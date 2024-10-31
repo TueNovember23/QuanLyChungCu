@@ -8,6 +8,8 @@ CREATE TABLE Role (
     RoleName VARCHAR(50) UNIQUE NOT NULL,
     Description VARCHAR(255)
 );
+
+
 INSERT INTO ROLE (RoleName, Description) VALUES ('Administrator', 'Quản trị hệ thống');
 INSERT INTO ROLE (RoleName, Description) VALUES ('Accountant', 'Quản lý chung cư');
 INSERT INTO ROLE (RoleName, Description) VALUES ('ServiceSupervisor', 'Nhân viên quản lý chung cư');
@@ -20,9 +22,13 @@ CREATE TABLE Account (
     CONSTRAINT FK_Account_Role FOREIGN KEY (RoleId) REFERENCES Role(RoleID) 
 );
 
-INSERT INTO Account (Username, Password, RoleId) VALUES ('admin', 'admin', 1);
-INSERT INTO Account (Username, Password, RoleId) VALUES ('accountant', 'accountant', 2);
-INSERT INTO Account (Username, Password, RoleId) VALUES ('service', 'service', 3);
+INSERT INTO Account (Username, Password, RoleId) VALUES ('admin', '1', 1);
+INSERT INTO Account (Username, Password, RoleId) VALUES ('accountant', '1', 2);
+INSERT INTO Account (Username, Password, RoleId) VALUES ('service', '1', 3);
+
+INSERT INTO Account (Username, Password, RoleId) VALUES ('ad', '1', 1);
+INSERT INTO Account (Username, Password, RoleId) VALUES ('ac', '1', 2);
+INSERT INTO Account (Username, Password, RoleId) VALUES ('se', '1', 3);
 
 CREATE TABLE Area (
     AreaId INT PRIMARY KEY IDENTITY(1, 1),
@@ -166,19 +172,25 @@ CREATE TABLE WaterInvoice (
     EndIndex int not null,
     Level  int not null,
     Price FLOAT not null,
-    TotalAmount FLOAT
+    TotalAmount FLOAT,
+    InvoiceId int not null,
+    CONSTRAINT FK_WaterInvoice_Invoice FOREIGN KEY (InvoiceId) REFERENCES Invoice(InvoiceId)
 )
 
 CREATE TABLE ManagementFeeInvoice (
     ManagementFeeInvoiceId int IDENTITY(1, 1) NOT NULL,
     Area float not null,
     Price FLOAT not null,
-    TotalAmount FLOAT
+    TotalAmount FLOAT,
+    InvoiceId int not null,
+    constraint FK_ManagementFeeInvoice_Invoice foreign key (InvoiceId) references Invoice(InvoiceId)
 )
 
 CREATE TABLE VechicleInvoice (
     VechicleInvoiceId int IDENTITY(1, 1) PRIMARY KEY,
-    TotalAmount FLOAT
+    TotalAmount FLOAT,
+    InvoiceId int not null,
+    constraint FK_VechicleInvoice_Invoice foreign key (InvoiceId) references Invoice(InvoiceId)
 )
 
 CREATE TABLE VechicleInvoiceDetail (
