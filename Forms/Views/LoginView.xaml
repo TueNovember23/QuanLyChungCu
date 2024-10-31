@@ -1,0 +1,25 @@
+﻿<Window x:Class="Forms.Views.LoginView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:Forms.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:LoginViewModel}"
+        mc:Ignorable="d"
+        Title="LoginView" Height="250" Width="400">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Username:" VerticalAlignment="Center" />
+        <TextBox Grid.Row="0" Margin="10,0,0,10" Width="200" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+
+        <TextBlock Text="Password:" Grid.Row="1" VerticalAlignment="Center" />
+        <PasswordBox Grid.Row="1" Margin="10,0,0,10" Width="200" PasswordChanged="PasswordBox_PasswordChanged" />
+
+        <Button Grid.Row="2" Content="Login" Width="100" Margin="0,10,0,0" Command="{Binding LoginCommand}" />
+    </Grid>
+</Window>
