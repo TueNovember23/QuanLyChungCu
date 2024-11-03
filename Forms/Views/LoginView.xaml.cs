@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Forms.Views
 {
@@ -20,7 +21,32 @@ namespace Forms.Views
         {
             if (DataContext is LoginViewModel viewModel)
             {
-                viewModel.Password = ((PasswordBox)sender).Password;
+                if (sender is PasswordBox passwordBox)
+                {
+                    viewModel.Password = passwordBox.Password;
+                }
+            }
+        }
+        
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void ShowPasswordButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is LoginViewModel viewModel)
+            {
+                viewModel.IsPasswordVisible = true;
+            }
+        }
+
+        private void ShowPasswordButton_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is LoginViewModel viewModel)
+            {
+                viewModel.IsPasswordVisible = false; 
             }
         }
     }

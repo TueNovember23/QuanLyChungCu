@@ -9,8 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="UserControls\" />
-    <Folder Include="ViewModels\Accountant\" />
+    <None Remove="Resources\building-icon.png" />
+    <None Remove="Resources\office.png" />
+    <None Remove="Resources\sekiller.png" />
+    <None Remove="Resources\ters.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ViewModels\AdministativeStaff\" />
     <Folder Include="ViewModels\ServiceSupervisor\" />
     <Folder Include="Views\Accountant\" />
@@ -28,6 +33,21 @@
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Repositories\Repositories.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\building-icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\office.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\sekiller.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ters.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

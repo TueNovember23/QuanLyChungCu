@@ -19,6 +19,11 @@ namespace Forms.ViewModels
         [ObservableProperty]
         private bool isBusy;
 
+        [ObservableProperty]
+        private bool isPasswordVisible;
+
+        public string PasswordEyeIcon => IsPasswordVisible ? "🙈" : "👁️";
+
         [RelayCommand]
         public async Task LoginAsync()
         {
