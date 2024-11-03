@@ -220,3 +220,20 @@ create table CommunityRoomBooking (
     constraint FK_CommunityRoomBooking_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
     constraint FK_CommunityRoomBooking_CommunityRoom foreign key (CommunityRoomId) references CommunityRoom(CommunityRoomId)
 )
+
+CREATE TABLE Regulation (
+    RegulationId int IDENTITY(1, 1) PRIMARY KEY,
+    Title nvarchar(100) NOT NULL,
+    Content nvarchar(255) NOT NULL,
+    CreatedDate date DEFAULT GETDATE() NOT NULL
+)
+
+CREATE TABLE Violation (
+    ViolationId int IDENTITY(1, 1) PRIMARY KEY,
+    ApartmentId int not null,
+    RegulationId int not null,
+    CreatedDate date DEFAULT GETDATE() NOT NULL,
+    Detail nvarchar(255),
+    constraint FK_Violation_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
+    constraint FK_Violation_Regulation foreign key (RegulationId) references Regulation(RegulationId)
+)
