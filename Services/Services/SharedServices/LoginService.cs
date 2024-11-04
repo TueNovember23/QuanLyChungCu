@@ -17,8 +17,9 @@ namespace Services.Services.SharedServices
             Account account = await _unitOfWork.GetRepository<Account>()
                 .FindAsync(x => x.Username == request.Username && x.Password == request.Password)
                 ?? throw new BusinessException("Invalid username or password");
-
-            return _mapper.Map<LoginResponseDTO>(account);
+            LoginResponseDTO response = _mapper.Map<LoginResponseDTO>(account);
+            response.Role = account.Role.RoleName;
+            return response;
         }
     }
 }

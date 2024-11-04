@@ -14,7 +14,9 @@ namespace Forms.Views
         public LoginView()
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider?.GetService<LoginViewModel>();
+            var viewModel = App.ServiceProvider?.GetService<LoginViewModel>();
+            viewModel?.Initialize(this);
+            DataContext = viewModel;
         }
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)

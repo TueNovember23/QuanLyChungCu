@@ -2,7 +2,6 @@ create database QuanLyChungCu
 go
 use QuanLyChungCu
 go
-
 CREATE TABLE Role (
     RoleId INT PRIMARY KEY IDENTITY(1, 1),
     RoleName VARCHAR(50) UNIQUE NOT NULL,
@@ -10,9 +9,9 @@ CREATE TABLE Role (
 );
 
 
-INSERT INTO ROLE (RoleName, Description) VALUES ('Administrator', 'Quản trị hệ thống');
-INSERT INTO ROLE (RoleName, Description) VALUES ('Accountant', 'Quản lý chung cư');
-INSERT INTO ROLE (RoleName, Description) VALUES ('ServiceSupervisor', 'Nhân viên quản lý chung cư');
+INSERT INTO ROLE (RoleName, Description) VALUES ('Administrator', N'Quản trị hệ thống');
+INSERT INTO ROLE (RoleName, Description) VALUES ('Accountant', N'Quản lý chung cư');
+INSERT INTO ROLE (RoleName, Description) VALUES ('ServiceSupervisor', N'Nhân viên quản lý chung cư');
 
 CREATE TABLE Account (
     Username NVARCHAR(50) PRIMARY KEY,
@@ -35,6 +34,10 @@ CREATE TABLE Area (
     AreaName VARCHAR(100) NOT NULL,
     Location VARCHAR(100)
 );
+insert into area (AreaName, Location) values (N'Khu vực Block E', 'Block E')
+insert into area (AreaName, Location) values (N'Khu vực Block D', 'Block D')
+insert into area (AreaName, Location) values (N'Khu vực Gửi xe', N'Phía trước Block D')
+insert into area (AreaName, Location) values (N'Khu vực Khuôn viên', N'Khuôn viên chung cư')
 
 CREATE TABLE Department (
     DepartmentId INT PRIMARY KEY IDENTITY(1, 1),
@@ -103,6 +106,10 @@ create table Block (
     IsDeleleted bit DEFAULT 0,
     CONSTRAINT FK_Block_Area FOREIGN KEY (AreaId) REFERENCES Area(AreaID)
 )
+insert into BLOCK (BlockCode, AreaId) values ('E1', 1)
+insert into BLOCK (BlockCode, AreaId) values ('E2', 1)
+insert into BLOCK (BlockCode, AreaId) values ('D1', 2)
+insert into BLOCK (BlockCode, AreaId) values ('D2', 2)
 
 create table Floor (
     FloorId int identity(1, 1) primary key,
@@ -111,14 +118,20 @@ create table Floor (
     BlockId int not null,
     constraint FK_Floor_Block foreign key (BlockId) references Block(BlockId)
 )
+insert INTO Floor (FloorNumber, BlockId) VALUES (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1)
+insert into floor (FloorNumber, BlockId) values (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2)
+insert into floor (FloorNumber, BlockId) values (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3)
+insert into floor (FloorNumber, BlockId) values (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4)
 
 Create Table Apartment (
-	ApartmentId int identity(1, 1) primary key,
+	ApartmentId int primary key,
 	Area int,
 	Status nvarchar(20),
 	FloorId int not null,
     Constraint FK_Apartment_Floor foreign key (FloorId) references Floor(FloorId)
 )
+insert into Department (DepartmentName, NumberOfStaff, Description) values ('Bảo trì', 5, 'Phòng bảo trì')
+
 
 create table Resident (
     ResidentId char(12) primary key,
