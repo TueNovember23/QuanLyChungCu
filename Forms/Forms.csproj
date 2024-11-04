@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <None Remove="Resources\building-icon.png" />
+    <None Remove="Resources\building.png" />
     <None Remove="Resources\office.png" />
     <None Remove="Resources\sekiller.png" />
     <None Remove="Resources\ters.png" />
@@ -38,6 +39,9 @@
   <ItemGroup>
     <Resource Include="Resources\building-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\building.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\office.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
