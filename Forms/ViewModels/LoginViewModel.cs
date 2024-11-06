@@ -1,9 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Forms.ViewModels.Accountant;
+using Forms.Views.AdministrativeStaff;
 using Services.DTOs.LoginDTO;
 using Services.Interfaces.SharedServices;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Forms.ViewModels
@@ -50,10 +49,10 @@ namespace Forms.ViewModels
                 {
                     if (response.Role == "Administrator")
                     {
-                        MainWindow mainWindow = new(response.Username);
+                        ApartmentView mainWindow = new();
                         mainWindow.Show();
 
-                        _loginWindow.Close();
+                        _loginWindow?.Close();
                     }
                     else
                     {

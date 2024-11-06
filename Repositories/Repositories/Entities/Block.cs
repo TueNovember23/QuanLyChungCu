@@ -11,6 +11,8 @@ public partial class Block
 
     public int AreaId { get; set; }
 
+    public int? NumberOfFloor { get; set; }
+
     public bool? IsDeleleted { get; set; }
 
     public virtual Area Area { get; set; } = null!;

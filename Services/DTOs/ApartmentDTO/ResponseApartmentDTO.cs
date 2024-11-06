@@ -2,7 +2,7 @@
 {
     public class ResponseApartmentDTO
     {
-        public int ApartmentId { get; set; }
+        public string ApartmentCode { get; set; } = null!;
 
         public int? Area { get; set; }
 
