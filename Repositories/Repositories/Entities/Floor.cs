@@ -9,7 +9,7 @@ public partial class Floor
 
     public int FloorNumber { get; set; }
 
-    public bool? IsDeleleted { get; set; }
+    public int? NumberOfApartment { get; set; }
 
     public int BlockId { get; set; }
 
