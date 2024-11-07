@@ -20,7 +20,6 @@
     <Folder Include="ViewModels\AdministativeStaff\" />
     <Folder Include="ViewModels\ServiceSupervisor\" />
     <Folder Include="Views\Accountant\" />
-    <Folder Include="Views\ServiceSupervisor\" />
   </ItemGroup>
 
   <ItemGroup>

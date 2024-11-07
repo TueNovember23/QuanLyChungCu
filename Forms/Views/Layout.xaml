@@ -8,74 +8,101 @@
         mc:Ignorable="d"
         Height="850" Width="1200" WindowStartupLocation="CenterScreen"
         WindowStyle="None" ResizeMode="NoResize" Background="{x:Null}" AllowsTransparency="True" Loaded="Window_Loaded">
+    <Window.Resources>
+        <Storyboard x:Key="ExpandSidebar">
+            <DoubleAnimation Storyboard.TargetName="Sidebar" Storyboard.TargetProperty="Width"
+                             From="60" To="200" Duration="0:0:0.3" />
+        </Storyboard>
+        <Storyboard x:Key="CollapseSidebar">
+            <DoubleAnimation Storyboard.TargetName="Sidebar" Storyboard.TargetProperty="Width"
+                             From="200" To="60" Duration="0:0:0.3" />
+        </Storyboard>
+    </Window.Resources>
+
     <Grid>
         <materialDesign:Card Margin="10" UniformCornerRadius="15">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="15*" />
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Sidebar Column -->
+                    <ColumnDefinition Width="*" />
+                    <!-- Content Column -->
                 </Grid.ColumnDefinitions>
-                <Grid.Resources>
-                    <Style TargetType="materialDesign:PackIcon">
-                        <Setter Property="Width" Value="30"></Setter>
-                        <Setter Property="Height" Value="30"></Setter>
-                    </Style>
-                </Grid.Resources>
-                <Grid Grid.Column="0">
-                    <ListView Margin="0 15">
-                        <ListViewItem HorizontalAlignment="Center" Margin="0 10">
-                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                             BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black">
-                                <StackPanel Margin="-5">
+
+                <!-- Sidebar -->
+                <Grid x:Name="Sidebar" Background="#D3D3D3" Width="60" MouseEnter="Sidebar_MouseEnter" MouseLeave="Sidebar_MouseLeave">
+                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="{Binding ActualWidth, ElementName=Sidebar}">
+                        <!-- Button 1 -->
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
+                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left" 
+                                    Width="190" 
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="Resistor"/>
+                                    <TextBlock x:Name="ResistorText" Text="Resistor" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
-                        <ListViewItem HorizontalAlignment="Center" Margin="0">
-                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                             BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black">
-                                <StackPanel Margin="-5">
+                        <!-- Button 2 -->
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
+                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left" 
+                                    Width="190"
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="CircleSlice6"/>
+                                    <TextBlock x:Name="CircleSliceText" Text="Circle Slice" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
-                        <ListViewItem HorizontalAlignment="Center" Margin="0 10">
+                        <!-- Button 3 -->
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                             BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black">
-                                <StackPanel Margin="-5">
+                                    Width="190" 
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="CalendarBlankOutline"/>
+                                    <TextBlock x:Name="CalendarText" Text="Calendar" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
-                            </ListViewItem>
-                        <ListViewItem HorizontalAlignment="Center" Margin="0">
+                        </ListViewItem>
+                        <!-- Button 4 -->
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                             BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black">
-                                <StackPanel Margin="-5">
+                                    Width="190" 
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="EqualiserVertical"/>
+                                    <TextBlock x:Name="EqualizerText" Text="Equalizer" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
-                        <ListViewItem HorizontalAlignment="Center" Margin="0 10">
+                        <!-- Button 5 -->
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                             BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black">
-                                <StackPanel Margin="-5">
+                                    Width="190" 
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="ChatOutline"/>
+                                    <TextBlock x:Name="ChatText" Text="Chat" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
-                        <ListViewItem HorizontalAlignment="Center" Margin="0 60 0 0">
+                        <!-- Exit Button -->
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0 100 0 0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                             BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" x:Name="btnExit" Click="btnExit_Click">
-                                <StackPanel Margin="-5">
+                                    Width="190" 
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" x:Name="btnExit" Click="btnExit_Click" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="ExitToApp"/>
+                                    <TextBlock x:Name="ExitText" Text="Exit" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
-                    </ListView>
+                    </StackPanel>
                 </Grid>
 
+                <!-- Main Content -->
                 <Grid Grid.Column="1" Background="#F6F5F8" Name="RenderPages">
-                    
                 </Grid>
             </Grid>
         </materialDesign:Card>

@@ -1,8 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Forms.Views
+namespace Forms.Views.ServiceSupervisor
 {
     public partial class ParkingView : UserControl
     {
