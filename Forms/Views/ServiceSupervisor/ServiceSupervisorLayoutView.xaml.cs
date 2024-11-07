@@ -1,25 +1,39 @@
-﻿using Forms.Views.ServiceSupervisor;
-using System;
+﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using Forms.Views.AdministrativeStaff;
 
-namespace Forms.Views
+namespace Forms.Views.ServiceSupervisor
 {
-    public partial class Layout : Window
+    public partial class ServiceSupervisorLayoutView : Window
     {
-        public Layout()
+        public ServiceSupervisorLayoutView()
         {
             InitializeComponent();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            RenderPages.Children.Clear();
-            RenderPages.Children.Add(new GeneralInfoView());
+            LoadUserControl(new RegisterParkingView());
+        }
 
-            //RenderPages.Children.Add(new RegisterParkingView());
+        private void ParkingViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+            LoadUserControl(new RegisterParkingView());
+        }
+
+        private void RegisterParkingViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new ParkingView());
+        }
+
+        private void LoadUserControl(UserControl userControl)
+        {
+            RenderPages.Children.Clear();
+
+            RenderPages.Children.Add(userControl);
         }
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
@@ -29,11 +43,9 @@ namespace Forms.Views
 
         private void Sidebar_MouseEnter(object sender, MouseEventArgs e)
         {
-            // Expand sidebar when mouse enters
             Storyboard storyboard = (Storyboard)this.Resources["ExpandSidebar"];
             storyboard.Begin();
 
-            // Show text labels when sidebar expands
             ResistorText.Visibility = Visibility.Visible;
             CircleSliceText.Visibility = Visibility.Visible;
             CalendarText.Visibility = Visibility.Visible;
@@ -44,11 +56,9 @@ namespace Forms.Views
 
         private void Sidebar_MouseLeave(object sender, MouseEventArgs e)
         {
-            // Collapse sidebar when mouse leaves
             Storyboard storyboard = (Storyboard)this.Resources["CollapseSidebar"];
             storyboard.Begin();
 
-            // Hide text labels when sidebar collapses
             ResistorText.Visibility = Visibility.Collapsed;
             CircleSliceText.Visibility = Visibility.Collapsed;
             CalendarText.Visibility = Visibility.Collapsed;
