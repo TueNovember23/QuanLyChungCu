@@ -2,8 +2,10 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Forms.Converters"
+        xmlns:mtrld="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
         Title="Login" Height="500" Width="700"
         WindowStyle="None" ResizeMode="NoResize"
+        AllowsTransparency="True"
         Background="Transparent" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -32,7 +34,7 @@
 
                         <!-- Username Label and Field -->
                         <TextBlock Text="Tài khoản" FontSize="14" Foreground="#2C3E50" Margin="0,0,0,-5"/>
-                        <TextBox Name="usernameTextBox" Height="35" FontSize="16" Margin="0,0,0,10" Padding="4"
+                        <TextBox mtrld:HintAssist.Hint="Tên đăng nhập" Name="usernameTextBox" Height="35" FontSize="16" Margin="0,0,0,10" Padding="4"
                                  Background="Transparent" BorderBrush="#2C3E50" BorderThickness="0,0,0,2"
                                  Text="{Binding Username, Mode=TwoWay}"/>
 
@@ -55,7 +57,8 @@
                                          Visibility="{Binding IsPasswordVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
 
                             <!-- TextBox hiển thị mật khẩu khi ở trạng thái hiển thị -->
-                            <TextBox Text="{Binding Password, Mode=TwoWay}"
+                            <TextBox mtrld:HintAssist.Hint="Mật khẩu"
+                                     Text="{Binding Password, Mode=TwoWay}"
                                      FontSize="16" Padding="4"
                                      Background="Transparent" BorderBrush="#2C3E50" BorderThickness="0,0,0,2"
                                      VerticalContentAlignment="Center"
@@ -64,7 +67,7 @@
                                      Visibility="{Binding IsPasswordVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                             <!-- Toggle Password Visibility Button with PreviewMouseDown and PreviewMouseUp events -->
-                            <Button Content="{Binding PasswordEyeIcon}"
+                            <Button Content="👁️" Foreground="Black" Padding="0"
                                     Width="30" Height="30" Background="Transparent" BorderBrush="Transparent"
                                     VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0" 
                                     Grid.Column="1"
@@ -87,9 +90,9 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <!-- Close Button in the top-right corner -->
-                <Button Content="✕" FontSize="16" Width="30" Height="30"
+                <Button Content="✕" FontSize="16" Width="35" Height="35" Padding="0"
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0"
-                        Background="Transparent" Foreground="Coral" BorderBrush="Transparent"
+                        Background="Transparent" Foreground="Black" BorderBrush="Transparent"
                         Click="CloseButton_Click"/>
                 <Image Source="/Resources/building-icon.png"
                        Height="100" HorizontalAlignment="Center" VerticalAlignment="Top"
