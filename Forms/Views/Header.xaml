@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="Forms.Views.Header"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:Forms.Views"
+             xmlns:viewModels="clr-namespace:Forms.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="60" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <viewModels:CommonViewModel />
+    </UserControl.DataContext>
+
+    <StackPanel Margin="5" MouseDown="StackPanel_MouseDown" Background="Transparent">
+        <Grid Height="60">
+            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
+                    BorderBrush="{x:Null}" Background="{x:Null}">
+                <StackPanel Margin="-5">
+                    <materialDesign:PackIcon Kind="ReorderHorizontal" Foreground="Gray" />
+                </StackPanel>
+            </Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Height="35" Width="35">
+                    <materialDesign:PackIcon Kind="WindowMinimize" />
+                </Button>
+
+                <!--<Button Style="{StaticResource MaterialDesignFloatingActionButton}" Command="{Binding MaximizeRestoreCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Height="35" Width="35">
+                    <materialDesign:PackIcon Kind="WindowMaximize" />
+                </Button>-->
+
+                <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Height="35" Width="35">
+                    <materialDesign:PackIcon Kind="WindowClose" />
+                </Button>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>
