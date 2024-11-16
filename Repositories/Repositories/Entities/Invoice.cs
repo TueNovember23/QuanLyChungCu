@@ -15,8 +15,6 @@ public partial class Invoice
 
     public int? Year { get; set; }
 
-    public double? TotalAmount { get; set; }
-
     public string? Status { get; set; }
 
     public virtual Account CreatedByNavigation { get; set; } = null!;

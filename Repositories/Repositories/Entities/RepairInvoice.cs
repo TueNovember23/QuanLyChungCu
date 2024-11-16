@@ -19,9 +19,9 @@ public partial class RepairInvoice
 
     public int? MalfunctionReportId { get; set; }
 
-    public int? DepartmentId { get; set; }
+    public string CreatedBy { get; set; } = null!;
 
-    public virtual Department? Department { get; set; }
+    public virtual Account CreatedByNavigation { get; set; } = null!;
 
     public virtual MalfunctionReport? MalfunctionReport { get; set; }
 }

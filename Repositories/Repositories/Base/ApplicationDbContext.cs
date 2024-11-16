@@ -39,7 +39,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<MalfunctionReport> MalfunctionReports { get; set; }
 
-    public virtual DbSet<ManagementFeeHistory> ManagementFeeHistories { get; set; }
+    public virtual DbSet<ManagementFee> ManagementFees { get; set; }
 
     public virtual DbSet<ManagementFeeInvoice> ManagementFeeInvoices { get; set; }
 
@@ -63,7 +63,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Violation> Violations { get; set; }
 
-    public virtual DbSet<WaterFeeHistory> WaterFeeHistories { get; set; }
+    public virtual DbSet<WaterFee> WaterFees { get; set; }
 
     public virtual DbSet<WaterInvoice> WaterInvoices { get; set; }
 
@@ -80,13 +80,18 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.Username).HasName("PK__Account__536C85E5AA1AE6F3");
+            entity.HasKey(e => e.Username).HasName("PK__Account__536C85E5B8737158");
 
-            entity.ToTable("Account");
+            entity.ToTable("Account", tb => tb.HasTrigger("TRG_Account_Insert"));
 
             entity.Property(e => e.Username).HasMaxLength(50);
             entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.Password).HasMaxLength(255);
+
+            entity.HasOne(d => d.Department).WithMany(p => p.Accounts)
+                .HasForeignKey(d => d.DepartmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Account_Department");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.RoleId)
@@ -96,7 +101,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Apartment>(entity =>
         {
-            entity.HasKey(e => e.ApartmentId).HasName("PK__Apartmen__CBDF5764DFA8B51F");
+            entity.HasKey(e => e.ApartmentId).HasName("PK__Apartmen__CBDF5764F7260808");
 
             entity.ToTable("Apartment", tb => tb.HasTrigger("TRG_Apartment_Insert"));
 
@@ -115,21 +120,17 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Area>(entity =>
         {
-            entity.HasKey(e => e.AreaId).HasName("PK__Area__70B8204880A20D7B");
+            entity.HasKey(e => e.AreaId).HasName("PK__Area__70B82048DFAD8258");
 
             entity.ToTable("Area");
 
-            entity.Property(e => e.AreaName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Location)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+            entity.Property(e => e.AreaName).HasMaxLength(100);
+            entity.Property(e => e.Location).HasMaxLength(100);
         });
 
         modelBuilder.Entity<Block>(entity =>
         {
-            entity.HasKey(e => e.BlockId).HasName("PK__Block__144215F180954C19");
+            entity.HasKey(e => e.BlockId).HasName("PK__Block__144215F15EA72A2B");
 
             entity.ToTable("Block");
 
@@ -148,7 +149,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<CommunityRoom>(entity =>
         {
-            entity.HasKey(e => e.CommunityRoomId).HasName("PK__Communit__9AA1F65C5842B044");
+            entity.HasKey(e => e.CommunityRoomId).HasName("PK__Communit__9AA1F65C815F57EC");
 
             entity.ToTable("CommunityRoom");
 
@@ -158,7 +159,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<CommunityRoomBooking>(entity =>
         {
-            entity.HasKey(e => e.CommunityRoomBookingId).HasName("PK__Communit__14F5AE4C8D06A79A");
+            entity.HasKey(e => e.CommunityRoomBookingId).HasName("PK__Communit__14F5AE4C56EEC8E4");
 
             entity.ToTable("CommunityRoomBooking");
 
@@ -178,34 +179,25 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Department>(entity =>
         {
-            entity.HasKey(e => e.DepartmentId).HasName("PK__Departme__B2079BEDFEF0C1AF");
+            entity.HasKey(e => e.DepartmentId).HasName("PK__Departme__B2079BED4BE04D57");
 
             entity.ToTable("Department");
 
-            entity.HasIndex(e => e.DepartmentName, "UQ__Departme__D949CC34769135D4").IsUnique();
+            entity.HasIndex(e => e.DepartmentName, "UQ__Departme__D949CC3433F6EA98").IsUnique();
 
-            entity.Property(e => e.DepartmentName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Description)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.Property(e => e.DepartmentName).HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Equipment>(entity =>
         {
-            entity.HasKey(e => e.EquipmentId).HasName("PK__Equipmen__34474479505D598A");
+            entity.HasKey(e => e.EquipmentId).HasName("PK__Equipmen__34474479F9856B1F");
 
             entity.Property(e => e.EquipmentId).ValueGeneratedNever();
-            entity.Property(e => e.Discription)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.EquipmentName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+            entity.Property(e => e.Description).HasMaxLength(255);
+            entity.Property(e => e.EquipmentName).HasMaxLength(100);
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasDefaultValue("Hoạt động");
 
             entity.HasOne(d => d.Area).WithMany(p => p.Equipment)
@@ -216,7 +208,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Floor>(entity =>
         {
-            entity.HasKey(e => e.FloorId).HasName("PK__Floor__49D1E84B70F186A9");
+            entity.HasKey(e => e.FloorId).HasName("PK__Floor__49D1E84B7A7D817D");
 
             entity.ToTable("Floor", tb => tb.HasTrigger("TRG_Floor_Insert"));
 
@@ -230,7 +222,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Invoice>(entity =>
         {
-            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoice__D796AAB52B958C04");
+            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoice__D796AAB5B8739C27");
 
             entity.ToTable("Invoice");
 
@@ -250,27 +242,23 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Maintenance>(entity =>
         {
-            entity.HasKey(e => e.MaintenanceId).HasName("PK__Maintena__E60542D5020378C5");
+            entity.HasKey(e => e.MaintenanceId).HasName("PK__Maintena__E60542D5149B664E");
 
             entity.ToTable("Maintenance");
 
             entity.Property(e => e.MaintenanceId).ValueGeneratedNever();
-            entity.Property(e => e.Description)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.Property(e => e.CreatedBy).HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.MaintanaceDate).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.MaintenanceName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+            entity.Property(e => e.MaintenanceName).HasMaxLength(100);
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasDefaultValue("Chưa hoàn thành");
 
-            entity.HasOne(d => d.Department).WithMany(p => p.Maintenances)
-                .HasForeignKey(d => d.DepartmentId)
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Maintenances)
+                .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Maintenance_Department");
+                .HasConstraintName("FK_Maintenance_Account");
 
             entity.HasMany(d => d.Equipment).WithMany(p => p.Maintenances)
                 .UsingEntity<Dictionary<string, object>>(
@@ -285,7 +273,7 @@ public partial class ApplicationDbContext : DbContext
                         .HasConstraintName("FK_EquipmentMaintanance_Maintenance"),
                     j =>
                     {
-                        j.HasKey("MaintenanceId", "EquipmentId").HasName("PK__Equipmen__654136EC46F280D6");
+                        j.HasKey("MaintenanceId", "EquipmentId").HasName("PK__Equipmen__654136EC9F78E2A1");
                         j.ToTable("EquipmentMaintanance");
                         j.IndexerProperty<int>("MaintenanceId").HasColumnName("MaintenanceID");
                         j.IndexerProperty<int>("EquipmentId").HasColumnName("EquipmentID");
@@ -294,18 +282,15 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<MalfunctionReport>(entity =>
         {
-            entity.HasKey(e => e.ReportId).HasName("PK__Malfunct__D5BD480510B3B9A5");
+            entity.HasKey(e => e.ReportId).HasName("PK__Malfunct__D5BD48050D1E4839");
 
             entity.ToTable("MalfunctionReport");
 
             entity.Property(e => e.ReportId).ValueGeneratedNever();
-            entity.Property(e => e.ReportContent)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.Property(e => e.ReportContent).HasMaxLength(255);
             entity.Property(e => e.ReportDate).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.ReportStatus)
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasDefaultValue("Chưa xử lý");
 
             entity.HasOne(d => d.Equipment).WithMany(p => p.MalfunctionReports)
@@ -314,11 +299,11 @@ public partial class ApplicationDbContext : DbContext
                 .HasConstraintName("FK_MalfunctionReport_Equipment");
         });
 
-        modelBuilder.Entity<ManagementFeeHistory>(entity =>
+        modelBuilder.Entity<ManagementFee>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("ManagementFeeHistory");
+            entity.HasKey(e => e.ManagementFeeId).HasName("PK__Manageme__F316122CA98C837A");
+
+            entity.ToTable("ManagementFee");
         });
 
         modelBuilder.Entity<ManagementFeeInvoice>(entity =>
@@ -342,7 +327,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Regulation>(entity =>
         {
-            entity.HasKey(e => e.RegulationId).HasName("PK__Regulati__A192C7E9F2EB773D");
+            entity.HasKey(e => e.RegulationId).HasName("PK__Regulati__A192C7E919CE9AB1");
 
             entity.ToTable("Regulation");
 
@@ -353,29 +338,26 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<RepairInvoice>(entity =>
         {
-            entity.HasKey(e => e.InvoiceId).HasName("PK__RepairIn__D796AAD570C880DB");
+            entity.HasKey(e => e.InvoiceId).HasName("PK__RepairIn__D796AAD5B965566A");
 
             entity.ToTable("RepairInvoice");
 
             entity.Property(e => e.InvoiceId)
                 .ValueGeneratedNever()
                 .HasColumnName("InvoiceID");
-            entity.Property(e => e.InvoiceContent)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.Property(e => e.CreatedBy).HasMaxLength(50);
+            entity.Property(e => e.InvoiceContent).HasMaxLength(255);
             entity.Property(e => e.InvoiceDate).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.MalfunctionReportId).HasColumnName("MalfunctionReportID");
-            entity.Property(e => e.SolvingMethod)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.Property(e => e.SolvingMethod).HasMaxLength(255);
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasDefaultValue("Chưa thanh toán");
 
-            entity.HasOne(d => d.Department).WithMany(p => p.RepairInvoices)
-                .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("FK_RepairInvoice_Department");
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.RepairInvoices)
+                .HasForeignKey(d => d.CreatedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RepairInvoice_Account");
 
             entity.HasOne(d => d.MalfunctionReport).WithMany(p => p.RepairInvoices)
                 .HasForeignKey(d => d.MalfunctionReportId)
@@ -384,7 +366,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Representative>(entity =>
         {
-            entity.HasKey(e => e.RepresentativeId).HasName("PK__Represen__E25A22996C7B5617");
+            entity.HasKey(e => e.RepresentativeId).HasName("PK__Represen__E25A2299147BD90F");
 
             entity.ToTable("Representative");
 
@@ -412,7 +394,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Resident>(entity =>
         {
-            entity.HasKey(e => e.ResidentId).HasName("PK__Resident__07FB00DCF3855FB6");
+            entity.HasKey(e => e.ResidentId).HasName("PK__Resident__07FB00DC4C8ECFDA");
 
             entity.ToTable("Resident");
 
@@ -436,23 +418,19 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1AB7654F6C");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1A4F59FD43");
 
             entity.ToTable("Role");
 
-            entity.HasIndex(e => e.RoleName, "UQ__Role__8A2B616005B74E95").IsUnique();
+            entity.HasIndex(e => e.RoleName, "UQ__Role__8A2B61603B388525").IsUnique();
 
-            entity.Property(e => e.Description)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.RoleName)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.Description).HasMaxLength(255);
+            entity.Property(e => e.RoleName).HasMaxLength(50);
         });
 
         modelBuilder.Entity<VechicleInvoice>(entity =>
         {
-            entity.HasKey(e => e.VechicleInvoiceId).HasName("PK__Vechicle__5E303E996CAEB917");
+            entity.HasKey(e => e.VechicleInvoiceId).HasName("PK__Vechicle__5E303E99A593B027");
 
             entity.ToTable("VechicleInvoice");
 
@@ -491,7 +469,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Vehicle>(entity =>
         {
-            entity.HasKey(e => e.VehicleId).HasName("PK__Vehicle__476B549295B1BC0F");
+            entity.HasKey(e => e.VehicleId).HasName("PK__Vehicle__476B54929B22DF69");
 
             entity.ToTable("Vehicle");
 
@@ -513,7 +491,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<VehicleCategory>(entity =>
         {
-            entity.HasKey(e => e.VehicleCategoryId).HasName("PK__VehicleC__55CCA5679236DC0E");
+            entity.HasKey(e => e.VehicleCategoryId).HasName("PK__VehicleC__55CCA56717877F39");
 
             entity.ToTable("VehicleCategory");
 
@@ -523,7 +501,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Violation>(entity =>
         {
-            entity.HasKey(e => e.ViolationId).HasName("PK__Violatio__18B6DC08E3B12B44");
+            entity.HasKey(e => e.ViolationId).HasName("PK__Violatio__18B6DC0863A1A22F");
 
             entity.ToTable("Violation");
 
@@ -541,11 +519,11 @@ public partial class ApplicationDbContext : DbContext
                 .HasConstraintName("FK_Violation_Regulation");
         });
 
-        modelBuilder.Entity<WaterFeeHistory>(entity =>
+        modelBuilder.Entity<WaterFee>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("WaterFeeHistory");
+            entity.HasKey(e => e.WaterFeeId).HasName("PK__WaterFee__6141561EB40810DE");
+
+            entity.ToTable("WaterFee");
         });
 
         modelBuilder.Entity<WaterInvoice>(entity =>
@@ -565,6 +543,11 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(d => d.InvoiceId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_WaterInvoice_Invoice");
+
+            entity.HasOne(d => d.WaterFee).WithMany()
+                .HasForeignKey(d => d.WaterFeeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WaterInvoice_WaterFee");
         });
 
         OnModelCreatingPartial(modelBuilder);

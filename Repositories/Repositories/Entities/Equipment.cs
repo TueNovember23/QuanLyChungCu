@@ -9,7 +9,7 @@ public partial class Equipment
 
     public string EquipmentName { get; set; } = null!;
 
-    public string? Discription { get; set; }
+    public string? Description { get; set; }
 
     public int AreaId { get; set; }
 
