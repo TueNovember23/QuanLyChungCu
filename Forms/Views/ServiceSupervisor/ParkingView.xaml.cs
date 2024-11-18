@@ -17,5 +17,10 @@ namespace Forms.Views.ServiceSupervisor
             RenderHeader.Children.Clear();
             RenderHeader.Children.Add(new Header());
         }
+
+        private void Header_Loaded()
+        {
+
+        }
     }
 }
