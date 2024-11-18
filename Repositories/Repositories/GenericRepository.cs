@@ -119,12 +119,20 @@ namespace Repositories.Repositories
             _dbSet.Entry(obj).State = EntityState.Modified;
         }
 
+        //public async Task UpdateAsync(T obj)
+        //{
+        //    _dbSet.Attach(obj);
+        //    _dbSet.Entry(obj).State = EntityState.Modified;
+        //    Task.WaitAll(Task.FromResult(0));
+        //}
+
         public async Task UpdateAsync(T obj)
         {
             _dbSet.Attach(obj);
             _dbSet.Entry(obj).State = EntityState.Modified;
-            Task.WaitAll(Task.FromResult(0));
+            await _context.SaveChangesAsync();
         }
+
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {

@@ -16,4 +16,8 @@ public partial class WaterInvoice
     public double Price { get; set; }
 
     public double? TotalAmount { get; set; }
+
+    public int InvoiceId { get; set; }
+
+    public virtual Invoice Invoice { get; set; } = null!;
 }

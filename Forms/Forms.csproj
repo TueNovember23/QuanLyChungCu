@@ -9,17 +9,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="UserControls\" />
-    <Folder Include="ViewModels\Accountant\" />
+    <None Remove="Resources\building-icon.png" />
+    <None Remove="Resources\building.png" />
+    <None Remove="Resources\office.png" />
+    <None Remove="Resources\sekiller.png" />
+    <None Remove="Resources\ters.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ViewModels\AdministativeStaff\" />
     <Folder Include="ViewModels\ServiceSupervisor\" />
-    <Folder Include="Views\Accountant\" />
-    <Folder Include="Views\AdministrativeStaff\" />
-    <Folder Include="Views\ServiceSupervisor\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="MaterialDesignColors" Version="3.1.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
   </ItemGroup>
@@ -28,6 +33,24 @@
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Repositories\Repositories.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\building-icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\building.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\office.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\sekiller.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ters.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

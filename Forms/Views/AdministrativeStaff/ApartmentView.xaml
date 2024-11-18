@@ -1,0 +1,38 @@
+﻿<Window x:Class="Forms.Views.AdministrativeStaff.ApartmentView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Danh sách căn hộ" Height="450" Width="800">
+
+    <Grid>
+        <DataGrid ItemsSource="{Binding Apartments}" AutoGenerateColumns="False" Margin="10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Mã căn hộ" Binding="{Binding ApartmentCode}" Width="*"/>
+                <DataGridTextColumn Header="Diện tích (m²)" Binding="{Binding Area}" Width="*"/>
+                <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="*"/>
+                <DataGridTextColumn Header="Tầng" Binding="{Binding Floor}" Width="*"/>
+                <DataGridTextColumn Header="Block" Binding="{Binding Block}" Width="*"/>
+
+                <!-- Cột nút "Xem danh sách cư dân" -->
+                <DataGridTemplateColumn Header="Danh sách cư dân" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Xem danh sách cư dân" Width="150" Height="30" Command="{Binding DataContext.ViewResidentsCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentId}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- Cột nút "Chỉnh sửa thông tin căn hộ" -->
+                <DataGridTemplateColumn Header="Chỉnh sửa" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Chỉnh sửa thông tin" Width="150" Height="30" Command="{Binding DataContext.EditApartmentCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentId}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

@@ -16,4 +16,6 @@ public partial class Invoice
     public int ApartmentId { get; set; }
 
     public virtual Apartment Apartment { get; set; } = null!;
+
+    public virtual ICollection<VechicleInvoice> VechicleInvoices { get; set; } = new List<VechicleInvoice>();
 }

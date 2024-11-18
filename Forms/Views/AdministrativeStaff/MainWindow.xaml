@@ -1,0 +1,41 @@
+﻿<Window x:Class="Forms.Views.AdministrativeStaff.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Forms.Views.AdministrativeStaff"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        WindowState="Maximized" WindowStyle="None">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- Sidebar -->
+            <ColumnDefinition Width="250" />
+            <!-- Phần chính -->
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar bên trái -->
+        <Border Background="#f0f0f0" Grid.Column="0">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top">
+
+                <!-- Logo ứng dụng hoặc biểu tượng -->
+                <Image Source="/Resources/building-icon.png" Height="80" Width="80" Margin="0,10,0,20" />
+
+                <!-- Tên các chức năng -->
+                <Button Content="Trang chủ" Width="200" Height="40" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                <Button Content="Quản lý căn hộ" Width="200" Height="40" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                <Button Content="Quản lý dịch vụ" Width="200" Height="40" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                <Button Content="Quản lý cư dân" Width="200" Height="40" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                <Button Content="Báo cáo" Width="200" Height="40" Margin="0,5,0,20" HorizontalAlignment="Center"/>
+
+                <!-- Nút Logout ở cuối sidebar -->
+                <Button Content="Đăng xuất" Width="200" Height="40" Margin="0,20,0,0" HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom" Background="#FF6B6B" Foreground="White" FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Khu vực chính để hiển thị các giao diện chức năng -->
+        <ContentControl Grid.Column="1" Margin="10" x:Name="MainContentArea" />
+    </Grid>
+</Window>
