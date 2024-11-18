@@ -1,4 +1,7 @@
-﻿namespace Repositories.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Repositories.Entities;
 
 public partial class Apartment
 {
