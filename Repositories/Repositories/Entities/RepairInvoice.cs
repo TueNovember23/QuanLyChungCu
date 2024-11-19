@@ -11,17 +11,13 @@ public partial class RepairInvoice
 
     public string? InvoiceContent { get; set; }
 
-    public string? SolvingMethod { get; set; }
-
-    public double RepairPrice { get; set; }
+    public double TotalAmount { get; set; }
 
     public string Status { get; set; } = null!;
 
-    public int? MalfunctionReportId { get; set; }
+    public int? CreatedBy { get; set; }
 
-    public string CreatedBy { get; set; } = null!;
+    public virtual Account? CreatedByNavigation { get; set; }
 
-    public virtual Account CreatedByNavigation { get; set; } = null!;
-
-    public virtual MalfunctionReport? MalfunctionReport { get; set; }
+    public virtual ICollection<MalfuntionEquipment> MalfuntionEquipments { get; set; } = new List<MalfuntionEquipment>();
 }

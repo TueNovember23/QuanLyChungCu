@@ -19,7 +19,7 @@ public partial class WaterFee
 
     public double? Price2 { get; set; }
 
-    public int? Level3 { get; set; }
-
     public double? Price3 { get; set; }
+
+    public virtual ICollection<WaterInvoice> WaterInvoices { get; set; } = new List<WaterInvoice>();
 }

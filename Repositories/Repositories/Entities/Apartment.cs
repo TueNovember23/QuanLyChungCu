@@ -32,4 +32,6 @@ public partial class Apartment
     public virtual ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
 
     public virtual ICollection<Violation> Violations { get; set; } = new List<Violation>();
+
+    public virtual ICollection<WaterInvoice> WaterInvoices { get; set; } = new List<WaterInvoice>();
 }

@@ -11,6 +11,8 @@ public partial class WaterInvoice
 
     public int EndIndex { get; set; }
 
+    public int NumberOfPeople { get; set; }
+
     public double? TotalAmount { get; set; }
 
     public int InvoiceId { get; set; }

@@ -15,7 +15,11 @@ public partial class ManagementFeeInvoice
 
     public int ApartmentId { get; set; }
 
+    public int ManagementFeeHistoryId { get; set; }
+
     public virtual Apartment Apartment { get; set; } = null!;
 
     public virtual Invoice Invoice { get; set; } = null!;
+
+    public virtual ManagementFee ManagementFeeHistory { get; set; } = null!;
 }

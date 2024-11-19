@@ -9,11 +9,11 @@ public partial class Department
 
     public string DepartmentName { get; set; } = null!;
 
-    public string? Description { get; set; }
-
     public int NumberOfStaff { get; set; }
+
+    public string? Description { get; set; }
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
+    public virtual ICollection<Maintenance> Maintenances { get; set; } = new List<Maintenance>();
 }

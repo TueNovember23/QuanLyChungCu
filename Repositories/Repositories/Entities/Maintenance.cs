@@ -15,9 +15,13 @@ public partial class Maintenance
 
     public string? Status { get; set; }
 
-    public string CreatedBy { get; set; } = null!;
+    public int CreatedBy { get; set; }
+
+    public int DepartmentId { get; set; }
 
     public virtual Account CreatedByNavigation { get; set; } = null!;
+
+    public virtual Department Department { get; set; } = null!;
 
     public virtual ICollection<Equipment> Equipment { get; set; } = new List<Equipment>();
 }

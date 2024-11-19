@@ -9,7 +9,7 @@ public partial class Equipment
 
     public string EquipmentName { get; set; } = null!;
 
-    public string? Description { get; set; }
+    public string? Discription { get; set; }
 
     public int AreaId { get; set; }
 
@@ -19,7 +19,7 @@ public partial class Equipment
 
     public virtual Area Area { get; set; } = null!;
 
-    public virtual ICollection<MalfunctionReport> MalfunctionReports { get; set; } = new List<MalfunctionReport>();
+    public virtual ICollection<MalfuntionEquipment> MalfuntionEquipments { get; set; } = new List<MalfuntionEquipment>();
 
     public virtual ICollection<Maintenance> Maintenances { get; set; } = new List<Maintenance>();
 }
