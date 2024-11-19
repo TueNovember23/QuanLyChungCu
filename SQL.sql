@@ -2,15 +2,16 @@ create database QuanLyChungCu
 go
 use QuanLyChungCu
 go
--- drop database QuanLyChungCu
+
 CREATE TABLE Role (
     RoleId INT PRIMARY KEY IDENTITY(1, 1),
     RoleName VARCHAR(50) UNIQUE NOT NULL,
-    Description VARCHAR(255)
+    Description NVARCHAR(255)
 );
 
 CREATE TABLE Account (
-    Username NVARCHAR(50) PRIMARY KEY,
+    AccountId INT PRIMARY KEY IDENTITY(1, 1),
+    Username VARCHAR(50) UNIQUE NOT NULL,
     Password NVARCHAR(255) NOT NULL,
     FullName NVARCHAR(100) NOT NULL,
     RoleId INT NOT NULl,
@@ -18,64 +19,67 @@ CREATE TABLE Account (
     CONSTRAINT FK_Account_Role FOREIGN KEY (RoleId) REFERENCES Role(RoleID) 
 );
 
-CREATE TABLE Area (
-    AreaId INT PRIMARY KEY IDENTITY(1, 1),
-    AreaName VARCHAR(100) NOT NULL,
-    Location VARCHAR(100)
-);
-
 CREATE TABLE Department (
     DepartmentId INT PRIMARY KEY IDENTITY(1, 1),
-    DepartmentName VARCHAR(100) UNIQUE NOT NULL,
+    DepartmentName NVARCHAR(100) UNIQUE NOT NULL,
     NumberOfStaff INT DEFAULT 0 NOT NULL,
-    Description VARCHAR(255),
+    Description NVARCHAR(255),
     IsDeleted BIT DEFAULT 0 NOT NULL
+);
+
+CREATE TABLE Area (
+    AreaId INT PRIMARY KEY IDENTITY(1, 1),
+    AreaName NVARCHAR(100) NOT NULL,
+    Location NVARCHAR(100)
 );
 
 CREATE TABLE Equipment (
     EquipmentId INT PRIMARY KEY,
-    EquipmentName VARCHAR(100) NOT NULL,
-    Discription VARCHAR(255),
+    EquipmentName NVARCHAR(100) NOT NULL,
+    Discription NVARCHAR(255),
     AreaId INT NOT NULL,
-    Status VARCHAR(50) NOT NULL DEFAULT N'Hoạt động', -- Trạng thái thiết bị (hoạt động, hỏng),
+    Status NVARCHAR(50) NOT NULL DEFAULT N'Hoạt động', -- Trạng thái thiết bị (hoạt động, hỏng),
     IsDeleted BIT DEFAULT 0 NOT NULL,
     CONSTRAINT FK_Equipment_Area FOREIGN KEY (AreaID) REFERENCES Area(AreaID)
 );
 
--- Báo cáo hư hỏng thiết bị
-CREATE TABLE MalfunctionReport (
-    ReportId INT PRIMARY KEY,
-    ReportDate DATE DEFAULT GETDATE() NOT NULL,
-    ReportContent VARCHAR(255),
-    ReportStatus VARCHAR(50) DEFAULT N'Chưa xử lý' NOT NULL, -- Trạng thái báo cáo (đã xử lý, chưa xử lý)
-    EquipmentId INT NOT NULL,
-    CONSTRAINT FK_MalfunctionReport_Equipment FOREIGN KEY (EquipmentID) REFERENCES Equipment(EquipmentID)
-);
-
+-- Hóa đơn sửa chữa (join với báo cáo hư hỏng để lấy thông tin thiết bị hỏng, phương án sửa và giá)
 CREATE TABLE RepairInvoice (
     InvoiceID INT PRIMARY KEY,
     InvoiceDate DATE DEFAULT GETDATE() NOT NULL,
-    InvoiceContent VARCHAR(255),
-    SolvingMethod VARCHAR(255), 
-    RepairPrice FLOAT NOT NULL,
-    Status VARCHAR(50) DEFAULT N'Chưa thanh toán' NOT NULL, -- Trạng thái hóa đơn (đã thanh toán, chưa thanh toán)
-    MalfunctionReportID INT,
-    DepartmentId INT,
-    CONSTRAINT FK_RepairInvoice_Department FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID),
-    CONSTRAINT FK_RepairInvoice_MalfunctionReport FOREIGN KEY (MalfunctionReportID) REFERENCES MalfunctionReport(ReportId)
+    InvoiceContent NVARCHAR(255),
+    TotalAmount FLOAT NOT NULL,
+    Status NVARCHAR(50) DEFAULT N'Chưa thanh toán' NOT NULL, -- Trạng thái hóa đơn (đã thanh toán, chưa thanh toán)
+    CreatedBy INT, -- Người tạo hóa đơn
+    CONSTRAINT FK_RepairInvoice_Account FOREIGN KEY (CreatedBy) REFERENCES Account(AccountId)
 );
 
+-- Thiết bị hư hỏng (bảng n-n giữa thiêt bị và báo cáo hư hỏng)
+CREATE TABLE MalfuntionEquipment (
+    MalfuntionId INT PRIMARY KEY IDENTITY(1, 1),
+    RepairInvoiceId INT,
+    EquipmentId INT,
+    Description NVARCHAR(100),
+    SolvingMethod NVARCHAR(255), -- Phương pháp sửa chữa
+    RepairPrice FLOAT NOT NULL,
+    CONSTRAINT FK_MalfuntionEquipment_Equipment FOREIGN KEY (EquipmentID) REFERENCES Equipment(EquipmentID),
+    CONSTRAINT FK_MalfuntionEquipment_RepairInvoice FOREIGN KEY (RepairInvoiceID) REFERENCES RepairInvoice(InvoiceID)
+)
 
+-- Lịch bảo trì
 CREATE TABLE Maintenance (
     MaintenanceId INT PRIMARY KEY,
-    MaintenanceName VARCHAR(100) NOT NULL,
+    MaintenanceName NVARCHAR(100) NOT NULL,
 	MaintanaceDate DATE DEFAULT GETDATE() NOT NULL,
-    Description VARCHAR(255),
-    Status VARCHAR(50) DEFAULT N'Chưa hoàn thành', -- Trạng thái bảo trì (đã hoàn thành, chưa hoàn thành)
-    DepartmentId INT NOT NULL,
-    CONSTRAINT FK_Maintenance_Department FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID)
+    Description NVARCHAR(255),
+    Status NVARCHAR(50) DEFAULT N'Chưa hoàn thành', -- Trạng thái bảo trì (đã hoàn thành, chưa hoàn thành)
+    CreatedBy INT NOT NULL, -- Người tạo bảo trì
+    DepartmentId INT NOT NULL, -- Bộ phận thực hiện bảo trì
+    CONSTRAINT FK_Maintenance_Department FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID),
+    CONSTRAINT FK_Maintenance_Account FOREIGN KEY (CreatedBy) REFERENCES Account(AccountId)
 );
 
+-- Bảng n-n giữa thiết bị và bảo trì
 CREATE TABLE EquipmentMaintanance (
 	MaintenanceID INT,
 	EquipmentID INT,
@@ -93,7 +97,6 @@ create table Block (
     CONSTRAINT FK_Block_Area FOREIGN KEY (AreaId) REFERENCES Area(AreaID)
 )
 
-
 create table Floor (
     FloorId int identity(1, 1) primary key,
     FloorNumber int NOT NULL,
@@ -103,11 +106,11 @@ create table Floor (
 )
 
 Create Table Apartment (
-	ApartmentId int primary key, -- Id căn hộ (ẩn khỏi người dùng)
+	ApartmentId int IDENTITY(1, 1) primary key, -- Id căn hộ (ẩn khỏi người dùng)
     ApartmentCode char(20), --Mã căn hộ
     ApartmentNumber int, -- Số thứ tự của căn hộ tại 1 lầu
 	Area int,
-    NumberOfPeople int,
+    NumberOfPeople int DEFAULT 0,
 	Status nvarchar(20),
 	FloorId int not null,
     Constraint FK_Apartment_Floor foreign key (FloorId) references Floor(FloorId)
@@ -116,7 +119,7 @@ Create Table Apartment (
 create table Resident (
     ResidentId char(12) primary key,
     FullName nvarchar(50) NOT NULL,
-    Gender char(6),
+    Gender nchar(4),
     DateOfBirth date,
     RelationShipWithOwner nvarchar(50),
     MoveInDate date,
@@ -127,7 +130,7 @@ create table Resident (
 create table Representative (
     RepresentativeId char(12) primary key,
     FullName nvarchar(50),
-    Gender char(6),
+    Gender nchar(4),
     DateOfBirth date,
     Email nvarchar(100),
     PhoneNumber char(10),
@@ -138,12 +141,12 @@ create table Representative (
 create table VehicleCategory (
     VehicleCategoryId int identity(1, 1) primary key,
     CategoryName nvarchar(50),
-    MonthlyFee FLOAT,
-    IsDeleleted BIT DEFAULT 0
+    MonthlyFee FLOAT
 )
 
 create table Vehicle (
-    VehicleId char(20) PRIMARY KEY,
+    VehicleId char(20) PRIMARY KEY, -- Biển số xe
+    VechicleOwner nvarchar(50), -- Tên chủ xe
     ApartmentId int not null,
     VehicleCategoryId int not null,
     constraint FK_Vehicle_VehicleCategory foreign key (VehicleCategoryId) references VehicleCategory(VehicleCategoryId),
@@ -153,45 +156,45 @@ create table Vehicle (
 create table Invoice (
     InvoiceId int identity(1, 1) primary key,
     CreatedDate date DEFAULT GETDATE(),
-    CreatedBy NVARCHAR(50) not null,
+    CreatedBy int NOT NULL,
     Month int DEFAULT MONTH(GETDATE()),
     Year int DEFAULT YEAR(GETDATE()),
     TotalAmount FLOAT,
     Status nvarchar(20) DEFAULT N'Chưa thanh toán',
-    CONSTRAINT FK_Invoice_CreatedBy FOREIGN KEY (CreatedBy) REFERENCES Account(Username)
+    CONSTRAINT FK_Invoice_CreatedBy FOREIGN KEY (CreatedBy) REFERENCES Account(AccountId)
+)
+
+-- Giá nước
+CREATE TABLE WaterFee (
+    WaterFeeId int IDENTITY(1, 1) PRIMARY KEY,
+    CreatedDate date,
+    DeletedDate date, -- Khi xóa thì thêm ngày xóa
+    Level1 int, -- Định mức bậc 1 (m3/người)
+    Price1 FLOAT,
+    Level2 int, -- Định mức bậc 2 (m3/người)
+    Price2 FLOAT,
+    Price3 FLOAT -- Giá nước vượt định mức 2
 )
 
 CREATE TABLE WaterInvoice (
-    WaterInvoiceId int IDENTITY(1, 1) Not NULL,
+    WaterInvoiceId int IDENTITY(1, 1) PRIMARY KEY,
     StartIndex int not NULL,
     EndIndex int not null,
-    Level  int not null,
-    Price FLOAT not null,
+    NumberOfPeople int not null, -- Lưu lại để tránh số người thay đổi
     TotalAmount FLOAT,
     InvoiceId int not null,
     ApartmentId int not null,
+    WaterFeeId int not null,
     CONSTRAINT FK_WaterInvoice_Invoice FOREIGN KEY (InvoiceId) REFERENCES Invoice(InvoiceId),
-    CONSTRAINT FK_WaterInvoice_Apartment FOREIGN KEY (ApartmentId) REFERENCES Apartment(ApartmentId)
+    CONSTRAINT FK_WaterInvoice_Apartment FOREIGN KEY (ApartmentId) REFERENCES Apartment(ApartmentId),
+    CONSTRAINT FK_WaterInvoice_WaterFee FOREIGN KEY (WaterFeeId) REFERENCES WaterFee(WaterFeeId)
 )
 
-CREATE TABLE WaterFeeHistory (
+create table ManagementFee (
+    ManagementFeeId int identity(1, 1) primary key,
     CreatedDate date,
     DeletedDate date,
-    -- Định mức bậc 1 (m3/người)
-    Level1 int,
-    Price1 FLOAT,
-    -- Định mức bậc 2 (m3/người)
-    Level2 int,
-    Price2 FLOAT,
-    -- Định mức bậc 3 (m3/người)
-    Level3 int,
-    Price3 FLOAT,
-)
-
-create table ManagementFeeHistory (
-    CreatedDate date,
-    DeletedDate date,
-    Price FLOAT
+    Price FLOAT -- Đơn giá theo m2
 )
 
 CREATE TABLE ManagementFeeInvoice (
@@ -200,8 +203,10 @@ CREATE TABLE ManagementFeeInvoice (
     TotalAmount FLOAT,
     InvoiceId int not null,
     ApartmentId int not null,
+    ManagementFeeHistoryId int not null,
     constraint FK_ManagementFeeInvoice_Invoice foreign key (InvoiceId) references Invoice(InvoiceId),
-    constraint FK_ManagementFeeInvoice_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
+    constraint FK_ManagementFeeInvoice_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
+    constraint FK_ManagementFeeInvoice_ManagementFeeHistory foreign key (ManagementFeeHistoryId) references ManagementFee(ManagementFeeId)
 )
 
 CREATE TABLE VechicleInvoice (
@@ -213,10 +218,11 @@ CREATE TABLE VechicleInvoice (
     constraint FK_VechicleInvoice_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
 )
 
+-- Chi tiết hóa đơn xe (bảng n-n giữa hóa đơn xe và xe)
 CREATE TABLE VechicleInvoiceDetail (
     VechicleInvoiceId int not null,
     VehicleId char(20) not null,
-    Price FLOAT not null,
+    Price FLOAT not null, -- Giá tiền lấy từ bảng VehicleCategory
     constraint FK_VechicleInvoiceDetail_VechicleInvoice foreign key (VechicleInvoiceId) references VechicleInvoice(VechicleInvoiceId),
     constraint FK_VechicleInvoiceDetail_Vehicle foreign key (VehicleId) references Vehicle(VehicleId)
 )
@@ -258,7 +264,7 @@ CREATE TABLE Violation (
 )
 GO
 
--- viết trigger tự động cập nhật số tầng của block khi thêm tầng
+-- cập nhật số tầng của block khi thêm tầng
 CREATE TRIGGER TRG_Floor_Insert
 ON Floor
 AFTER INSERT
@@ -276,7 +282,7 @@ END;
 GO
 
 
--- viết trigger cập nhật số căn hộ của tầng khi thêm căn hộ
+-- cập nhật số căn hộ của tầng khi thêm căn hộ
 CREATE TRIGGER TRG_Apartment_Insert
 ON Apartment
 AFTER INSERT
@@ -290,6 +296,40 @@ BEGIN
         GROUP BY FloorId
     ) AS i
     WHERE Floor.FloorId = i.FloorId;
+END;
+GO
+
+-- cập nhật số người ở của căn hộ khi thêm cư dân
+CREATE TRIGGER TRG_Resident_Insert
+ON Resident
+AFTER INSERT
+AS
+BEGIN
+    UPDATE Apartment
+    SET NumberOfPeople = NumberOfPeople + i.ResidentCount
+    FROM (
+        SELECT ApartmentID, COUNT(*) AS ResidentCount
+        FROM inserted
+        GROUP BY ApartmentID
+    ) AS i
+    WHERE Apartment.ApartmentId = i.ApartmentID;
+END;
+GO
+
+-- tự động tạo mã căn hộ
+CREATE TRIGGER TRG_Apartment_Insert_AutoCode
+ON Apartment
+AFTER INSERT
+AS
+BEGIN
+    UPDATE Apartment
+    SET ApartmentCode = CONCAT(
+        f.FloorNumber, '.', i.ApartmentNumber, ' Block ', b.BlockCode
+    )
+    FROM inserted i
+    INNER JOIN Floor f ON i.FloorId = f.FloorId
+    INNER JOIN Block b ON f.BlockId = b.BlockId
+    WHERE Apartment.ApartmentId = i.ApartmentId;
 END;
 GO
 
@@ -310,10 +350,70 @@ insert into BLOCK (BlockCode, AreaId) values ('E1', 1)
 insert into BLOCK (BlockCode, AreaId) values ('E2', 1)
 insert into BLOCK (BlockCode, AreaId) values ('D1', 2)
 insert into BLOCK (BlockCode, AreaId) values ('D2', 2)
+GO
 
+-- Chèn 24 tầng cho mỗi block
+BEGIN
+    DECLARE @BlockId INT;
+    DECLARE @FloorNumber INT;
 
-insert INTO Floor (FloorNumber, BlockId) VALUES (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1)
-insert into floor (FloorNumber, BlockId) values (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2)
-insert into floor (FloorNumber, BlockId) values (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3)
-insert into floor (FloorNumber, BlockId) values (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4)
+    SET @BlockId = 1; -- ID của block bắt đầu
+    SET @FloorNumber = 1; -- Số tầng bắt đầu
 
+    WHILE @BlockId <= (SELECT MAX(BlockId) FROM Block) -- Lặp qua tất cả các block
+    BEGIN
+        SET @FloorNumber = 1; -- Reset số tầng
+
+        WHILE @FloorNumber <= 10 -- Mỗi block có 24 tầng
+        BEGIN
+            INSERT INTO Floor (FloorNumber, BlockId)
+            VALUES (@FloorNumber, @BlockId);
+
+            SET @FloorNumber = @FloorNumber + 1;
+        END
+
+        SET @BlockId = @BlockId + 1; -- Chuyển sang block tiếp theo
+    END;
+END;
+GO
+
+BEGIN
+    DECLARE @FloorId INT;
+    DECLARE @MaxFloorId INT;
+    DECLARE @ApartmentNumber INT;
+
+    SET @FloorId = (SELECT MIN(FloorId) FROM Floor); -- ID tầng bắt đầu
+    SET @MaxFloorId = (SELECT MAX(FloorId) FROM Floor); -- ID tầng kết thúc
+
+    WHILE @FloorId <= @MaxFloorId -- Lặp qua tất cả các tầng
+    BEGIN
+        SET @ApartmentNumber = 1; -- Reset số thứ tự căn hộ
+
+        WHILE @ApartmentNumber <= 10 -- Mỗi tầng có 10 căn hộ
+        BEGIN
+            INSERT INTO Apartment (ApartmentNumber, Area, Status, FloorId)
+            VALUES (
+                @ApartmentNumber, -- Số thứ tự căn hộ
+                100,              -- Diện tích căn hộ, giả sử mặc định là 100
+                N'Đã bán',         -- Trạng thái mặc định là "Trống"
+                @FloorId          -- Tầng tương ứng
+            );
+
+            SET @ApartmentNumber = @ApartmentNumber + 1; -- Tăng số thứ tự căn hộ
+        END;
+
+        SET @FloorId = @FloorId + 1; -- Chuyển sang tầng tiếp theo
+    END;
+END;
+GO
+
+-- USE [master]
+-- GO
+-- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE
+-- GO
+-- USE [master]
+-- GO
+-- DROP DATABASE [QuanLyChungCu]
+-- GO
+-- EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'QuanLyChungCu'
+-- GO
