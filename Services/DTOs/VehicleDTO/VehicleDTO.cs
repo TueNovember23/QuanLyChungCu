@@ -8,10 +8,11 @@ namespace Services.DTOs.VehicleDTO
 {
     public class VehicleDTO
     {
-        public string VehicleNumber { get; set; } = null!;  // Biển số xe
-        public string VehicleType { get; set; } = null!;   // Loại xe
-        public string VehicleOwner { get; set; } = null!;      // Tên chủ xe
-        public string IdentityCard { get; set; } = string.Empty;
-        public int ApartmentId { get; set; }       // ID căn hộ liên kết
+        public string VehicleNumber { get; set; } = null!;
+        public string VehicleType { get; set; } = null!;
+        public string VehicleOwner { get; set; } = null!;
+        public int ApartmentId { get; set; }
+        public DateTime RegisterDate { get; set; }
+        public string Status { get; set; } = null!;
     }
 }

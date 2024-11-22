@@ -146,7 +146,7 @@ create table VehicleCategory (
 
 create table Vehicle (
     VehicleId char(20) PRIMARY KEY, -- Biển số xe
-    VechicleOwner nvarchar(50), -- Tên chủ xe
+    VehicleOwner nvarchar(50), -- Tên chủ xe,   tên cũ là VechicleOwner, vừa sửa thành VehicleOwner
     ApartmentId int not null,
     VehicleCategoryId int not null,
     constraint FK_Vehicle_VehicleCategory foreign key (VehicleCategoryId) references VehicleCategory(VehicleCategoryId),

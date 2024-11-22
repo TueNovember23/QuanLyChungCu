@@ -21,12 +21,12 @@ namespace Forms.Views.ServiceSupervisor
         private void ParkingViewButton_Click(object sender, RoutedEventArgs e)
         {
             
-            LoadUserControl(new RegisterParkingView());
+            LoadUserControl(new ParkingView());
         }
 
         private void RegisterParkingViewButton_Click(object sender, RoutedEventArgs e)
         {
-            LoadUserControl(new ParkingView());
+            LoadUserControl(new RegisterParkingView());
         }
 
         private void LoadUserControl(UserControl userControl)

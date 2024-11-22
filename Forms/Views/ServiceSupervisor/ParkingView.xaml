@@ -39,22 +39,34 @@
             </materialDesign:Card>
 
             <!-- Danh sách xe -->
-            <materialDesign:Card Grid.Row="1" Margin="16,189,16,16" UniformCornerRadius="20">
+            <materialDesign:Card Grid.Row="1" Margin="16,189,16,16" UniformCornerRadius="20" IsEnabled="{Binding !IsLoading}">
                 <StackPanel>
                     <TextBlock Text="Danh sách xe" FontSize="18" FontWeight="SemiBold" Margin="16"/>
-                    <DataGrid x:Name="VehicleDataGrid" AutoGenerateColumns="False" Margin="16">
+                    <DataGrid x:Name="VehicleDataGrid" 
+                  ItemsSource="{Binding Vehicles}" 
+                  SelectedItem="{Binding SelectedVehicle}"
+                  AutoGenerateColumns="False" 
+                  Margin="16">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Biển số" Binding="{Binding VehicleId}" />
-                            <DataGridTextColumn Header="Loại xe" Binding="{Binding VehicleCategory.CategoryName}" />
-                            <DataGridTextColumn Header="Tên chủ xe" Binding="{Binding Representative.FullName}" />
-                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding Apartment.ApartmentCode}" />
-                            <DataGridTextColumn Header="Trạng thái thanh toán" Binding="{Binding PaymentStatus}" />
-                            <DataGridTemplateColumn Header="Hành động">
+                            <DataGridTextColumn Header="Biển số xe" 
+                                  Binding="{Binding VehicleNumber}" 
+                                  Width="*"/>
+                            <DataGridTextColumn Header="Loại xe" 
+                                  Binding="{Binding VehicleType}" 
+                                  Width="*"/>
+                            <DataGridTextColumn Header="Tên chủ xe" 
+                                  Binding="{Binding VehicleOwner}" 
+                                  Width="*"/>
+                            <DataGridTextColumn Header="Mã căn hộ" 
+                                  Binding="{Binding ApartmentCode}" 
+                                  Width="*"/>
+                            <DataGridTextColumn Header="Trạng thái" 
+                                  Binding="{Binding Status}" 
+                                  Width="*"/>
+                            <DataGridTemplateColumn Header="Hành động" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Content="Xóa" Command="{Binding DeleteCommand}" Margin="4" CommandParameter="{Binding}" />
-                                        </StackPanel>
+                                    <Button Content="Xóa" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding DeleteCommand}" CommandParameter="{Binding SelectedVehicle}" Margin="4"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -69,14 +81,16 @@
             <materialDesign:Card Margin="16" UniformCornerRadius="20">
                 <StackPanel Margin="16">
                     <TextBlock Text="Thông tin xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Biển số xe" Margin="0,0,0,16"/>
+                    <TextBox materialDesign:HintAssist.Hint="Căn hộ" Margin="0,0,0,16"/>
                     <ComboBox materialDesign:HintAssist.Hint="Loại xe" ItemsSource="{Binding VehicleTypes}" SelectedItem="{Binding SelectedVehicleType}" Margin="0,8,0,16">
                         <ComboBoxItem Content="Xe đạp"/>
                         <ComboBoxItem Content="Xe máy"/>
                         <ComboBoxItem Content="Ô tô"/>
                     </ComboBox>
+                    <TextBox materialDesign:HintAssist.Hint="Biển số xe" Margin="0,0,0,16"/>
+                    
                     <TextBox materialDesign:HintAssist.Hint="Tên chủ xe" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Căn hộ" Margin="0,0,0,16"/>
+                    
                     <Button Content="Sửa thông tin" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding EditCommand}"/>
                 </StackPanel>
             </materialDesign:Card>
@@ -94,11 +108,17 @@
             <materialDesign:Card Margin="16" UniformCornerRadius="20">
                 <StackPanel Margin="16">
                     <TextBlock Text="Thống kê" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBlock Text="Số lượng xe đạp: {Binding BicycleCount}" FontSize="14" Margin="0,0,0,16"/>
-                    <TextBlock Text="Số lượng xe máy: {Binding MotorcycleCount}" FontSize="14" Margin="0,0,0,16"/>
-                    <TextBlock Text="Số lượng ô tô: {Binding CarCount}" FontSize="14" Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding BicycleCount, StringFormat='Số lượng xe đạp: {0}'}" FontSize="14" Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding MotorcycleCount, StringFormat='Số lượng xe máy: {0}'}" FontSize="14" Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding CarCount, StringFormat='Số lượng ô tô: {0}'}" FontSize="14" Margin="0,0,0,16"/>
                 </StackPanel>
             </materialDesign:Card>
         </StackPanel>
+        <materialDesign:Card 
+            Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center">
+            <ProgressBar IsIndeterminate="True" Margin="16"/>
+        </materialDesign:Card>
     </Grid>
 </UserControl>

@@ -27,5 +27,9 @@ namespace Repositories.Interfaces
         Task<IQueryable<T>> FindAllAsync(Expression<Func<T, bool>> predicate);
         Task<IQueryable<T>> GetAllQueryableAsync();
         Task<List<T>> FindListAsync(Expression<Func<T, bool>> predicate);
+
+        IQueryable<T> Find_Sync(Expression<Func<T, bool>> predicate);
+        IQueryable<T> FindAll();
+
     }
 }

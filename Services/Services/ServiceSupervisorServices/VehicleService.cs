@@ -5,6 +5,8 @@ using Services.DTOs.VehicleDTO;
 using Services.DTOs.ApartmentDTO;
 using Services.Interfaces.ServiceSupervisorServices;
 using Core;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Services.Services.ServiceSupervisorServices
 {
@@ -19,13 +21,10 @@ namespace Services.Services.ServiceSupervisorServices
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-
-
         public async Task RegisterVehicleAsync(VehicleDTO vehicle)
         {
             if (vehicle == null) throw new ArgumentNullException(nameof(vehicle));
 
-            // Check for existing vehicle
             var existingVehicle = await _unitOfWork.GetRepository<Vehicle>()
                 .FindAsync(v => v.VehicleId == vehicle.VehicleNumber);
 
@@ -38,7 +37,7 @@ namespace Services.Services.ServiceSupervisorServices
             {
                 VehicleId = vehicle.VehicleNumber ?? string.Empty,
                 VehicleCategoryId = GetCategoryId(vehicle.VehicleType ?? string.Empty),
-                VehicleOwner = vehicle.VehicleOwner ?? string.Empty, // Fixed line
+                VehicleOwner = vehicle.VehicleOwner ?? string.Empty, 
                 ApartmentId = vehicle.ApartmentId
             };
 
@@ -54,9 +53,9 @@ namespace Services.Services.ServiceSupervisorServices
             {
                 VehicleNumber = v.VehicleId,
                 VehicleType = v.VehicleCategory?.CategoryName ?? string.Empty,
-                VehicleOwner = v.VehicleOwner ?? string.Empty, // Fixed line
+                VehicleOwner = v.VehicleOwner ?? string.Empty, 
                 MonthlyFee = (float)(v.VehicleCategory?.MonthlyFee ?? 0),
-                Status = "Active" // Assuming a default status
+                Status = "Active" 
             }).ToList();
         }
 
@@ -75,7 +74,7 @@ namespace Services.Services.ServiceSupervisorServices
             {
                 VehicleNumber = vehicle.VehicleId,
                 VehicleType = vehicle.VehicleCategory?.CategoryName ?? string.Empty,
-                VehicleOwner = vehicle.VehicleOwner ?? string.Empty, // Fixed line
+                VehicleOwner = vehicle.VehicleOwner ?? string.Empty,
                 MonthlyFee = (float)(vehicle.VehicleCategory?.MonthlyFee ?? 0),
                 Status = "Active"
             };
@@ -117,23 +116,6 @@ namespace Services.Services.ServiceSupervisorServices
         }
         
 
-        // public async Task<List<ApartmentDTO>> GetAllApartmentsAsync()
-        // {
-        //     var apartments = await _unitOfWork.GetRepository<Apartment>()
-        //         .FindListAsync(a => !a.IsDeleted);
-
-        //     return apartments
-        //         .Where(a => a.ApartmentCode != null)
-        //         .Select(a => new ApartmentDTO
-        //         {
-        //             ApartmentId = a.ApartmentId,
-        //             ApartmentCode = a.ApartmentCode ?? "",
-        //             Status = a.Status ?? "Unknown",
-        //             FloorNumber = a.Floor?.FloorNumber ?? 0
-        //         }).ToList();
-        // }
-
-
         public float CalculatePaymentAmount(string vehicleType)
         {
             return vehicleType switch
@@ -143,13 +125,12 @@ namespace Services.Services.ServiceSupervisorServices
                 "Ô tô" => 200000,
                 "Xe máy điện" => 120000,
                 "Ô tô điện" => 250000,
-                _ => throw new ArgumentException("Invalid vehicle type")
+                _ => throw new ArgumentException("Loại xe không hợp lệ!")
             };
         }
 
         private int GetCategoryId(string vehicleType)
         {
-            // Map vehicle type to category ID (simplified logic)
             return vehicleType switch
             {
                 "Xe đạp" => 1,
@@ -157,8 +138,80 @@ namespace Services.Services.ServiceSupervisorServices
                 "Ô tô" => 3,
                 "Xe máy điện" => 4,
                 "Ô tô điện" => 5,
-                _ => throw new ArgumentException("Invalid vehicle type")
+                _ => throw new ArgumentException("Loại xe không hợp lệ!")
             };
+        }
+
+
+        // -------------------- Parking View
+        public async Task<List<VehicleResponseDTO>> GetParkingAsync(string searchText)
+        {
+            try
+            {
+                var vehicleRepository = _unitOfWork.GetRepository<Vehicle>();
+                IQueryable<Vehicle> vehicles;
+
+                if (string.IsNullOrWhiteSpace(searchText))
+                {
+                    vehicles = vehicleRepository.FindAll(); 
+                }
+                else
+                {
+                    vehicles = vehicleRepository.Find_Sync(v => v.VehicleId.Contains(searchText) || v.VehicleOwner.Contains(searchText));
+                }
+
+                var vehicleList = await vehicles
+                    .Include(v => v.VehicleCategory)
+                    .Include(v => v.Apartment)
+                    .ToListAsync();
+
+                return vehicleList.Select(v => new VehicleResponseDTO
+                {
+                    VehicleNumber = v.VehicleId,
+                    VehicleType = v.VehicleCategory?.CategoryName ?? string.Empty,
+                    VehicleOwner = v.VehicleOwner ?? string.Empty,
+                    ApartmentCode = v.Apartment?.ApartmentCode ?? string.Empty,
+                    Status = "Đã thanh toán",
+                    MonthlyFee = (float)(v.VehicleCategory?.MonthlyFee ?? 0)
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Lỗi từ GetParkingAsync: {ex.Message}");
+                return new List<VehicleResponseDTO>();
+            }
+        }
+
+        public async Task<List<VehicleResponseDTO>> SearchVehiclesAsync(string searchText)
+        {
+            var vehicleRepository = _unitOfWork.GetRepository<Vehicle>();
+            var vehicles = await vehicleRepository
+                .FindAllAsync(v => v.VehicleId.Contains(searchText) || v.VehicleOwner.Contains(searchText));
+
+            var vehicleList = await vehicles
+                .Include(v => v.VehicleCategory)
+                .Include(v => v.Apartment)
+                .ToListAsync();
+
+            return vehicleList.Select(v => new VehicleResponseDTO
+            {
+                VehicleNumber = v.VehicleId,
+                VehicleType = v.VehicleCategory?.CategoryName ?? string.Empty,
+                VehicleOwner = v.VehicleOwner ?? string.Empty,
+                ApartmentCode = v.Apartment?.ApartmentCode ?? string.Empty,
+                Status = "Đã thanh toán", 
+                MonthlyFee = (float)(v.VehicleCategory?.MonthlyFee ?? 0)
+            }).ToList();
+        }
+
+        public async Task DeleteVehicleAsync(string vehicleNumber)
+        {
+            var vehicle = await _unitOfWork.GetRepository<Vehicle>().FindAsync(v => v.VehicleId == vehicleNumber);
+            if (vehicle != null)
+            {
+                _unitOfWork.GetRepository<Vehicle>().Delete(vehicle);
+                await _unitOfWork.SaveAsync();
+            }
         }
     }
 }

@@ -11,5 +11,9 @@ namespace Services.Interfaces.ServiceSupervisorServices
         Task<List<ApartmentDTO>> SearchApartmentsAsync(string searchText);
         Task<List<ApartmentDTO>> GetAllApartmentsAsync();
         float CalculatePaymentAmount(string vehicleType);
+        Task<List<VehicleResponseDTO>> GetParkingAsync(string searchText);
+        Task<List<VehicleResponseDTO>> SearchVehiclesAsync(string searchText);
+        Task DeleteVehicleAsync(string vehicleNumber);
     }
+
 }

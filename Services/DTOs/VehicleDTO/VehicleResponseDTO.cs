@@ -11,7 +11,8 @@ namespace Services.DTOs.VehicleDTO
         public string VehicleNumber { get; set; } = null!;
         public string VehicleType { get; set; } = null!;
         public string VehicleOwner { get; set; } = null!;
-        public string Status { get; set; } = null!;  // Trạng thái xe
+        public string Status { get; set; } = null!; 
         public float MonthlyFee { get; set; }
+        public string ApartmentCode { get; set; } = null!;
     }
 }

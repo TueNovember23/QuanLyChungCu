@@ -57,7 +57,6 @@ namespace Repositories.Repositories
         }
 
 
-
         public List<T> GetAll()
         {
             return [.. _context.Set<T>()];
@@ -119,13 +118,6 @@ namespace Repositories.Repositories
             _dbSet.Entry(obj).State = EntityState.Modified;
         }
 
-        //public async Task UpdateAsync(T obj)
-        //{
-        //    _dbSet.Attach(obj);
-        //    _dbSet.Entry(obj).State = EntityState.Modified;
-        //    Task.WaitAll(Task.FromResult(0));
-        //}
-
         public async Task UpdateAsync(T obj)
         {
             _dbSet.Attach(obj);
@@ -133,10 +125,19 @@ namespace Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public IQueryable<T> Find_Sync(Expression<Func<T, bool>> predicate)
+        {
+            return _dbSet.Where(predicate).AsQueryable();
+        }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
+        }
+
+        public IQueryable<T> FindAll()
+        {
+            return _dbSet; 
         }
     }
 }

@@ -14,6 +14,7 @@ using Services.Services.AccountantServices;
 using Services.Services.ServiceSupervisorServices;
 using Services.Services.SharedServices;
 
+
 namespace Forms
 {
     public static class ServiceRegistration
@@ -31,7 +32,7 @@ namespace Forms
         {
             services.AddScoped<LoginViewModel>();
             services.AddScoped<ApartmentViewModel>();
-            //services.AddScoped<ParkingViewModel>();
+            services.AddScoped<ParkingViewModel>();
             services.AddScoped<RegisterParkingViewModel>();
         }
 
@@ -39,8 +40,8 @@ namespace Forms
         {
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IApartmentService, ApartmentService>();
-            //services.AddScoped<IParkingService, ParkingService>();
             services.AddScoped<IVehicleService, VehicleService>();
+
 
         }
 
