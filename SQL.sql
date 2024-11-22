@@ -93,7 +93,7 @@ create table Block (
 	BlockCode CHAR(2),
     AreaId int NOT NULL,
     NumberOfFloor int DEFAULT 0,
-    IsDeleleted bit DEFAULT 0,
+    IsDeleted bit DEFAULT 0,
     CONSTRAINT FK_Block_Area FOREIGN KEY (AreaId) REFERENCES Area(AreaID)
 )
 
@@ -417,3 +417,4 @@ GO
 -- GO
 -- EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'QuanLyChungCu'
 -- GO
+

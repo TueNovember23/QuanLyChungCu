@@ -28,7 +28,7 @@ namespace Forms.UserControls
                 textBox.GotFocus += RemovePlaceholder;
                 textBox.LostFocus += ShowPlaceholder;
 
-                ShowPlaceholder(textBox, null);
+                ShowPlaceholder(textBox, new RoutedEventArgs());
             }
         }
 

@@ -123,7 +123,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(2)
                 .IsUnicode(false)
                 .IsFixedLength();
-            entity.Property(e => e.IsDeleleted).HasDefaultValue(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
 
             entity.HasOne(d => d.Area).WithMany(p => p.Blocks)
                 .HasForeignKey(d => d.AreaId)
@@ -205,7 +205,7 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("Floor");
 
-            entity.Property(e => e.IsDeleleted).HasDefaultValue(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
 
             entity.HasOne(d => d.Block).WithMany(p => p.Floors)
                 .HasForeignKey(d => d.BlockId)
@@ -470,7 +470,7 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("VehicleCategory");
 
             entity.Property(e => e.CategoryName).HasMaxLength(50);
-            entity.Property(e => e.IsDeleleted).HasDefaultValue(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
         });
 
         modelBuilder.Entity<WaterInvoice>(entity =>

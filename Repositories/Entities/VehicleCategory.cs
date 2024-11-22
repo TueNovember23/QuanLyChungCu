@@ -11,7 +11,7 @@ public partial class VehicleCategory
 
     public double? MonthlyFee { get; set; }
 
-    public bool? IsDeleleted { get; set; }
+    public bool? IsDeleted { get; set; }
 
     public virtual ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
 }

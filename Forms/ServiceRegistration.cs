@@ -1,14 +1,17 @@
 ﻿using Forms.ViewModels;
 using Forms.ViewModels.AdministrativeStaff;
+using Forms.ViewModels.ServiceSupervisor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Repositories.Base;
 using Repositories.Interfaces;
 using Repositories.Repositories;
 using Services.Interfaces.AccountantServices;
+using Services.Interfaces.ServiceSupervisorServices;
 using Services.Interfaces.SharedServices;
 using Services.MapperProfile;
 using Services.Services.AccountantServices;
+using Services.Services.ServiceSupervisorServices;
 using Services.Services.SharedServices;
 
 namespace Forms
@@ -28,12 +31,17 @@ namespace Forms
         {
             services.AddScoped<LoginViewModel>();
             services.AddScoped<ApartmentViewModel>();
+            //services.AddScoped<ParkingViewModel>();
+            services.AddScoped<RegisterParkingViewModel>();
         }
 
         public static void AddServices(IServiceCollection services)
         {
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IApartmentService, ApartmentService>();
+            //services.AddScoped<IParkingService, ParkingService>();
+            services.AddScoped<IVehicleService, VehicleService>();
+
         }
 
         public static void AddRepositories(IServiceCollection services)

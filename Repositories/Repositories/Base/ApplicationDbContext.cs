@@ -143,7 +143,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(2)
                 .IsUnicode(false)
                 .IsFixedLength();
-            entity.Property(e => e.IsDeleleted).HasDefaultValue(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.NumberOfFloor).HasDefaultValue(0);
 
             entity.HasOne(d => d.Area).WithMany(p => p.Blocks)

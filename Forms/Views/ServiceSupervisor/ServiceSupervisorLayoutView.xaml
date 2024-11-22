@@ -48,7 +48,7 @@
                                 Width="190" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="RegisterParkingViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="CircleSlice6"/>
-                                    <TextBlock x:Name="CircleSliceText" Text="Register Parking" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="CircleSliceText" Text="Parking" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>

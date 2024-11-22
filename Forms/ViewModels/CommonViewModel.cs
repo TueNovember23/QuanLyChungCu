@@ -13,12 +13,12 @@ namespace Forms.ViewModels
 
         public CommonViewModel()
         {
-            MinimizeCommand = new RelayCommand<Window>(Minimize);
-            //MaximizeRestoreCommand = new RelayCommand<Window>(MaximizeRestore);
-            CloseCommand = new RelayCommand<Window>(Close);
+            MinimizeCommand = new RelayCommand<Window?>(Minimize);
+            //MaximizeRestoreCommand = new RelayCommand<Window?>(MaximizeRestore);
+            CloseCommand = new RelayCommand<Window?>(Close);
         }
 
-        private void Minimize(Window window)
+        private void Minimize(Window? window)
         {
             if (window != null)
             {
@@ -26,7 +26,7 @@ namespace Forms.ViewModels
             }
         }
 
-        //private void MaximizeRestore(Window window)
+        //private void MaximizeRestore(Window? window)
         //{
         //    if (window != null)
         //    {
@@ -34,7 +34,7 @@ namespace Forms.ViewModels
         //    }
         //}
 
-        private void Close(Window window)
+        private void Close(Window? window)
         {
             if (window != null)
             {

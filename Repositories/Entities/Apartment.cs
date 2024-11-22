@@ -4,11 +4,14 @@ public partial class Apartment
 {
     public int ApartmentId { get; set; }
 
+    public string? ApartmentCode { get; set; }
+
     public int? Area { get; set; }
 
     public string? Status { get; set; }
 
     public int FloorId { get; set; }
+    public bool IsDeleted { get; set; }
 
     public virtual ICollection<CommunityRoomBooking> CommunityRoomBookings { get; set; } = new List<CommunityRoomBooking>();
 
