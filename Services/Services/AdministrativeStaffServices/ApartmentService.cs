@@ -2,9 +2,9 @@
 using Repositories.Repositories.Entities;
 using Repositories.Interfaces;
 using Services.DTOs.ApartmentDTO;
-using Services.Interfaces.AccountantServices;
+using Services.Interfaces.AdministrativeStaffServices;
 
-namespace Services.Services.AccountantServices
+namespace Services.Services.AdministrativeStaffServices
 {
     public class ApartmentService(IUnitOfWork unitOfWork) : IApartmentService
     {
@@ -17,6 +17,7 @@ namespace Services.Services.AccountantServices
                 {
                     ApartmentCode = $"{Apartment.Floor.FloorNumber}.{Apartment.ApartmentId} Block {Apartment.Floor.Block.BlockCode}",
                     Area = Apartment.Area,
+                    NumberOfPeople = Apartment.NumberOfPeople,
                     Block = Apartment.Floor.Block.BlockCode,
                     Floor = Apartment.Floor.FloorNumber,
                     Status = Apartment.Status

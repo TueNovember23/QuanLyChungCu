@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Services.DTOs.ApartmentDTO;
-using Services.Interfaces.AccountantServices;
+using Services.Interfaces.AdministrativeStaffServices;
 using System.Collections.ObjectModel;
 
 namespace Forms.ViewModels.AdministrativeStaff

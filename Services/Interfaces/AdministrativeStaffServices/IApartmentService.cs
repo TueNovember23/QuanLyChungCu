@@ -1,6 +1,6 @@
 ﻿using Services.DTOs.ApartmentDTO;
 
-namespace Services.Interfaces.AccountantServices
+namespace Services.Interfaces.AdministrativeStaffServices
 {
     public interface IApartmentService
     {

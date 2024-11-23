@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\AdministrativeStaffServices\" />
+    <Folder Include="Interfaces\AccountantServices\" />
     <Folder Include="Interfaces\ServiceSupervisorServices\" />
-    <Folder Include="Services\AdministrativeStaffServices\" />
+    <Folder Include="Services\AccountantServices\" />
     <Folder Include="Services\ServiceSupervisorServices\" />
   </ItemGroup>
 

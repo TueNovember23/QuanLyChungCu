@@ -18,15 +18,15 @@
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding Apartments}" AutoGenerateColumns="False" Margin="10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Block" Binding="{Binding Block}" Width="*"/>
-                <DataGridTextColumn Header="Tầng" Binding="{Binding Floor}" Width="*"/>
-                <DataGridTextColumn Header="Mã căn hộ" Binding="{Binding ApartmentCode}" Width="*"/>
-                <DataGridTextColumn Header="Diện tích (m²)" Binding="{Binding Area}" Width="*"/>
-                <DataGridTextColumn Header="Nhân khẩu" Binding="{Binding NumberOfPeople}" Width="*"/>
-                <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="*"/>
+                <DataGridTextColumn Header="Block" Binding="{Binding Block}" Width="auto"/>
+                <DataGridTextColumn Header="Tầng" Binding="{Binding Floor}" Width="auto"/>
+                <DataGridTextColumn Header="Mã căn hộ" Binding="{Binding ApartmentCode}" Width="auto"/>
+                <DataGridTextColumn Header="Diện tích (m²)" Binding="{Binding Area}" Width="auto"/>
+                <DataGridTextColumn Header="Nhân khẩu" Binding="{Binding NumberOfPeople}" Width="auto"/>
+                <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="auto"/>
 
                 <!-- Cột nút "Xem danh sách cư dân" -->
-                <DataGridTemplateColumn Header="Danh sách cư dân" Width="*">
+                <DataGridTemplateColumn Header="Danh sách cư dân" Width="auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Xem danh sách cư dân" Width="150" Height="30" Command="{Binding DataContext.ViewResidentsCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentId}" />
