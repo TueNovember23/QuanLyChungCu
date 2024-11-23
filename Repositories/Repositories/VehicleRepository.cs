@@ -14,9 +14,9 @@ namespace Repositories.Repositories
             _context = context;
         }
 
-
         public async Task<bool> CreateVehicleAsync(Vehicle vehicle)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var existingVehicle = await _context.Vehicles
@@ -26,10 +26,13 @@ namespace Repositories.Repositories
 
                 await _context.Vehicles.AddAsync(vehicle);
                 var result = await _context.SaveChangesAsync();
+                
+                await transaction.CommitAsync();
                 return result > 0;
             }
             catch
             {
+                await transaction.RollbackAsync();
                 return false;
             }
         }

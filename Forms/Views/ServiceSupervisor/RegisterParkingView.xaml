@@ -119,7 +119,7 @@
                     <Button Content="In thẻ xe" 
                 Style="{StaticResource MaterialDesignRaisedButton}" 
                 Margin="0,0,0,16" 
-                Command="{Binding SaveAndPrintCommand}"
+                Command="{Binding PrintCardCommand}"
                 IsEnabled="{Binding CanPrintCard}"/>
 
                     <!-- Hiển thị trạng thái thanh toán -->

@@ -201,9 +201,10 @@ namespace Forms.ViewModels.ServiceSupervisor
                 {
                     VehicleNumber = normalizedNumber,
                     VehicleType = SelectedVehicleType,
-                    VehicleOwner = SelectedApartment?.OwnerName ?? string.Empty,
-                    ApartmentId = SelectedApartment?.ApartmentId ?? 0
-
+                    VehicleOwner = VehicleOwner, // Sử dụng input VehicleOwner
+                    ApartmentId = SelectedApartment?.ApartmentId ?? 0,
+                    RegisterDate = DateTime.Now,
+                    Status = "Active"
                 };
 
                 await _registerVehicleService.RegisterVehicleAsync(vehicle);
@@ -230,7 +231,7 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
         }
 
-        //[RelayCommand]
+        [RelayCommand]
         private async Task ProcessPaymentAsync()
         {
             if (IsProcessing || string.IsNullOrEmpty(SelectedPaymentMethod))
@@ -239,16 +240,26 @@ namespace Forms.ViewModels.ServiceSupervisor
                 return;
             }
 
+            if (string.IsNullOrEmpty(SelectedPaymentStatus))
+            {
+                MessageBox.Show("Vui lòng chọn trạng thái thanh toán!");
+                return;
+            }
+
             try
             {
                 IsProcessing = true;
-                await Task.Delay(10);
+                // Thêm xử lý thanh toán thực tế
                 IsPaymentCompleted = true;
+                CanPrintCard = true;
+                MessageBox.Show("Thanh toán thành công!");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi thanh toán!");
-                Debug.WriteLine($"Lỗi khi thanh toán: {ex}");
+                Debug.WriteLine($"Lỗi thanh toán: {ex}");
+                IsPaymentCompleted = false;
+                CanPrintCard = false;
             }
             finally
             {
@@ -280,11 +291,14 @@ namespace Forms.ViewModels.ServiceSupervisor
         {
             VehicleNumber = string.Empty;
             SelectedVehicleType = string.Empty;
-            //VehicleOwner = string.Empty;
+            VehicleOwner = string.Empty; // Uncomment this
+            SelectedApartment = null; // Add this
             SelectedApartmentCode = string.Empty;
             PaymentAmount = 0;
             IsPaymentCompleted = false;
             CanPrintCard = false;
+            SelectedPaymentMethod = string.Empty; // Add this
+            SelectedPaymentStatus = string.Empty; // Add this
         }
 
     }

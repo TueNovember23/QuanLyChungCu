@@ -15,7 +15,7 @@ namespace Forms.Views.ServiceSupervisor
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadUserControl(new RegisterParkingView());
+            LoadUserControl(new ParkingView());
         }
 
         private void ParkingViewButton_Click(object sender, RoutedEventArgs e)

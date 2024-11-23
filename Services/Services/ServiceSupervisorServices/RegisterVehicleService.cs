@@ -49,6 +49,26 @@ namespace Services.Services.ServiceSupervisorServices
 
         public async Task<VehicleResponseDTO> RegisterVehicleAsync(VehicleDTO vehicleDto)
         {
+
+            if (!vehicleDto.IsValid())
+            {
+                return new VehicleResponseDTO 
+                { 
+                    Success = false,
+                    Message = "Thông tin xe không hợp lệ"
+                };
+            }
+
+            var vehicleCount = await _vehicleRepository.GetAllAsync();
+            var apartmentVehicles = vehicleCount.Count(v => v.ApartmentId == vehicleDto.ApartmentId);
+            if (apartmentVehicles >= 3)
+            {
+                return new VehicleResponseDTO
+                {
+                    Success = false,
+                    Message = "Căn hộ đã đăng ký tối đa 3 xe"
+                };
+            }
             var response = new VehicleResponseDTO();
 
             try
