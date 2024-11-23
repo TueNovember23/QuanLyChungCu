@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Repositories.Entities;
+using Repositories.Repositories.Entities;
 using Repositories.Interfaces;
 using Services.DTOs.ApartmentDTO;
 using Services.Interfaces.AccountantServices;

@@ -1,19 +1,29 @@
-﻿<Window x:Class="Forms.Views.AdministrativeStaff.ApartmentView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        Title="Danh sách căn hộ" Height="450" Width="800">
+﻿<UserControl x:Class="Forms.Views.AdministrativeStaff.ApartmentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Forms.Views.AdministrativeStaff"
+             xmlns:header="clr-namespace:Forms.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid HorizontalAlignment="Left" Width="1100">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-    <Grid>
-        <DataGrid ItemsSource="{Binding Apartments}" AutoGenerateColumns="False" Margin="10">
+        <!-- Header -->
+        <header:Header Grid.Row="0"/>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Apartments}" AutoGenerateColumns="False" Margin="10">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="Block" Binding="{Binding Block}" Width="*"/>
+                <DataGridTextColumn Header="Tầng" Binding="{Binding Floor}" Width="*"/>
                 <DataGridTextColumn Header="Mã căn hộ" Binding="{Binding ApartmentCode}" Width="*"/>
                 <DataGridTextColumn Header="Diện tích (m²)" Binding="{Binding Area}" Width="*"/>
+                <DataGridTextColumn Header="Nhân khẩu" Binding="{Binding NumberOfPeople}" Width="*"/>
                 <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="*"/>
-                <DataGridTextColumn Header="Tầng" Binding="{Binding Floor}" Width="*"/>
-                <DataGridTextColumn Header="Block" Binding="{Binding Block}" Width="*"/>
 
                 <!-- Cột nút "Xem danh sách cư dân" -->
                 <DataGridTemplateColumn Header="Danh sách cư dân" Width="*">
@@ -35,4 +45,4 @@
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
-</Window>
+</UserControl>

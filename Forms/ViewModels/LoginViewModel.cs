@@ -47,9 +47,8 @@ namespace Forms.ViewModels
                 {
                     if (response.Role == "Administrator")
                     {
-                        ApartmentView mainWindow = new();
-                        mainWindow.Show();
-
+                        AdministrativeStaffLayoutView administrativeStaffLayoutView = new();
+                        administrativeStaffLayoutView.Show();
                         _loginWindow?.Close();
                     }
                     else

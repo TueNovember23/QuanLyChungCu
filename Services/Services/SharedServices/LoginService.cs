@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Core;
-using Repositories.Entities;
+using Repositories.Repositories.Entities;
 using Repositories.Interfaces;
 using Services.DTOs.LoginDTO;
 using Services.Interfaces.SharedServices;

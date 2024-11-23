@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:Forms.Views.AdministrativeStaff"
         mc:Ignorable="d"
         Height="850" Width="1200" WindowStartupLocation="CenterScreen"
-        WindowStyle="None" ResizeMode="NoResize" Background="{x:Null}" AllowsTransparency="True" Loaded="Window_Loaded">
+        WindowStyle="None" ResizeMode="NoResize" Background="{x:Null}" AllowsTransparency="True" Loaded="Window_Loaded"
+        WindowState="Maximized">
     <Window.Resources>
         <Storyboard x:Key="ExpandSidebar">
             <DoubleAnimation Storyboard.TargetName="Sidebar" Storyboard.TargetProperty="Width"
@@ -32,6 +33,16 @@
                 <!-- Sidebar -->
                 <Grid x:Name="Sidebar" Background="#D3D3D3" Width="60" MouseEnter="Sidebar_MouseEnter" MouseLeave="Sidebar_MouseLeave">
                     <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="{Binding ActualWidth, ElementName=Sidebar}">
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
+                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
+                                    Width="190" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center"
+                                    Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="ApartmentViewButton_Click">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="HomeVariant"/>
+                                    <TextBlock x:Name="ApartmentText" Text="Apartment View" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                </StackPanel>
+                            </Button>
+                        </ListViewItem>
                         <!-- Button 1 -->
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"

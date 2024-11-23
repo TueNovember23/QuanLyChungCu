@@ -115,7 +115,7 @@ Create Table Apartment (
 	FloorId int not null,
     Constraint FK_Apartment_Floor foreign key (FloorId) references Floor(FloorId)
 )
-
+SELECT * FROM Apartment
 create table Resident (
     ResidentId char(12) primary key,
     FullName nvarchar(50) NOT NULL,

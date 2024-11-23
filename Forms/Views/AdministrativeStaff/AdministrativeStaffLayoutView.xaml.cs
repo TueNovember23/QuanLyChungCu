@@ -22,6 +22,11 @@ namespace Forms.Views.AdministrativeStaff
             LoadUserControl(new GeneralInfoView());
         }
 
+        private void ApartmentViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new ApartmentView());
+        }
+
         private void RegulationViewButton_Click(object sender, RoutedEventArgs e)
         {
             LoadUserControl(new RegulationView());
@@ -70,5 +75,7 @@ namespace Forms.Views.AdministrativeStaff
             GeneralInfoText.Visibility = Visibility.Collapsed;
             // Ẩn các text khác nếu có
         }
+
+        
     }
 }

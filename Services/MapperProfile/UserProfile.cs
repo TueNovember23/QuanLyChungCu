@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Repositories.Entities;
+using Repositories.Repositories.Entities;
 using Services.DTOs.LoginDTO;
 
 namespace Services.MapperProfile

@@ -1,4 +1,4 @@
-﻿using Repositories.Base;
+﻿using Repositories.Repositories.Base;
 using Repositories.Interfaces;
 
 namespace Repositories.Repositories

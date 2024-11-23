@@ -7,7 +7,7 @@ public partial class Vehicle
 {
     public string VehicleId { get; set; } = null!;
 
-    public string? VechicleOwner { get; set; }
+    public string? VehicleOwner { get; set; }
 
     public int ApartmentId { get; set; }
 

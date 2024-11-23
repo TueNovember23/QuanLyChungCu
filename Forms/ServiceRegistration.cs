@@ -3,7 +3,7 @@ using Forms.ViewModels.AdministrativeStaff;
 using Forms.ViewModels.ServiceSupervisor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Repositories.Base;
+using Repositories.Repositories.Base;
 using Repositories.Interfaces;
 using Repositories.Repositories;
 using Services.Interfaces.AccountantServices;

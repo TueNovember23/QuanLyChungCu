@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\AdministativeStaff\" />
+    <Folder Include="ViewModels\Accountant\" />
     <Folder Include="Views\Accountant\" />
   </ItemGroup>
 

@@ -481,7 +481,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .IsFixedLength();
-            entity.Property(e => e.VechicleOwner).HasMaxLength(50);
+            entity.Property(e => e.VehicleOwner).HasMaxLength(50);
 
             entity.HasOne(d => d.Apartment).WithMany(p => p.Vehicles)
                 .HasForeignKey(d => d.ApartmentId)

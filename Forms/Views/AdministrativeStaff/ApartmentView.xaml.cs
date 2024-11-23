@@ -13,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Forms.Views.AdministrativeStaff
@@ -20,12 +21,12 @@ namespace Forms.Views.AdministrativeStaff
     /// <summary>
     /// Interaction logic for ApartmentView.xaml
     /// </summary>
-    public partial class ApartmentView : Window
+    public partial class ApartmentView : UserControl
     {
         public ApartmentView()
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider?.GetService<ApartmentViewModel>();
+            DataContext = App.ServiceProvider?.GetService<ApartmentViewModel>()!;
         }
     }
 }

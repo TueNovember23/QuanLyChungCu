@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Repositories.Entities;
+using Repositories.Repositories.Entities;
 using Repositories.Interfaces;
 using Services.DTOs.VehicleDTO;
 using Services.DTOs.ApartmentDTO;
