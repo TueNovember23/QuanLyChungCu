@@ -26,6 +26,11 @@ namespace Services.Services.ServiceSupervisorServices
 
         public async Task<List<VehicleResponseDTO>> SearchVehiclesAsync(string searchText)
         {
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                return await GetAllVehiclesAsync();
+            }
+
             var vehicles = await _vehicleRepository.SearchAsync(searchText);
             return vehicles.Select(MapToDTO).ToList();
         }
@@ -62,6 +67,38 @@ namespace Services.Services.ServiceSupervisorServices
                 ApartmentCode = vehicle.Apartment?.ApartmentCode ?? "Chưa có mã căn hộ",
                 Status = "Đã thanh toán",
                 MonthlyFee = (float)(vehicle.VehicleCategory?.MonthlyFee ?? 0)
+            };
+        }
+
+        public async Task<bool> UpdateVehicleAsync(VehicleDTO updatedVehicle)
+        {
+            try
+            {
+                var vehicle = await _vehicleRepository.GetByNumberAsync(updatedVehicle.VehicleNumber);
+                if (vehicle == null) return false;
+
+                vehicle.VehicleOwner = updatedVehicle.VehicleOwner;
+                vehicle.VehicleCategoryId = GetCategoryId(updatedVehicle.VehicleType);
+
+                var result = await _vehicleRepository.SaveChangesAsync();
+                return result > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private int GetCategoryId(string vehicleType)
+        {
+            return vehicleType switch
+            {
+                "Xe đạp" => 1,
+                "Xe máy" => 2,
+                "Ô tô" => 3,
+                "Xe máy điện" => 4,
+                "Ô tô điện" => 5,
+                _ => throw new ArgumentException("Loại xe không hợp lệ!")
             };
         }
     }

@@ -66,8 +66,7 @@ namespace Repositories.Repositories
             return await _context.Vehicles
                 .Include(v => v.VehicleCategory)
                 .Include(v => v.Apartment)
-                .Where(v => v.VehicleId.Contains(searchText) ||
-                           v.VehicleOwner.Contains(searchText))
+                .Where(v => v.VehicleId.Contains(searchText))
                 .ToListAsync();
         }
 

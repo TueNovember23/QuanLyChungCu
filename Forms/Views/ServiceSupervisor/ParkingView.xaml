@@ -32,9 +32,9 @@
                 <StackPanel Margin="16">
                     <TextBlock Text="Lọc xe theo loại" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16" />
                     <ComboBox materialDesign:HintAssist.Hint="Chọn loại xe" 
-                              ItemsSource="{Binding VehicleTypes}" 
-                              SelectedItem="{Binding SelectedVehicleType}" 
-                              Margin="0,8,0,16" />
+                        ItemsSource="{Binding VehicleTypes}" 
+                        SelectedItem="{Binding SelectedVehicleType}"
+                        Margin="0,8,0,16" />
                 </StackPanel>
             </materialDesign:Card>
 
@@ -44,7 +44,10 @@
                     <TextBlock Text="Danh sách xe" FontSize="18" FontWeight="SemiBold" Margin="16"/>
                     <ListView x:Name="VehicleListView"
                   ItemsSource="{Binding Vehicles}"
-                  SelectedItem="{Binding SelectedVehicle}" Width="731" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionMode="Single">
+                  SelectedItem="{Binding SelectedVehicle}" 
+                  Width="731" d:ItemsSource="{d:SampleData ItemCount=5}" 
+                  SelectionMode="Single" Height="400"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Biển số" DisplayMemberBinding="{Binding VehicleNumber}" Width="107"/>
@@ -56,7 +59,11 @@
                                 <GridViewColumn Header="Hành động" Width="1000">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="Xóa" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding DeleteCommand}" CommandParameter="{Binding }" Margin="4"/>
+                                            <Button Content="Xóa"
+                                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                                Command="{Binding DataContext.DeleteVehicleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Margin="4"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -73,17 +80,27 @@
             <materialDesign:Card Margin="16" UniformCornerRadius="20">
                 <StackPanel Margin="16">
                     <TextBlock Text="Thông tin xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Căn hộ" Margin="0,0,0,16"/>
-                    <ComboBox materialDesign:HintAssist.Hint="Loại xe" ItemsSource="{Binding VehicleTypes}" SelectedItem="{Binding SelectedVehicleType}" Margin="0,8,0,16">
-                        <ComboBoxItem Content="Xe đạp"/>
-                        <ComboBoxItem Content="Xe máy"/>
-                        <ComboBoxItem Content="Ô tô"/>
-                    </ComboBox>
-                    <TextBox materialDesign:HintAssist.Hint="Biển số xe" Margin="0,0,0,16"/>
+                    <TextBox materialDesign:HintAssist.Hint="Căn hộ" 
+                         Text="{Binding SelectedApartmentCode}"
+                         IsEnabled="False"
+                         Margin="0,0,0,16"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Loại xe"
+                        ItemsSource="{Binding VehicleTypes}"
+                        SelectedItem="{Binding SelectedVehicleType, Mode=OneWay}"
+                        IsEnabled="False"
+                        Margin="0,8,0,16"/>
+                    <TextBox materialDesign:HintAssist.Hint="Biển số xe"
+                         Text="{Binding SelectedVehicleNumber}"
+                         IsEnabled="{Binding IsLicensePlateEnabled}"
+                         Margin="0,0,0,16"/>
 
-                    <TextBox materialDesign:HintAssist.Hint="Tên chủ xe" Margin="0,0,0,16"/>
+                    <TextBox materialDesign:HintAssist.Hint="Tên chủ xe"
+                         Text="{Binding SelectedVehicleOwner}"
+                         Margin="0,0,0,16"/>
 
-                    <Button Content="Sửa thông tin" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding EditCommand}"/>
+                    <Button Content="Sửa thông tin" 
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Command="{Binding EditVehicleCommand}"/>
                 </StackPanel>
             </materialDesign:Card>
 
@@ -91,7 +108,9 @@
             <materialDesign:Card Margin="16" UniformCornerRadius="20">
                 <StackPanel Margin="16">
                     <TextBlock Text="Tìm kiếm xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Nhập biển số hoặc tên chủ xe" Margin="0,0,0,16"/>
+                    <TextBox materialDesign:HintAssist.Hint="Nhập biển số xe"
+                         Text="{Binding SearchText}"
+                         Margin="0,0,0,16"/>
                     <Button Content="Tìm kiếm" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding SearchCommand}"/>
                 </StackPanel>
             </materialDesign:Card>

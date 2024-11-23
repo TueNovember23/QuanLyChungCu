@@ -1,16 +1,22 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core;
+using QRCoder;
 using Services.DTOs.ApartmentDTO;
 using Services.DTOs.VehicleDTO;
 using Services.Interfaces.ServiceSupervisorServices;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace Forms.ViewModels.ServiceSupervisor
 {
@@ -66,6 +72,9 @@ namespace Forms.ViewModels.ServiceSupervisor
 
         [ObservableProperty]
         private string _selectedPaymentStatus = string.Empty;
+
+        [ObservableProperty]
+        private bool _canProcessPayment = false;
 
         public ICommand SearchCommand { get; }
         public ICommand RegisterCommand { get; }
@@ -201,20 +210,26 @@ namespace Forms.ViewModels.ServiceSupervisor
                 {
                     VehicleNumber = normalizedNumber,
                     VehicleType = SelectedVehicleType,
-                    VehicleOwner = VehicleOwner, // Sử dụng input VehicleOwner
+                    VehicleOwner = VehicleOwner,
                     ApartmentId = SelectedApartment?.ApartmentId ?? 0,
                     RegisterDate = DateTime.Now,
                     Status = "Active"
                 };
 
-                await _registerVehicleService.RegisterVehicleAsync(vehicle);
-
-                PaymentAmount = _registerVehicleService.CalculatePaymentAmount(SelectedVehicleType);
-                IsPaymentCompleted = false;
-                CanPrintCard = false;
-
-                MessageBox.Show("Đăng ký xe thành công!");
-                ClearForm();
+                var result = await _registerVehicleService.RegisterVehicleAsync(vehicle);
+                
+                if (result.Success)
+                {
+                    PaymentAmount = result.PaymentAmount;
+                    CanProcessPayment = true;
+                    // KHÔNG xóa form ở đây
+                    // KHÔNG hiển thị message box thành công ở đây
+                    MessageBox.Show("Đã tạo thông tin xe. Vui lòng thanh toán để hoàn tất đăng ký!");
+                }
+                else
+                {
+                    MessageBox.Show(result.Message);
+                }
             }
             catch (BusinessException bex)
             {
@@ -234,29 +249,40 @@ namespace Forms.ViewModels.ServiceSupervisor
         [RelayCommand]
         private async Task ProcessPaymentAsync()
         {
-            if (IsProcessing || string.IsNullOrEmpty(SelectedPaymentMethod))
+            if (!CanProcessPayment || string.IsNullOrEmpty(SelectedPaymentMethod) || string.IsNullOrEmpty(SelectedPaymentStatus)) 
             {
-                MessageBox.Show("Vui lòng chọn phương thức thanh toán!");
+                MessageBox.Show("Vui lòng chọn phương thức và trạng thái thanh toán!");
                 return;
             }
 
-            if (string.IsNullOrEmpty(SelectedPaymentStatus))
+            if (SelectedPaymentStatus != "Đã thanh toán")
             {
-                MessageBox.Show("Vui lòng chọn trạng thái thanh toán!");
+                MessageBox.Show("Vui lòng xác nhận trạng thái đã thanh toán!");
                 return;
             }
 
             try
             {
                 IsProcessing = true;
-                // Thêm xử lý thanh toán thực tế
+                
+                // Giả lập xử lý thanh toán
+                await Task.Delay(1500); 
+
+                // Kiểm tra điều kiện trước khi thực hiện animation và set trạng thái
+                if (!IsProcessing) return;
+                
+                // Thực hiện animation
+                var storyboard = Application.Current.MainWindow.FindResource("PaymentSuccessAnimation") as Storyboard;
+                storyboard?.Begin();
+                
                 IsPaymentCompleted = true;
                 CanPrintCard = true;
+                
                 MessageBox.Show("Thanh toán thành công!");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi thanh toán!");
+                MessageBox.Show($"Lỗi khi thanh toán: {ex.Message}");
                 Debug.WriteLine($"Lỗi thanh toán: {ex}");
                 IsPaymentCompleted = false;
                 CanPrintCard = false;
@@ -267,24 +293,112 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
         }
 
+        // ...
 
         [RelayCommand]
-        private void PrintCard()
+        private async Task PrintCardAsync()
         {
-            if (!IsPaymentCompleted)
-            {
-                MessageBox.Show("Vui lòng thanh toán trước khi in thẻ xe!");
-                return;
-            }
+            if (!CanPrintCard) return;
 
             try
             {
-                MessageBox.Show("In thẻ xe thành công!");
+                PrintDialog dialog = new();
+                if (dialog.ShowDialog() == true)
+                {
+                    var cardVisual = new DrawingVisual();
+                    using (var context = cardVisual.RenderOpen())
+                    {
+                        // Card background
+                        context.DrawRectangle(
+                            new LinearGradientBrush(
+                                Colors.White, 
+                                Color.FromRgb(240, 240, 255), 
+                                new Point(0, 0), 
+                                new Point(1, 1)),
+                            new Pen(Brushes.Gray, 2),
+                            new Rect(0, 0, 400, 250));
+
+                        // Header
+                        var headerText = new FormattedText(
+                            "THẺ XE - CHUNG CƯ ABC",
+                            CultureInfo.CurrentCulture,
+                            FlowDirection.LeftToRight,
+                            new Typeface("Segoe UI Semibold"),
+                            20,
+                            Brushes.DarkBlue,
+                            VisualTreeHelper.GetDpi(cardVisual).PixelsPerDip);
+                        context.DrawText(headerText, new Point(20, 20));
+
+                        // QR Code (using QRCoder library)
+                        var qrGenerator = new QRCodeGenerator();
+                        var qrData = $"VehicleID:{VehicleNumber}-{DateTime.Now:yyyyMMdd}";
+                        var qrCode = qrGenerator.CreateQrCode(qrData, QRCodeGenerator.ECCLevel.Q);
+                        var qrBmp = new BitmapImage();
+                        // Convert QR to image and draw at position
+                        context.DrawImage(qrBmp, new Rect(300, 20, 80, 80));
+
+                        // Vehicle Info
+                        var infoStyle = new Typeface("Segoe UI");
+                        var infoBrush = Brushes.Black;
+                        double y = 70;
+
+                        DrawInfoLine(context, "Biển số xe:", VehicleNumber, y);
+                        DrawInfoLine(context, "Loại xe:", SelectedVehicleType, y += 25);
+                        DrawInfoLine(context, "Chủ xe:", VehicleOwner, y += 25);
+                        DrawInfoLine(context, "Căn hộ:", SelectedApartmentCode, y += 25);
+                        DrawInfoLine(context, "Ngày cấp:", DateTime.Now.ToString("dd/MM/yyyy"), y += 25);
+
+                        // Card Number
+                        var cardNumber = $"Số thẻ: {DateTime.Now:yyyyMMdd}{new Random().Next(1000, 9999)}";
+                        DrawInfoLine(context, "", cardNumber, y += 40);
+
+                        // Watermark
+                        var watermark = new FormattedText(
+                            "CHUNG CƯ ABC",
+                            CultureInfo.CurrentCulture,
+                            FlowDirection.LeftToRight,
+                            new Typeface("Arial"),
+                            60,
+                            new SolidColorBrush(Color.FromArgb(30, 0, 0, 0)),
+                            VisualTreeHelper.GetDpi(cardVisual).PixelsPerDip);
+                        context.PushTransform(new RotateTransform(45, 200, 125));
+                        context.DrawText(watermark, new Point(50, 80));
+                        context.Pop();
+                    }
+
+                    dialog.PrintVisual(cardVisual, "Vehicle Card");
+                    MessageBox.Show("In thẻ xe thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ClearForm();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi in thẻ: {ex.Message}");
             }
+        }
+
+        private void DrawInfoLine(DrawingContext context, string label, string value, double y)
+        {
+            var labelText = new FormattedText(
+                label,
+                CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new Typeface("Segoe UI"),
+                12,
+                Brushes.Gray,
+                VisualTreeHelper.GetDpi(new DrawingVisual()).PixelsPerDip);
+
+            var valueText = new FormattedText(
+                value,
+                CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new Typeface("Segoe UI Semibold"),
+                12,
+                Brushes.Black,
+                VisualTreeHelper.GetDpi(new DrawingVisual()).PixelsPerDip);
+
+            context.DrawText(labelText, new Point(20, y));
+            context.DrawText(valueText, new Point(100, y));
         }
 
         private void ClearForm()

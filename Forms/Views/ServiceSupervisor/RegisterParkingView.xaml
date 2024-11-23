@@ -8,6 +8,23 @@
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1100">
 
+    <UserControl.Resources>
+        <Storyboard x:Key="PaymentSuccessAnimation">
+            <DoubleAnimation 
+                Storyboard.TargetName="PaymentSuccessIcon"
+                Storyboard.TargetProperty="Opacity"
+                From="0" To="1" Duration="0:0:0.5"/>
+            <DoubleAnimation 
+                Storyboard.TargetName="PaymentSuccessIcon"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                From="0.2" To="1" Duration="0:0:0.5"/>
+            <DoubleAnimation 
+                Storyboard.TargetName="PaymentSuccessIcon"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                From="0.2" To="1" Duration="0:0:0.5"/>
+        </Storyboard>
+    </UserControl.Resources>
+
     <Grid HorizontalAlignment="Left" Width="1100">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -37,7 +54,13 @@
             <materialDesign:Card Grid.Column="0" Margin="16,192,11,16" UniformCornerRadius="20">
                 <StackPanel Margin="16,16,16,16">
                     <TextBlock Text="Danh sách căn hộ" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <ListView x:Name="ApartmentListView" ItemsSource="{Binding Apartments}" SelectedItem="{Binding SelectedApartment}" SelectionMode="Single" d:ItemsSource="{d:SampleData ItemCount=5}">
+                    <ListView x:Name="ApartmentListView" 
+                  ItemsSource="{Binding Apartments}" 
+                  SelectedItem="{Binding SelectedApartment}" 
+                  SelectionMode="Single" 
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  Height="400"
+                  d:ItemsSource="{d:SampleData ItemCount=5}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="170"/>
@@ -88,13 +111,13 @@
 
             <!--Thông tin thanh toán-->
             <materialDesign:Card Grid.Column="1" Margin="11,340,12,16" UniformCornerRadius="20">
-                <StackPanel Margin="16,16,16,0" Height="360" VerticalAlignment="Top">
+                <StackPanel Margin="16,16,16,0" Height="360" VerticalAlignment="Top" IsEnabled="{Binding CanProcessPayment}">
                     <TextBlock Text="Thông tin thanh toán" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
 
                     <TextBox materialDesign:HintAssist.Hint="Số tiền thanh toán" 
                  Margin="0,0,0,16" 
                  Text="{Binding PaymentAmount, StringFormat={}{0:N0} VNĐ}" 
-                 IsReadOnly="True"/>
+                 IsReadOnly="True" IsEnabled="False"/>
 
                     <ComboBox materialDesign:HintAssist.Hint="Chọn phương thức thanh toán" 
                   Margin="0,0,0,16" 
@@ -121,6 +144,18 @@
                 Margin="0,0,0,16" 
                 Command="{Binding PrintCardCommand}"
                 IsEnabled="{Binding CanPrintCard}"/>
+
+                <materialDesign:PackIcon x:Name="PaymentSuccessIcon"
+                        Kind="CheckCircle"
+                        Width="48" Height="48"
+                        Foreground="Green"
+                        Opacity="0"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,8">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
 
                     <!-- Hiển thị trạng thái thanh toán -->
                     <TextBlock Text="Đã thanh toán" 

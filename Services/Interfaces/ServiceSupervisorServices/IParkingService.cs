@@ -8,5 +8,6 @@ namespace Services.Interfaces.ServiceSupervisorServices
         Task<List<VehicleResponseDTO>> SearchVehiclesAsync(string searchText);
         Task<bool> DeleteVehicleAsync(string vehicleNumber);
         Task<VehicleStatisticsDTO> GetVehicleStatisticsAsync();
+        Task<bool> UpdateVehicleAsync(VehicleDTO updatedVehicle);
     }
 }
