@@ -13,6 +13,10 @@ using Services.MapperProfile;
 using Services.Services.AccountantServices;
 using Services.Services.ServiceSupervisorServices;
 using Services.Services.SharedServices;
+using Forms.ViewModels.AdministativeStaff;
+using Services.Interfaces.AdministrativeStaffServices;
+using Services.Services.AdministrativeStaffServices;
+using Forms.ViewModels.AdministativeStaff.GeneralInfo;
 
 
 namespace Forms
@@ -34,6 +38,10 @@ namespace Forms
             services.AddScoped<ApartmentViewModel>();
             services.AddScoped<ParkingViewModel>();
             services.AddScoped<RegisterParkingViewModel>();
+            services.AddScoped<RegulationViewModel>();
+            services.AddScoped<GeneralInfoViewModel>();
+
+            services.AddTransient<AddEditAreaViewModel>();
         }
 
         public static void AddServices(IServiceCollection services)
@@ -42,6 +50,8 @@ namespace Forms
             services.AddScoped<IApartmentService, ApartmentService>();
             services.AddScoped<IRegisterVehicleService, RegisterVehicleService>();
             services.AddScoped<IParkingService, ParkingService>();
+            services.AddScoped<IRegulationService, RegulationService>();
+            services.AddScoped<IGeneralInfoService, GeneralInfoService>();
         }
 
         public static void AddRepositories(IServiceCollection services)

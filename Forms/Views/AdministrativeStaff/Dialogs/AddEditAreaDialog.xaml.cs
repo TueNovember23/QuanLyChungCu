@@ -1,4 +1,5 @@
-﻿using Forms.ViewModels.ServiceSupervisor;
+﻿using Forms.ViewModels.AdministativeStaff.GeneralInfo;
+using Forms.ViewModels.ServiceSupervisor;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -15,17 +16,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Forms.Views.AdministrativeStaff
+namespace Forms.Views.AdministrativeStaff.Dialogs
 {
     /// <summary>
-    /// Interaction logic for GeneralInfoView.xaml
+    /// Interaction logic for AddEditAreaDialog.xaml
     /// </summary>
-    public partial class GeneralInfoView : UserControl
+    public partial class AddEditAreaDialog : UserControl
     {
-        public GeneralInfoView()
+        public AddEditAreaDialog()
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider?.GetService<GeneralInfoView>();
+            DataContext = App.ServiceProvider?.GetService<AddEditAreaViewModel>();
         }
     }
 }
