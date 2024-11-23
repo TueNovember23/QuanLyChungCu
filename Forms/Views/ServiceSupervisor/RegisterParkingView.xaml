@@ -25,7 +25,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Search Card -->
-            <materialDesign:Card Grid.Column="0" Margin="16,16,16,0" UniformCornerRadius="20" Height="162" VerticalAlignment="Top">
+            <materialDesign:Card Grid.Column="0" Margin="16,16,11,0" UniformCornerRadius="20" Height="162" VerticalAlignment="Top">
                 <StackPanel Margin="16">
                     <TextBlock Text="Tìm kiếm căn hộ" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
                     <TextBox materialDesign:HintAssist.Hint="Nhập mã căn hộ" Margin="0,0,0,16" Text="{Binding SearchText}"/>
@@ -34,15 +34,15 @@
             </materialDesign:Card>
 
             <!-- Apartment List -->
-            <materialDesign:Card Grid.Column="0" Margin="16,192,16,16" UniformCornerRadius="20">
+            <materialDesign:Card Grid.Column="0" Margin="16,192,11,16" UniformCornerRadius="20">
                 <StackPanel Margin="16,16,16,16">
                     <TextBlock Text="Danh sách căn hộ" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <ListView x:Name="ApartmentListView" ItemsSource="{Binding Apartments}" SelectedItem="{Binding SelectedApartment}" SelectionMode="Single">
+                    <ListView x:Name="ApartmentListView" ItemsSource="{Binding Apartments}" SelectedItem="{Binding SelectedApartment}" SelectionMode="Single" d:ItemsSource="{d:SampleData ItemCount=5}">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="130"/>
+                                <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="170"/>
                                 <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="150"/>
-                                <GridViewColumn Header="Tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="100"/>
+                                <GridViewColumn Header="Tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="150"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -50,7 +50,7 @@
             </materialDesign:Card>
 
             <!-- Thông tin xe và chủ xe -->
-            <materialDesign:Card Grid.Column="1" Margin="16,16,16,0" UniformCornerRadius="20" Height="292" VerticalAlignment="Top">
+            <materialDesign:Card Grid.Column="1" Margin="11,16,12,0" UniformCornerRadius="20" Height="292" VerticalAlignment="Top">
                 <StackPanel Margin="16">
                     <TextBlock Text="Thông tin xe và chủ xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
 
@@ -70,7 +70,7 @@
                  Margin="0,0,0,16" 
                  Text="{Binding VehicleNumber}"
                  IsEnabled="{Binding IsLicensePlateRequired}"/>
-                    
+
 
                     <!-- Thông tin chủ xe -->
 
@@ -87,7 +87,7 @@
             </materialDesign:Card>
 
             <!--Thông tin thanh toán-->
-            <materialDesign:Card Grid.Column="1" Margin="16,340,16,16" UniformCornerRadius="20">
+            <materialDesign:Card Grid.Column="1" Margin="11,340,12,16" UniformCornerRadius="20">
                 <StackPanel Margin="16,16,16,0" Height="360" VerticalAlignment="Top">
                     <TextBlock Text="Thông tin thanh toán" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
 

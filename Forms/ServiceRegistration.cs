@@ -40,15 +40,16 @@ namespace Forms
         {
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IApartmentService, ApartmentService>();
-            services.AddScoped<IVehicleService, VehicleService>();
-
-
+            services.AddScoped<IRegisterVehicleService, RegisterVehicleService>();
+            services.AddScoped<IParkingService, ParkingService>();
         }
 
         public static void AddRepositories(IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<IVehicleRepository, VehicleRepository>();
         }
 
         public static void AddDatabase(IServiceCollection services)

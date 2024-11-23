@@ -11,8 +11,8 @@
 
     <Grid HorizontalAlignment="Left" Width="1100">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="36*" />
-            <ColumnDefinition Width="19*" />
+            <ColumnDefinition Width="387*" />
+            <ColumnDefinition Width="163*" />
         </Grid.ColumnDefinitions>
 
         <!-- Header -->
@@ -28,7 +28,7 @@
             </Grid.RowDefinitions>
 
             <!-- Lọc loại xe -->
-            <materialDesign:Card Grid.Row="0" Margin="16,60,16,0" UniformCornerRadius="20" Grid.RowSpan="2" Height="109" VerticalAlignment="Top">
+            <materialDesign:Card Grid.Row="0" Margin="11,60,11,0" UniformCornerRadius="20" Grid.RowSpan="2" Height="109" VerticalAlignment="Top">
                 <StackPanel Margin="16">
                     <TextBlock Text="Lọc xe theo loại" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16" />
                     <ComboBox materialDesign:HintAssist.Hint="Chọn loại xe" 
@@ -39,41 +39,33 @@
             </materialDesign:Card>
 
             <!-- Danh sách xe -->
-            <materialDesign:Card Grid.Row="1" Margin="16,189,16,16" UniformCornerRadius="20" IsEnabled="{Binding !IsLoading}">
+            <materialDesign:Card Grid.Row="1" Margin="11,189,11,16" UniformCornerRadius="20" IsEnabled="{Binding !IsLoading}">
                 <StackPanel>
                     <TextBlock Text="Danh sách xe" FontSize="18" FontWeight="SemiBold" Margin="16"/>
-                    <DataGrid x:Name="VehicleDataGrid" 
-                  ItemsSource="{Binding Vehicles}" 
-                  SelectedItem="{Binding SelectedVehicle}"
-                  AutoGenerateColumns="False" 
-                  Margin="16">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Biển số xe" 
-                                  Binding="{Binding VehicleNumber}" 
-                                  Width="*"/>
-                            <DataGridTextColumn Header="Loại xe" 
-                                  Binding="{Binding VehicleType}" 
-                                  Width="*"/>
-                            <DataGridTextColumn Header="Tên chủ xe" 
-                                  Binding="{Binding VehicleOwner}" 
-                                  Width="*"/>
-                            <DataGridTextColumn Header="Mã căn hộ" 
-                                  Binding="{Binding ApartmentCode}" 
-                                  Width="*"/>
-                            <DataGridTextColumn Header="Trạng thái" 
-                                  Binding="{Binding Status}" 
-                                  Width="*"/>
-                            <DataGridTemplateColumn Header="Hành động" Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                    <Button Content="Xóa" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding DeleteCommand}" CommandParameter="{Binding SelectedVehicle}" Margin="4"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <ListView x:Name="VehicleListView"
+                  ItemsSource="{Binding Vehicles}"
+                  SelectedItem="{Binding SelectedVehicle}" Width="731" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionMode="Single">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Biển số" DisplayMemberBinding="{Binding VehicleNumber}" Width="107"/>
+                                <GridViewColumn Header="Loại xe" DisplayMemberBinding="{Binding VehicleType}" Width="105"/>
+                                <GridViewColumn Header="Chủ xe" DisplayMemberBinding="{Binding VehicleOwner}" Width="103"/>
+                                <GridViewColumn Header="Căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="105"/>
+                                <GridViewColumn Header="Phí gửi" DisplayMemberBinding="{Binding MonthlyFee}" Width="104"/>
+                                <GridViewColumn Header="T/Thái" DisplayMemberBinding="{Binding Status}" Width="100"/>
+                                <GridViewColumn Header="Hành động" Width="1000">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Xóa" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding DeleteCommand}" CommandParameter="{Binding }" Margin="4"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </StackPanel>
             </materialDesign:Card>
+
         </Grid>
 
         <!-- Chức năng -->
@@ -88,9 +80,9 @@
                         <ComboBoxItem Content="Ô tô"/>
                     </ComboBox>
                     <TextBox materialDesign:HintAssist.Hint="Biển số xe" Margin="0,0,0,16"/>
-                    
+
                     <TextBox materialDesign:HintAssist.Hint="Tên chủ xe" Margin="0,0,0,16"/>
-                    
+
                     <Button Content="Sửa thông tin" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding EditCommand}"/>
                 </StackPanel>
             </materialDesign:Card>
@@ -117,7 +109,7 @@
         <materialDesign:Card 
             Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
             HorizontalAlignment="Center" 
-            VerticalAlignment="Center">
+            VerticalAlignment="Center" Height="36" Width="34">
             <ProgressBar IsIndeterminate="True" Margin="16"/>
         </materialDesign:Card>
     </Grid>

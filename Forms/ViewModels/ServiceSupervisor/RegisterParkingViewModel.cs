@@ -16,7 +16,7 @@ namespace Forms.ViewModels.ServiceSupervisor
 {
     public partial class RegisterParkingViewModel : ObservableObject
     {
-        private readonly IVehicleService _vehicleService;
+        private readonly IRegisterVehicleService _registerVehicleService;
 
 
         [ObservableProperty]
@@ -49,7 +49,7 @@ namespace Forms.ViewModels.ServiceSupervisor
         [ObservableProperty]
         private bool _isPaymentCompleted = false;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         private bool _canPrintCard = false;
 
         [ObservableProperty]
@@ -102,7 +102,7 @@ namespace Forms.ViewModels.ServiceSupervisor
         partial void OnSelectedVehicleTypeChanged(string value)
         {
             IsLicensePlateRequired = value != "Xe đạp";
-            
+
             if (!IsLicensePlateRequired)
             {
                 VehicleNumber = string.Empty;
@@ -137,7 +137,7 @@ namespace Forms.ViewModels.ServiceSupervisor
             number = number.Replace(" ", "").Replace("-", "").ToUpper();
 
             string pattern = @"^\d{2}[A-Z]{1,2}\d{4,5}$";
-            
+
             var isValid = Regex.IsMatch(number, pattern);
             Debug.WriteLine($"Xác nhận biển số xe: {number} -> {isValid}");
             return isValid;
@@ -157,9 +157,9 @@ namespace Forms.ViewModels.ServiceSupervisor
         }
 
 
-        public RegisterParkingViewModel(IVehicleService vehicleService)
+        public RegisterParkingViewModel(IRegisterVehicleService registerVehicleService)
         {
-            _vehicleService = vehicleService;
+            _registerVehicleService = registerVehicleService;
             SearchCommand = new RelayCommand(SearchApartments);
             RegisterCommand = new RelayCommand(async () => await RegisterVehicleAsync()); // Sửa ở đây
 
@@ -168,20 +168,20 @@ namespace Forms.ViewModels.ServiceSupervisor
 
         private async void SearchApartments()
         {
-            var apartmentList = await _vehicleService.SearchApartmentsAsync(SearchText);
+            var apartmentList = await _registerVehicleService.SearchApartmentsAsync(SearchText);
             Apartments = new ObservableCollection<ApartmentDTO>(apartmentList);
         }
 
         private async void LoadApartmentsAsync()
         {
-            var apartmentList = await _vehicleService.GetAllApartmentsAsync();
+            var apartmentList = await _registerVehicleService.GetAllApartmentsAsync();
             Apartments = new ObservableCollection<ApartmentDTO>(apartmentList);
         }
 
 
         private async Task RegisterVehicleAsync()
         {
-            if (IsProcessing || !ValidateForm()) return; 
+            if (IsProcessing || !ValidateForm()) return;
 
             try
             {
@@ -190,7 +190,7 @@ namespace Forms.ViewModels.ServiceSupervisor
                 var normalizedNumber = !IsLicensePlateRequired ? string.Empty :
                                         VehicleNumber.Trim().Replace(" ", "").Replace("-", "").ToUpper();
 
-                var existingVehicle = await _vehicleService.GetVehicleByNumberAsync(normalizedNumber);
+                var existingVehicle = await _registerVehicleService.GetVehicleByNumberAsync(normalizedNumber);
                 if (existingVehicle != null)
                 {
                     MessageBox.Show($"Biển số xe {VehicleNumber} đã được đăng ký!");
@@ -203,12 +203,12 @@ namespace Forms.ViewModels.ServiceSupervisor
                     VehicleType = SelectedVehicleType,
                     VehicleOwner = SelectedApartment?.OwnerName ?? string.Empty,
                     ApartmentId = SelectedApartment?.ApartmentId ?? 0
-                    
+
                 };
 
-                await _vehicleService.RegisterVehicleAsync(vehicle);
+                await _registerVehicleService.RegisterVehicleAsync(vehicle);
 
-                PaymentAmount = _vehicleService.CalculatePaymentAmount(SelectedVehicleType);
+                PaymentAmount = _registerVehicleService.CalculatePaymentAmount(SelectedVehicleType);
                 IsPaymentCompleted = false;
                 CanPrintCard = false;
 
@@ -226,7 +226,7 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
             finally
             {
-                IsProcessing = false; 
+                IsProcessing = false;
             }
         }
 

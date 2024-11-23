@@ -24,7 +24,7 @@ namespace Forms.Views.AdministrativeStaff
 
         private void ApartmentViewButton_Click(object sender, RoutedEventArgs e)
         {
-            LoadUserControl(new ApartmentView());
+            //LoadUserControl(new ApartmentView());
         }
 
         private void RegulationViewButton_Click(object sender, RoutedEventArgs e)
