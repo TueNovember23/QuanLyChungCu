@@ -5,6 +5,8 @@ namespace Repositories.Repositories.Entities;
 
 public partial class Vehicle
 {
+    public string? Status;
+
     public string VehicleId { get; set; } = null!;
 
     public string? VehicleOwner { get; set; }

@@ -12,6 +12,10 @@ namespace Forms.Views.AdministrativeStaff
     /// </summary>
     public partial class AdministrativeStaffLayoutView : Window
     {
+        private bool isMaximized = false;
+        private const double SIDEBAR_COLLAPSED_WIDTH = 60;
+        private const double SIDEBAR_EXPANDED_WIDTH = 200;
+
         public AdministrativeStaffLayoutView()
         {
             InitializeComponent();
@@ -19,6 +23,8 @@ namespace Forms.Views.AdministrativeStaff
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Sidebar.Width = SIDEBAR_COLLAPSED_WIDTH;
+            HideSidebarTexts();
             LoadUserControl(new GeneralInfoView());
         }
 
@@ -40,10 +46,8 @@ namespace Forms.Views.AdministrativeStaff
         // Hàm để load UserControl vào RenderPages
         private void LoadUserControl(UserControl userControl)
         {
-            // Xóa tất cả các phần tử con hiện tại trong RenderPages
             RenderPages.Children.Clear();
 
-            // Thêm UserControl vào RenderPages
             RenderPages.Children.Add(userControl);
         }
 
@@ -54,28 +58,49 @@ namespace Forms.Views.AdministrativeStaff
 
         private void Sidebar_MouseEnter(object sender, MouseEventArgs e)
         {
-            // Mở rộng sidebar khi chuột di chuyển vào
-            Storyboard storyboard = (Storyboard)this.Resources["ExpandSidebar"];
+            var storyboard = (Storyboard)FindResource("ExpandSidebar");
             storyboard.Begin();
-
-            // Hiển thị các text khi sidebar mở rộng
-            RegulationText.Visibility = Visibility.Visible;
-            GeneralInfoText.Visibility = Visibility.Visible;
-            // Các text khác nếu có
+            ShowSidebarTexts();
         }
 
         private void Sidebar_MouseLeave(object sender, MouseEventArgs e)
         {
-            // Thu nhỏ sidebar khi chuột di chuyển ra ngoài
-            Storyboard storyboard = (Storyboard)this.Resources["CollapseSidebar"];
+            var storyboard = (Storyboard)FindResource("CollapseSidebar");
             storyboard.Begin();
-
-            // Ẩn các text khi sidebar thu nhỏ
-            RegulationText.Visibility = Visibility.Collapsed;
-            GeneralInfoText.Visibility = Visibility.Collapsed;
-            // Ẩn các text khác nếu có
+            HideSidebarTexts();
         }
 
-        
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            isMaximized = (WindowState == WindowState.Maximized);
+            // Keep sidebar collapsed when window state changes
+            Sidebar.Width = SIDEBAR_COLLAPSED_WIDTH;
+            HideSidebarTexts();
+        }
+
+        private void ShowSidebarTexts()
+        {
+            ApartmentText.Visibility = Visibility.Visible;
+            RegulationText.Visibility = Visibility.Visible;
+            GeneralInfoText.Visibility = Visibility.Visible;
+            CalendarText.Visibility = Visibility.Visible;
+            EqualizerText.Visibility = Visibility.Visible;
+            ChatText.Visibility = Visibility.Visible;
+            ExitText.Visibility = Visibility.Visible;
+        }
+
+        private void HideSidebarTexts()
+        {
+            ApartmentText.Visibility = Visibility.Collapsed;
+            RegulationText.Visibility = Visibility.Collapsed;
+            GeneralInfoText.Visibility = Visibility.Collapsed;
+            CalendarText.Visibility = Visibility.Collapsed;
+            EqualizerText.Visibility = Visibility.Collapsed;
+            ChatText.Visibility = Visibility.Collapsed;
+            ExitText.Visibility = Visibility.Collapsed;
+        }
+
+
     }
 }

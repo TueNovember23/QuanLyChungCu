@@ -86,7 +86,8 @@ namespace Services.Services.ServiceSupervisorServices
                     VehicleId = vehicleDto.VehicleNumber,
                     VehicleCategoryId = GetCategoryId(vehicleDto.VehicleType),
                     VehicleOwner = vehicleDto.VehicleOwner,
-                    ApartmentId = vehicleDto.ApartmentId
+                    ApartmentId = vehicleDto.ApartmentId,
+                    Status = "Đang gửi"
                 };
 
                 var success = await _vehicleRepository.CreateVehicleAsync(vehicle);

@@ -65,8 +65,9 @@ namespace Services.Services.ServiceSupervisorServices
                 VehicleType = vehicle.VehicleCategory?.CategoryName ?? "Chưa xác định",
                 VehicleOwner = vehicle.VehicleOwner ?? "Chưa có chủ xe",
                 ApartmentCode = vehicle.Apartment?.ApartmentCode ?? "Chưa có mã căn hộ",
-                Status = "Đã thanh toán",
-                MonthlyFee = (float)(vehicle.VehicleCategory?.MonthlyFee ?? 0)
+                Status = vehicle.Status ?? "Đang gửi", // Default to "Đang gửi"
+                MonthlyFee = (float)(vehicle.VehicleCategory?.MonthlyFee ?? 0),
+                ApartmentId = vehicle.ApartmentId
             };
         }
 
@@ -79,6 +80,7 @@ namespace Services.Services.ServiceSupervisorServices
 
                 vehicle.VehicleOwner = updatedVehicle.VehicleOwner;
                 vehicle.VehicleCategoryId = GetCategoryId(updatedVehicle.VehicleType);
+                vehicle.Status = updatedVehicle.Status; // Update status
 
                 var result = await _vehicleRepository.SaveChangesAsync();
                 return result > 0;

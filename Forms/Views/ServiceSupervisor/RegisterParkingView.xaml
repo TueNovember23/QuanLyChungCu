@@ -73,24 +73,24 @@
             </materialDesign:Card>
 
             <!-- Thông tin xe và chủ xe -->
-            <materialDesign:Card Grid.Column="1" Margin="11,16,12,0" UniformCornerRadius="20" Height="292" VerticalAlignment="Top">
+            <materialDesign:Card Grid.Column="1" Margin="11,16,12,0" UniformCornerRadius="20" Height="350" VerticalAlignment="Top">
                 <StackPanel Margin="16">
-                    <TextBlock Text="Thông tin xe và chủ xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                    <TextBlock Text="Thông tin xe và chủ xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
                     <!-- Thông tin căn hộ -->
 
                     <TextBox materialDesign:HintAssist.Hint="Mã căn hộ" 
-                 Margin="0,0,0,16" 
+                 Margin="0,0,0,20" 
                  Text="{Binding SelectedApartmentCode}"
                  IsReadOnly="True"/>
 
                     <!-- Thông tin xe -->
                     <ComboBox materialDesign:HintAssist.Hint="Loại xe *" 
-                Margin="0,0,0,16" 
+                Margin="0,0,0,20" 
                 ItemsSource="{Binding VehicleTypes}" 
                 SelectedItem="{Binding SelectedVehicleType}"/>
                     <TextBox materialDesign:HintAssist.Hint="Biển số xe *" 
-                 Margin="0,0,0,16" 
+                 Margin="0,0,0,20" 
                  Text="{Binding VehicleNumber}"
                  IsEnabled="{Binding IsLicensePlateRequired}"/>
 
@@ -105,64 +105,26 @@
                     <Button Content="Đăng ký thông tin xe" 
                 Style="{StaticResource MaterialDesignRaisedButton}" 
                 Command="{Binding RegisterCommand}"
-                Margin="0,8,0,0"/>
+                Margin="0,20,0,0"/>
                 </StackPanel>
             </materialDesign:Card>
 
-            <!--Thông tin thanh toán-->
-            <materialDesign:Card Grid.Column="1" Margin="11,340,12,16" UniformCornerRadius="20">
-                <StackPanel Margin="16,16,16,0" Height="360" VerticalAlignment="Top" IsEnabled="{Binding CanProcessPayment}">
-                    <TextBlock Text="Thông tin thanh toán" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
+            <materialDesign:Card Grid.Column="1" Margin="11,404,12,16" UniformCornerRadius="20">
+                <StackPanel Margin="16,16,16,0" Height="318" VerticalAlignment="Top">
+                    <TextBlock Text="Lọc thông tin" 
+                            FontSize="18" 
+                            FontWeight="SemiBold" 
+                            Margin="0,0,0,20"/>
 
-                    <TextBox materialDesign:HintAssist.Hint="Số tiền thanh toán" 
-                 Margin="0,0,0,16" 
-                 Text="{Binding PaymentAmount, StringFormat={}{0:N0} VNĐ}" 
-                 IsReadOnly="True" IsEnabled="False"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Lọc theo tầng" 
+                            Margin="0,0,0,20" 
+                            ItemsSource="{Binding FilterFloors}" 
+                            SelectedItem="{Binding Path=SelectedFloors, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <ComboBox materialDesign:HintAssist.Hint="Chọn phương thức thanh toán" 
-                  Margin="0,0,0,16" 
-                  ItemsSource="{Binding PaymentMethods}" 
-                  SelectedItem="{Binding SelectedPaymentMethod}"/>
-
-
-                    <ComboBox materialDesign:HintAssist.Hint="Chọn trạng thái thanh toán" 
-                  Margin="0,0,0,16" 
-                  ItemsSource="{Binding PaymentStatuses}" 
-                  SelectedItem="{Binding SelectedPaymentStatus}"/>
-
-
-                    <!-- Nút thanh toán -->
-                    <Button Content="Xác nhận thanh toán" 
-                Style="{StaticResource MaterialDesignRaisedButton}" 
-                Margin="0,0,0,16" 
-                Command="{Binding ProcessPaymentCommand}"/>
-
-
-                    <!-- Nút in thẻ xe - chỉ enable khi đã thanh toán -->
-                    <Button Content="In thẻ xe" 
-                Style="{StaticResource MaterialDesignRaisedButton}" 
-                Margin="0,0,0,16" 
-                Command="{Binding PrintCardCommand}"
-                IsEnabled="{Binding CanPrintCard}"/>
-
-                <materialDesign:PackIcon x:Name="PaymentSuccessIcon"
-                        Kind="CheckCircle"
-                        Width="48" Height="48"
-                        Foreground="Green"
-                        Opacity="0"
-                        HorizontalAlignment="Center"
-                        Margin="0,8,0,8">
-                    <materialDesign:PackIcon.RenderTransform>
-                        <ScaleTransform ScaleX="1" ScaleY="1"/>
-                    </materialDesign:PackIcon.RenderTransform>
-                </materialDesign:PackIcon>
-
-                    <!-- Hiển thị trạng thái thanh toán -->
-                    <TextBlock Text="Đã thanh toán" 
-                   Foreground="Green" 
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"
-                   Visibility="{Binding IsPaymentCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Lọc theo căn hộ" 
+                            Margin="0,0,0,20" 
+                            ItemsSource="{Binding FilterApartments}" 
+                            SelectedItem="{Binding Path=SelectedApartments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
             </materialDesign:Card>
         </Grid>

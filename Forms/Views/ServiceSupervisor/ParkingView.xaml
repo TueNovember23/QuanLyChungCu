@@ -41,38 +41,38 @@
             <!-- Danh sách xe -->
             <materialDesign:Card Grid.Row="1" Margin="11,189,11,16" UniformCornerRadius="20" IsEnabled="{Binding !IsLoading}">
                 <StackPanel>
-                    <TextBlock Text="Danh sách xe" FontSize="18" FontWeight="SemiBold" Margin="16"/>
+                    <Grid Margin="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Danh sách xe" FontSize="18" FontWeight="SemiBold"/>
+                        <Button Grid.Column="1" 
+                                Style="{StaticResource MaterialDesignIconButton}"
+                                Command="{Binding LoadVehiclesCommand}">
+                            <materialDesign:PackIcon Kind="Refresh"/>
+                        </Button>
+                    </Grid>
                     <ListView x:Name="VehicleListView"
-                  ItemsSource="{Binding Vehicles}"
-                  SelectedItem="{Binding SelectedVehicle}" 
-                  Width="731" d:ItemsSource="{d:SampleData ItemCount=5}" 
-                  SelectionMode="Single" Height="400"
-                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            ItemsSource="{Binding Vehicles}"
+                            SelectedItem="{Binding SelectedVehicle}" 
+                            Width="731" 
+                            SelectionMode="Single" 
+                            Height="400"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Biển số" DisplayMemberBinding="{Binding VehicleNumber}" Width="107"/>
+                                <GridViewColumn Header="Biển số" DisplayMemberBinding="{Binding VehicleNumber}" Width="110"/>
                                 <GridViewColumn Header="Loại xe" DisplayMemberBinding="{Binding VehicleType}" Width="105"/>
-                                <GridViewColumn Header="Chủ xe" DisplayMemberBinding="{Binding VehicleOwner}" Width="103"/>
+                                <GridViewColumn Header="Chủ xe" DisplayMemberBinding="{Binding VehicleOwner}" Width="108"/>
                                 <GridViewColumn Header="Căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="105"/>
-                                <GridViewColumn Header="Phí gửi" DisplayMemberBinding="{Binding MonthlyFee}" Width="104"/>
-                                <GridViewColumn Header="T/Thái" DisplayMemberBinding="{Binding Status}" Width="100"/>
-                                <GridViewColumn Header="Hành động" Width="1000">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="Xóa"
-                                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                                Command="{Binding DataContext.DeleteVehicleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding}"
-                                                Margin="4"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                <GridViewColumn Header="Phí gửi" DisplayMemberBinding="{Binding MonthlyFee}" Width="105"/>
+                                <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="130"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
                 </StackPanel>
             </materialDesign:Card>
-
         </Grid>
 
         <!-- Chức năng -->
@@ -94,10 +94,11 @@
                          IsEnabled="{Binding IsLicensePlateEnabled}"
                          Margin="0,0,0,16"/>
 
-                    <TextBox materialDesign:HintAssist.Hint="Tên chủ xe"
-                         Text="{Binding SelectedVehicleOwner}"
-                         Margin="0,0,0,16"/>
-
+                    <ComboBox materialDesign:HintAssist.Hint="Trạng thái"
+                        ItemsSource="{Binding VehicleStatuses}"
+                        SelectedItem="{Binding SelectedVehicleStatus}"
+                        Margin="0,0,0,16"/>
+                  
                     <Button Content="Sửa thông tin" 
                         Style="{StaticResource MaterialDesignRaisedButton}"
                         Command="{Binding EditVehicleCommand}"/>
@@ -111,7 +112,9 @@
                     <TextBox materialDesign:HintAssist.Hint="Nhập biển số xe"
                          Text="{Binding SearchText}"
                          Margin="0,0,0,16"/>
-                    <Button Content="Tìm kiếm" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding SearchCommand}"/>
+                    <Button Content="Tìm kiếm" 
+                        Style="{StaticResource MaterialDesignRaisedButton}" 
+                        Command="{Binding SearchVehiclesCommand}"/>
                 </StackPanel>
             </materialDesign:Card>
 

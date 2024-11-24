@@ -8,13 +8,13 @@ namespace Forms.ViewModels
     public class CommonViewModel : ObservableObject
     {
         public ICommand MinimizeCommand { get; }
-        //public ICommand MaximizeRestoreCommand { get; }
+        public ICommand MaximizeRestoreCommand { get; }
         public ICommand CloseCommand { get; }
 
         public CommonViewModel()
         {
             MinimizeCommand = new RelayCommand<Window?>(Minimize);
-            //MaximizeRestoreCommand = new RelayCommand<Window?>(MaximizeRestore);
+            MaximizeRestoreCommand = new RelayCommand<Window?>(MaximizeRestore);
             CloseCommand = new RelayCommand<Window?>(Close);
         }
 
@@ -26,13 +26,13 @@ namespace Forms.ViewModels
             }
         }
 
-        //private void MaximizeRestore(Window? window)
-        //{
-        //    if (window != null)
-        //    {
-        //        window.WindowState = window.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-        //    }
-        //}
+        private void MaximizeRestore(Window? window)
+        {
+            if (window != null)
+            {
+                window.WindowState = window.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            }
+        }
 
         private void Close(Window? window)
         {

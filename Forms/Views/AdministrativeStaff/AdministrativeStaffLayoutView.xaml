@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Height="850" Width="1200" WindowStartupLocation="CenterScreen"
         WindowStyle="None" ResizeMode="NoResize" Background="{x:Null}" AllowsTransparency="True" Loaded="Window_Loaded"
-        WindowState="Maximized">
+        StateChanged="Window_StateChanged">
     <Window.Resources>
         <Storyboard x:Key="ExpandSidebar">
             <DoubleAnimation Storyboard.TargetName="Sidebar" Storyboard.TargetProperty="Width"
