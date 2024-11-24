@@ -9,6 +9,8 @@ public partial class Vehicle
 
     public string? VehicleOwner { get; set; }
 
+    public string? Status { get; set; }
+
     public int ApartmentId { get; set; }
 
     public int VehicleCategoryId { get; set; }
