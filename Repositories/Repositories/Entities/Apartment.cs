@@ -15,9 +15,9 @@ public partial class Apartment
 
     public int? NumberOfPeople { get; set; }
 
-    public string? Status { get; set; }
-
     public bool IsDeleted { get; set; }
+
+    public string? Status { get; set; }
 
     public int FloorId { get; set; }
 
