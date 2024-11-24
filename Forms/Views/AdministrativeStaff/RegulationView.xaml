@@ -54,11 +54,26 @@
                             </Button>
                         </Grid>
 
-                        <!-- Category Filter -->
-                        <ComboBox Margin="0,8,0,0"
-                         materialDesign:HintAssist.Hint="Phân loại"
-                         ItemsSource="{Binding Categories}"
-                         SelectedItem="{Binding SelectedCategory}"/>
+                        <!-- Category Filter and Refresh Row -->
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox Grid.Column="0"
+                                    materialDesign:HintAssist.Hint="Phân loại"
+                                    ItemsSource="{Binding Categories}"
+                                    SelectedItem="{Binding SelectedCategory}"/>
+
+                            <!-- Refresh Button -->
+                            <Button Grid.Column="1" Margin="8,0,0,0"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    Command="{Binding LoadRegulationsCommand}"
+                                    ToolTip="Làm mới danh sách">
+                                <materialDesign:PackIcon Kind="Refresh"/>
+                            </Button>
+                        </Grid>
                     </StackPanel>
 
                     <!-- Regulations List -->
@@ -170,6 +185,17 @@
                                     Style="{StaticResource MaterialDesignRaisedButton}"
                                     Command="{Binding SaveCommand}"/>
                         </StackPanel>
+                        <!-- Loading Indicator -->
+                        <materialDesign:Card 
+                            Grid.ColumnSpan="2"
+                            Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center">
+                            <ProgressBar 
+                                Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                IsIndeterminate="True"
+                                Margin="16"/>
+                        </materialDesign:Card>
                     </StackPanel>
                 </ScrollViewer>
             </materialDesign:Card>

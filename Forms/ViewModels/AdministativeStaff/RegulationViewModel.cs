@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Forms.ViewModels.AdministativeStaff
 {
@@ -30,6 +31,9 @@ namespace Forms.ViewModels.AdministativeStaff
         [ObservableProperty]
         private string _selectedCategory = string.Empty;
 
+        [ObservableProperty]
+        private bool _isLoading;
+
         public ObservableCollection<string> Categories { get; } =
             new(RegulationConstantsService.Categories);
 
@@ -46,8 +50,22 @@ namespace Forms.ViewModels.AdministativeStaff
         [RelayCommand]
         private async Task LoadRegulationsAsync()
         {
-            var regulations = await _regulationService.GetAllRegulationsAsync();
-            Regulations = new ObservableCollection<RegulationDTO>(regulations);
+            try
+            {
+                IsLoading = true;
+                var regulations = await _regulationService.GetAllRegulationsAsync();
+                Regulations = new ObservableCollection<RegulationDTO>(regulations);
+                SearchText = string.Empty;
+                SelectedCategory = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}");
+            }
+            finally 
+            {
+                IsLoading = false;
+            }
         }
 
         [RelayCommand]

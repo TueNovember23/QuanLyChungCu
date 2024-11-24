@@ -251,7 +251,12 @@ CREATE TABLE Regulation (
     RegulationId int IDENTITY(1, 1) PRIMARY KEY,
     Title nvarchar(100) NOT NULL,
     Content nvarchar(255) NOT NULL,
-    CreatedDate date DEFAULT GETDATE() NOT NULL
+    CreatedDate date DEFAULT GETDATE() NOT NULL,
+    Category nvarchar(20) NOT NULL DEFAULT N'Khác',
+    Priority nvarchar(20) NOT NULL DEFAULT N'Trung bình',
+    IsActive bit NOT NULL DEFAULT 1,
+    CONSTRAINT CK_Regulation_Category CHECK (Category IN (N'An ninh', N'Vệ sinh', N'Phòng cháy', N'Sinh hoạt', N'Khác')),
+    CONSTRAINT CK_Regulation_Priority CHECK (Priority IN (N'Cao', N'Trung bình', N'Thấp'))
 )
 
 CREATE TABLE Violation (
@@ -419,3 +424,16 @@ GO
 -- EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'QuanLyChungCu'
 -- GO
 
+-- Nếu đã có bảng nhưng ver cũ
+-- ALTER TABLE Regulation
+-- ADD Category nvarchar(50) NOT NULL DEFAULT N'Khác',
+--     Priority nvarchar(20) NOT NULL DEFAULT N'Trung bình',
+--     IsActive bit NOT NULL DEFAULT 1;
+
+-- ALTER TABLE Regulation
+-- ADD CONSTRAINT CK_Regulation_Category 
+--     CHECK (Category IN (N'An ninh', N'Vệ sinh', N'Phòng cháy', N'Sinh hoạt', N'Khác'));
+
+-- ALTER TABLE Regulation
+-- ADD CONSTRAINT CK_Regulation_Priority 
+--     CHECK (Priority IN (N'Cao', N'Trung bình', N'Thấp'));

@@ -61,45 +61,21 @@ namespace Services.Services.AdministrativeStaffServices
                 if (existingRegulation != null)
                     throw new BusinessException("Đã tồn tại nội quy với tiêu đề này");
 
-                // 2. Create metadata object
-                var metadata = new RegulationMetadata
-                {
-                    Category = regulationDto.Category,
-                    Priority = regulationDto.Priority,
-                    IsActive = regulationDto.IsActive,
-                    Content = regulationDto.Content
-                };
-
-                // 3. Create and save entity
+                // Map and save entity
                 var regulation = new Regulation
                 {
                     Title = regulationDto.Title,
-                    Content = JsonSerializer.Serialize(metadata),
+                    Content = regulationDto.Content,
+                    Category = regulationDto.Category,
+                    Priority = regulationDto.Priority,
+                    IsActive = regulationDto.IsActive,
                     CreatedDate = DateOnly.FromDateTime(DateTime.Now)
                 };
 
                 await _unitOfWork.GetRepository<Regulation>().InsertAsync(regulation);
                 await _unitOfWork.SaveAsync();
 
-                // 4. Map back to DTO with metadata
-                var savedMetadata = JsonSerializer.Deserialize<RegulationMetadata>(regulation.Content);
-                var resultDto = _mapper.Map<RegulationDTO>(regulation);
-                
-                // 5. Set metadata properties
-                resultDto.Category = savedMetadata.Category;
-                resultDto.Priority = savedMetadata.Priority;
-                resultDto.IsActive = savedMetadata.IsActive;
-                resultDto.Content = savedMetadata.Content;
-
-                return resultDto;
-            }
-            catch (JsonException)
-            {
-                throw new BusinessException("Lỗi xử lý dữ liệu nội quy");
-            }
-            catch (BusinessException)
-            {
-                throw;
+                return _mapper.Map<RegulationDTO>(regulation);
             }
             catch (Exception ex)
             {
@@ -113,8 +89,25 @@ namespace Services.Services.AdministrativeStaffServices
             if (regulation == null)
                 throw new BusinessException("Không tìm thấy nội quy");
 
+            // Thêm validation
+            if (string.IsNullOrWhiteSpace(regulationDto.Title))
+                throw new BusinessException("Tiêu đề không được để trống");
+            
+            if (string.IsNullOrWhiteSpace(regulationDto.Content))
+                throw new BusinessException("Nội dung không được để trống");
+                
+            if (!RegulationConstantsService.Categories.Contains(regulationDto.Category))
+                throw new BusinessException("Phân loại không hợp lệ");
+                
+            if (!RegulationConstantsService.PriorityLevels.Contains(regulationDto.Priority))
+                throw new BusinessException("Mức độ ưu tiên không hợp lệ");
+
+            // Cập nhật tất cả các trường
             regulation.Title = regulationDto.Title;
             regulation.Content = regulationDto.Content;
+            regulation.Category = regulationDto.Category;
+            regulation.Priority = regulationDto.Priority; 
+            regulation.IsActive = regulationDto.IsActive;
 
             await _unitOfWork.SaveAsync();
             return _mapper.Map<RegulationDTO>(regulation);
