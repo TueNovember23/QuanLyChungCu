@@ -36,12 +36,6 @@
                         <TextBlock Text="Làm mới"/>
                     </StackPanel>
                 </Button>
-                <Button Style="{StaticResource MaterialDesignOutlinedButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="FileExport" Margin="0,0,8,0"/>
-                        <TextBlock Text="Xuất báo cáo"/>
-                    </StackPanel>
-                </Button>
             </StackPanel>
 
             <!-- Tab Control -->
@@ -64,11 +58,6 @@
                                 materialDesign:HintAssist.Hint="Tìm kiếm khu vực"
                                 Text="{Binding SearchAreaText, UpdateSourceTrigger=PropertyChanged}"
                                 Margin="0,0,16,0"/>
-                            <Button Grid.Column="1"
-                                Command="{Binding AddAreaCommand}"
-                                Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
-                                <materialDesign:PackIcon Kind="Plus"/>
-                            </Button>
                         </Grid>
 
                         <!-- ListView -->
@@ -76,29 +65,11 @@
                             Margin="16,0"
                             ItemsSource="{Binding Areas}"
                             SelectedItem="{Binding SelectedArea}">
-                            <ListView.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Sửa" 
-                                        Command="{Binding EditAreaCommand}"
-                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}">
-                                        <MenuItem.Icon>
-                                            <materialDesign:PackIcon Kind="Edit"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Xóa" 
-                                        Command="{Binding DeleteAreaCommand}"
-                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}">
-                                        <MenuItem.Icon>
-                                            <materialDesign:PackIcon Kind="Delete"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </ContextMenu>
-                            </ListView.ContextMenu>
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Tên khu vực" DisplayMemberBinding="{Binding AreaName}" Width="200"/>
+                                    <GridViewColumn Header="Tên khu vực" DisplayMemberBinding="{Binding AreaName}" Width="220"/>
                                     <GridViewColumn Header="Vị trí" DisplayMemberBinding="{Binding Location}" Width="300"/>
-                                    <GridViewColumn Header="Số Block" DisplayMemberBinding="{Binding BlockCount}" Width="100"/>
+                                    <GridViewColumn Header="Số Block" DisplayMemberBinding="{Binding BlockCount}" Width="120"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -122,57 +93,49 @@
                         <!-- Controls -->
                         <StackPanel Grid.Row="0" Margin="16">
                             <ComboBox materialDesign:HintAssist.Hint="Chọn khu vực" 
-                                     Margin="0,0,0,16"
-                                     ItemsSource="{Binding Areas}"
-                                     DisplayMemberPath="AreaName"
-                                     SelectedItem="{Binding SelectedArea}"/>
+                                    Margin="0,0,0,16"
+                                    ItemsSource="{Binding Areas}"
+                                    DisplayMemberPath="AreaName"
+                                    SelectedItem="{Binding SelectedArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>     
+                            
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBox Grid.Column="0"
-                                        materialDesign:HintAssist.Hint="Tìm kiếm Block"
+                                        materialDesign:HintAssist.Hint="Tìm kiếm block"
                                         Text="{Binding SearchBlockText, UpdateSourceTrigger=PropertyChanged}"
                                         Margin="0,0,16,0"/>
-                                <Button Grid.Column="1"
-                                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
-                                    <materialDesign:PackIcon Kind="Plus"/>
-                                </Button>
                             </Grid>
                         </StackPanel>
 
                         <!-- ListView -->
-                        <ListView Grid.Row="1" Margin="16,0" 
-                                  ItemsSource="{Binding FilteredBlocks}"
-                                  SelectedItem="{Binding SelectedBlock}" d:ItemsSource="{d:SampleData ItemCount=5}">
-                            <ListView.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Sửa">
-                                        <MenuItem.Icon>
-                                            <materialDesign:PackIcon Kind="Edit"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Xóa">
-                                        <MenuItem.Icon>
-                                            <materialDesign:PackIcon Kind="Delete"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </ContextMenu>
-                            </ListView.ContextMenu>
+                        <ListView Grid.Row="1" 
+                                Margin="16,0"
+                                ItemsSource="{Binding Blocks}"
+                                SelectedItem="{Binding SelectedBlock}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Mã Block" DisplayMemberBinding="{Binding BlockCode}" Width="180"/>
-                                    <GridViewColumn Header="Số tầng" DisplayMemberBinding="{Binding NumberOfFloor}" Width="180"/>
-                                    <GridViewColumn Header="Số căn hộ" DisplayMemberBinding="{Binding ApartmentCount}" Width="180"/>
+                                    <GridViewColumn Header="Mã Block" 
+                                                DisplayMemberBinding="{Binding BlockCode}" 
+                                                Width="180"/>
+                                    <GridViewColumn Header="Số tầng" 
+                                                DisplayMemberBinding="{Binding NumberOfFloor}" 
+                                                Width="180"/>
+                                    <GridViewColumn Header="Khu vực" 
+                                                DisplayMemberBinding="{Binding AreaId}" 
+                                                Width="220"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
 
                         <!-- Chart -->
-                        <oxy:PlotView Grid.Row="2" Margin="16" Height="300"
-                            Model="{Binding BlockBarModel}"
-                            Background="Transparent"/>
+                        <oxy:PlotView Grid.Row="2" 
+                                    Margin="16" 
+                                    Height="300"
+                                    Model="{Binding BlockChartModel}"
+                                    Background="Transparent"/>
                     </Grid>
                 </TabItem>
 
@@ -191,7 +154,7 @@
                                 Margin="0,0,0,16"
                                 ItemsSource="{Binding Blocks}"
                                 DisplayMemberPath="BlockCode"
-                                SelectedItem="{Binding SelectedBlock}"/>
+                                SelectedItem="{Binding SelectedBlock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -201,31 +164,15 @@
                                     materialDesign:HintAssist.Hint="Tìm kiếm tầng"
                                     Text="{Binding SearchFloorText, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="0,0,16,0"/>
-                                <Button Grid.Column="1"
-                                    Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
-                                    <materialDesign:PackIcon Kind="Plus"/>
-                                </Button>
                             </Grid>
                         </StackPanel>
 
                         <!-- ListView -->
-                        <ListView Grid.Row="1" Margin="16,0" 
-                            ItemsSource="{Binding FilteredFloors}"
-                            SelectedItem="{Binding SelectedFloor}">
-                            <ListView.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Sửa">
-                                        <MenuItem.Icon>
-                                            <materialDesign:PackIcon Kind="Edit"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Xóa">
-                                        <MenuItem.Icon>
-                                            <materialDesign:PackIcon Kind="Delete"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </ContextMenu>
-                            </ListView.ContextMenu>
+                        <ListView Grid.Row="1" 
+                                Margin="16,0" 
+                                ItemsSource="{Binding Floors}"
+                                SelectedItem="{Binding SelectedFloor}"
+                                Background="{DynamicResource MaterialDesignPaper}">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Số tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="180"/>

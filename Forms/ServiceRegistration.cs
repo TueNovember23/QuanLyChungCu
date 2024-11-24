@@ -16,7 +16,6 @@ using Services.Services.SharedServices;
 using Forms.ViewModels.AdministativeStaff;
 using Services.Interfaces.AdministrativeStaffServices;
 using Services.Services.AdministrativeStaffServices;
-using Forms.ViewModels.AdministativeStaff.GeneralInfo;
 
 
 namespace Forms
@@ -41,7 +40,6 @@ namespace Forms
             services.AddScoped<RegulationViewModel>();
             services.AddScoped<GeneralInfoViewModel>();
 
-            services.AddTransient<AddEditAreaViewModel>();
         }
 
         public static void AddServices(IServiceCollection services)

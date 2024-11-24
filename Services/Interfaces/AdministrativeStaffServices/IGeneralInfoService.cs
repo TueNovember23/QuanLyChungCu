@@ -1,4 +1,6 @@
 ﻿using Services.DTOs.GeneralInfo.AreaDTO;
+using Services.DTOs.GeneralInfo.BlockDTO;
+using Services.DTOs.GeneralInfo.FloorDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +18,12 @@ namespace Services.Interfaces.AdministrativeStaffServices
         Task DeleteAreaAsync(int id);
         Task<IEnumerable<AreaResponseDTO>> SearchAreasAsync(string searchText);
         Task AddAreaAsync(CreateAreaDTO createDto);
+
+        // -------------------
+        Task<IEnumerable<BlockResponseDTO>> GetBlocksByAreaAsync(int areaId);
+        Task<IEnumerable<BlockResponseDTO>> SearchBlocksAsync(int areaId, string searchText);
+        // -------------------
+        Task<IEnumerable<FloorResponseDTO>> GetFloorsByBlockAsync(int blockId);
+        Task<IEnumerable<FloorResponseDTO>> SearchFloorsAsync(int blockId, string searchText);
     }
 }

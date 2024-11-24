@@ -4,9 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
 using Repositories.Repositories.Entities;
 using Services.DTOs.GeneralInfo.AreaDTO;
+using Services.DTOs.GeneralInfo.BlockDTO;
+using Services.DTOs.GeneralInfo.FloorDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,5 +117,63 @@ namespace Services.Services.AdministrativeStaffServices
             await _unitOfWork.GetRepository<Area>().InsertAsync(area);
             await _unitOfWork.SaveAsync();
         }
+
+        // -------------------
+
+        public async Task<IEnumerable<BlockResponseDTO>> GetBlocksByAreaAsync(int areaId)
+        {
+            var blocks = await _unitOfWork.GetRepository<Block>().Entities
+                .Where(b => b.AreaId == areaId && !(b.IsDeleted ?? false))
+                .ToListAsync();
+            return _mapper.Map<IEnumerable<BlockResponseDTO>>(blocks);
+        }
+
+        public async Task<IEnumerable<BlockResponseDTO>> SearchBlocksAsync(int areaId, string searchText)
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+                return await GetBlocksByAreaAsync(areaId);
+
+            var repository = _unitOfWork.GetRepository<Block>();
+            var blocks = await repository.Entities
+                .Where(b => b.AreaId == areaId 
+                        && !(b.IsDeleted ?? false)
+                        && b.BlockCode.Contains(searchText))
+                .ToListAsync();
+            return _mapper.Map<IEnumerable<BlockResponseDTO>>(blocks);
+        }
+
+        // -------------------
+        public async Task<IEnumerable<FloorResponseDTO>> GetFloorsByBlockAsync(int blockId)
+        {
+            try
+            {
+                var repository = _unitOfWork.GetRepository<Floor>();
+                var floors = await repository.Entities
+                    .Where(f => f.BlockId == blockId)
+                    .ToListAsync();
+                
+                Debug.WriteLine($"Found {floors.Count} floors for block {blockId}");
+                return _mapper.Map<IEnumerable<FloorResponseDTO>>(floors);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in GetFloorsByBlockAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<FloorResponseDTO>> SearchFloorsAsync(int blockId, string searchText)
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+                return await GetFloorsByBlockAsync(blockId);
+
+            var repository = _unitOfWork.GetRepository<Floor>();
+            var floors = await repository.Entities
+                .Where(f => f.BlockId == blockId && 
+                    f.FloorNumber.ToString().Contains(searchText))
+                .ToListAsync();
+            return _mapper.Map<IEnumerable<FloorResponseDTO>>(floors);
+        }
+
     }
 }

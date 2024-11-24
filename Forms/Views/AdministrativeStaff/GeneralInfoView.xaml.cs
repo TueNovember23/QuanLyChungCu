@@ -1,4 +1,5 @@
-﻿using Forms.ViewModels.ServiceSupervisor;
+﻿using Forms.ViewModels.AdministativeStaff;
+using Forms.ViewModels.ServiceSupervisor;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,8 @@ namespace Forms.Views.AdministrativeStaff
         public GeneralInfoView()
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider?.GetService<GeneralInfoView>();
+            DataContext = App.ServiceProvider?.GetService<GeneralInfoViewModel>()
+            ?? throw new Exception("Failed to resolve GeneralInfoViewModel");
         }
     }
 }
