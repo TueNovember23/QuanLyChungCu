@@ -17,6 +17,8 @@ public partial class Apartment
 
     public string? Status { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public int FloorId { get; set; }
 
     public virtual ICollection<CommunityRoomBooking> CommunityRoomBookings { get; set; } = new List<CommunityRoomBooking>();
