@@ -11,6 +11,9 @@ using System.Windows.Threading;
 using System.Windows;
 using System.Diagnostics;
 using Services.DTOs.GeneralInfo.FloorDTO;
+using OxyPlot.Series;
+using OxyPlot;
+using OxyPlot.Axes;
 
 
 namespace Forms.ViewModels.AdministativeStaff
@@ -55,13 +58,24 @@ namespace Forms.ViewModels.AdministativeStaff
         private string searchFloorText = string.Empty;
 
 
+        [ObservableProperty]
+        private PlotModel areaPieModel;
+
+        [ObservableProperty]
+        private PlotModel blockBarModel;
+
+        [ObservableProperty]
+        private PlotModel floorBarModel;
+
+
         public GeneralInfoViewModel(IGeneralInfoService generalInfoService)
         {
             _generalInfoService = generalInfoService;
             Areas = new ObservableCollection<AreaResponseDTO>();
             Blocks = new ObservableCollection<BlockResponseDTO>();
-
             Floors = new ObservableCollection<FloorResponseDTO>();
+
+            InitializeCharts();
             Task.Run(LoadAreas);
         }
 
@@ -96,7 +110,6 @@ namespace Forms.ViewModels.AdministativeStaff
                 return;
             }
 
-            // Use Task.Run to avoid UI thread blocking
             Task.Run(async () =>
             {
                 try
@@ -125,7 +138,7 @@ namespace Forms.ViewModels.AdministativeStaff
             });
         }
 
-     [RelayCommand]
+        [RelayCommand]
         private async Task LoadBlocks(int areaId)
         {
             try
@@ -201,6 +214,7 @@ namespace Forms.ViewModels.AdministativeStaff
                 IsLoading = true;
                 var areas = await _generalInfoService.GetAllAreasAsync();
                 Areas = new ObservableCollection<AreaResponseDTO>(areas);
+                UpdateAreaChart();
             }
             catch (BusinessException ex)
             {
@@ -229,6 +243,7 @@ namespace Forms.ViewModels.AdministativeStaff
                 {
                     await LoadFloorsForBlock(SelectedBlock.BlockId);
                 }
+                UpdateAreaChart();
             }
             catch (Exception ex)
             {
@@ -399,6 +414,49 @@ namespace Forms.ViewModels.AdministativeStaff
             {
                 IsLoading = false;
             }
+        }
+
+
+        private void InitializeCharts()
+        {
+            AreaPieModel = new PlotModel {};
+            AreaPieModel.Series.Add(new PieSeries());
+        }
+
+        private void UpdateAreaChart()
+        {
+            var pieSeries = new PieSeries
+            {
+                InsideLabelFormat = "{1:P1}", 
+                OutsideLabelFormat = "{0}: {2}", 
+                StrokeThickness = 1,
+                AngleSpan = 360,
+                StartAngle = 0
+            };
+
+            var colors = new[] 
+            { 
+                OxyColor.Parse("#2196F3"),
+                OxyColor.Parse("#4CAF50"), 
+                OxyColor.Parse("#FFC107"), 
+                OxyColor.Parse("#9C27B0") 
+            };
+
+            int colorIndex = 0;
+            foreach (var area in Areas)
+            {
+                pieSeries.Slices.Add(new PieSlice(
+                    area.AreaName,
+                    area.BlockCount)
+                {
+                    Fill = colors[colorIndex % colors.Length]
+                });
+                colorIndex++;
+            }
+
+            AreaPieModel.Series.Clear();
+            AreaPieModel.Series.Add(pieSeries);
+            AreaPieModel.InvalidatePlot(true);
         }
 
     }
