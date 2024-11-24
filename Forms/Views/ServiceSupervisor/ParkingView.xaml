@@ -79,7 +79,7 @@
         <StackPanel Margin="0,60,16,16" Grid.Column="1">
             <materialDesign:Card Margin="16" UniformCornerRadius="20">
                 <StackPanel Margin="16">
-                    <TextBlock Text="Thông tin xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                    <TextBlock Text="Thông tin tổng quan" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
                     <TextBox materialDesign:HintAssist.Hint="Căn hộ" 
                          Text="{Binding SelectedApartmentCode}"
                          IsEnabled="False"
@@ -94,11 +94,15 @@
                          IsEnabled="{Binding IsLicensePlateEnabled}"
                          Margin="0,0,0,16"/>
 
+                    <TextBox materialDesign:HintAssist.Hint="Tên chủ xe"
+                         Text="{Binding SelectedVehicleOwner}"
+                         Margin="0,0,0,16"/>
+
                     <ComboBox materialDesign:HintAssist.Hint="Trạng thái"
                         ItemsSource="{Binding VehicleStatuses}"
                         SelectedItem="{Binding SelectedVehicleStatus}"
                         Margin="0,0,0,16"/>
-                  
+
                     <Button Content="Sửa thông tin" 
                         Style="{StaticResource MaterialDesignRaisedButton}"
                         Command="{Binding EditVehicleCommand}"/>
@@ -106,10 +110,10 @@
             </materialDesign:Card>
 
             <!-- Tìm kiếm xe -->
-            <materialDesign:Card Margin="16" UniformCornerRadius="20">
+            <materialDesign:Card Margin="16" UniformCornerRadius="20" Height="147">
                 <StackPanel Margin="16">
                     <TextBlock Text="Tìm kiếm xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Nhập biển số xe"
+                    <TextBox materialDesign:HintAssist.Hint="Nhập biển số hoặc tên chủ xe"
                          Text="{Binding SearchText}"
                          Margin="0,0,0,16"/>
                     <Button Content="Tìm kiếm" 
@@ -117,16 +121,16 @@
                         Command="{Binding SearchVehiclesCommand}"/>
                 </StackPanel>
             </materialDesign:Card>
-
-            <!-- Thống kê -->
-            <materialDesign:Card Margin="16" UniformCornerRadius="20">
+            <materialDesign:Card UniformCornerRadius="20" Height="148" Width="278">
                 <StackPanel Margin="16">
                     <TextBlock Text="Thống kê" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBlock Text="{Binding BicycleCount, StringFormat='Số lượng xe đạp: {0}'}" FontSize="14" Margin="0,0,0,16"/>
-                    <TextBlock Text="{Binding MotorcycleCount, StringFormat='Số lượng xe máy: {0}'}" FontSize="14" Margin="0,0,0,16"/>
-                    <TextBlock Text="{Binding CarCount, StringFormat='Số lượng ô tô: {0}'}" FontSize="14" Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding BicycleCount, StringFormat=Số lượng xe đạp: \{0\}}" FontSize="12" Margin="0,0,0,12"/>
+                    <TextBlock Text="{Binding MotorcycleCount, StringFormat=Số lượng xe máy: \{0\}}" FontSize="12" Margin="0,0,0,12"/>
+                    <TextBlock Text="{Binding CarCount, StringFormat=Số lượng ô tô: \{0\}}" FontSize="12" Margin="0,0,0,12"/>
                 </StackPanel>
             </materialDesign:Card>
+
+            <!-- Thống kê -->
         </StackPanel>
         <materialDesign:Card 
             Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
