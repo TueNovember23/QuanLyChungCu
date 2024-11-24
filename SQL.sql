@@ -251,6 +251,9 @@ CREATE TABLE Regulation (
     RegulationId int IDENTITY(1, 1) PRIMARY KEY,
     Title nvarchar(100) NOT NULL,
     Content nvarchar(255) NOT NULL,
+    Category nvarchar(20),
+    Priority nvarchar(20),
+    IsActive bit,
     CreatedDate date DEFAULT GETDATE() NOT NULL
 )
 
