@@ -13,6 +13,12 @@ namespace Forms.ViewModels.AdministrativeStaff
         [ObservableProperty]
         private ObservableCollection<ResponseApartmentDTO> apartments = [];
 
+        [ObservableProperty]
+        private ObservableCollection<ResponseApartmentDTO> filteredApartments = [];
+
+        [ObservableProperty]
+        private string searchText = "";
+
         public ApartmentViewModel(IApartmentService apartmentService)
         {
             _apartmentService = apartmentService;
@@ -22,8 +28,32 @@ namespace Forms.ViewModels.AdministrativeStaff
         private async Task LoadApartmentsAsync()
         {
             var apartmentList = await _apartmentService.GetAll();
-            Apartments = new ObservableCollection<ResponseApartmentDTO>(apartmentList);
+            FilteredApartments = Apartments = new ObservableCollection<ResponseApartmentDTO>(apartmentList);
         }
+
+        [RelayCommand]
+        private void Refresh()
+        {
+            // Xóa nội dung tìm kiếm
+            SearchText = string.Empty;
+            // Trả lại danh sách căn hộ ban đầu
+            FilteredApartments = new ObservableCollection<ResponseApartmentDTO>(Apartments);
+        }
+
+        [RelayCommand]
+        private async Task Search()
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                FilteredApartments = new ObservableCollection<ResponseApartmentDTO>(Apartments);
+            }
+            else
+            {
+                var result = await _apartmentService.Search(SearchText);
+                FilteredApartments = new ObservableCollection<ResponseApartmentDTO>(result);
+            }
+        }
+
 
         [RelayCommand]
         private void ViewResidents(int apartmentId)
@@ -35,6 +65,12 @@ namespace Forms.ViewModels.AdministrativeStaff
         private void EditApartment(int apartmentId)
         {
             
+        }
+
+        [RelayCommand]
+        private void ViewResentativeCommand(int apartmentId)
+        {
+
         }
     }
 }
