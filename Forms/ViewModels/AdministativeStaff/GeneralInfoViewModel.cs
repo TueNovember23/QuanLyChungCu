@@ -18,7 +18,7 @@ using OxyPlot.Axes;
 
 namespace Forms.ViewModels.AdministativeStaff
 {
-   public partial class GeneralInfoViewModel : ObservableObject
+    public partial class GeneralInfoViewModel : ObservableObject
     {
         private readonly IGeneralInfoService _generalInfoService;
         private DispatcherTimer? _searchTimer;
@@ -75,11 +75,10 @@ namespace Forms.ViewModels.AdministativeStaff
             Blocks = new ObservableCollection<BlockResponseDTO>();
             Floors = new ObservableCollection<FloorResponseDTO>();
 
-            InitializeCharts();
             Task.Run(LoadAreas);
         }
 
-        // Trong ViewModel
+
         private async Task LoadInitialData()
         {
             try
@@ -101,7 +100,7 @@ namespace Forms.ViewModels.AdministativeStaff
                 IsLoading = false;
             }
         }
-        
+
         partial void OnSelectedAreaChanged(AreaResponseDTO? value)
         {
             if (value == null)
@@ -116,7 +115,7 @@ namespace Forms.ViewModels.AdministativeStaff
                 {
                     await Application.Current.Dispatcher.InvokeAsync(() => IsLoading = true);
                     var blocks = await _generalInfoService.GetBlocksByAreaAsync(value.AreaId);
-                    
+
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         Blocks = new ObservableCollection<BlockResponseDTO>(blocks);
@@ -145,7 +144,7 @@ namespace Forms.ViewModels.AdministativeStaff
             {
                 IsLoading = true;
                 var blocks = await _generalInfoService.GetBlocksByAreaAsync(areaId);
-                
+
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Blocks = new ObservableCollection<BlockResponseDTO>(blocks);
@@ -173,7 +172,7 @@ namespace Forms.ViewModels.AdministativeStaff
             {
                 IsLoading = true;
                 var results = await _generalInfoService.SearchBlocksAsync(SelectedArea.AreaId, SearchBlockText);
-                
+
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Blocks = new ObservableCollection<BlockResponseDTO>(results);
@@ -196,7 +195,7 @@ namespace Forms.ViewModels.AdministativeStaff
         partial void OnSearchBlockTextChanged(string value)
         {
             _searchBlockTimer?.Stop();
-            
+
             _searchBlockTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _searchBlockTimer.Tick += async (s, e) =>
             {
@@ -214,7 +213,6 @@ namespace Forms.ViewModels.AdministativeStaff
                 IsLoading = true;
                 var areas = await _generalInfoService.GetAllAreasAsync();
                 Areas = new ObservableCollection<AreaResponseDTO>(areas);
-                UpdateAreaChart();
             }
             catch (BusinessException ex)
             {
@@ -229,21 +227,20 @@ namespace Forms.ViewModels.AdministativeStaff
         [RelayCommand]
         private async Task RefreshData()
         {
-            try 
+            try
             {
                 IsLoading = true;
                 await LoadAreas();
-                
+
                 if (SelectedArea != null)
                 {
                     await LoadBlocks(SelectedArea.AreaId);
                 }
-                
+
                 if (SelectedBlock != null)
                 {
                     await LoadFloorsForBlock(SelectedBlock.BlockId);
                 }
-                UpdateAreaChart();
             }
             catch (Exception ex)
             {
@@ -265,7 +262,7 @@ namespace Forms.ViewModels.AdministativeStaff
                 await LoadAreas();
                 return;
             }
-            
+
             try
             {
                 IsLoading = true;
@@ -291,17 +288,17 @@ namespace Forms.ViewModels.AdministativeStaff
                 _searchTimer.Stop();
             }
 
-            _searchTimer = new DispatcherTimer 
-            { 
-                Interval = TimeSpan.FromMilliseconds(300) 
+            _searchTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(300)
             };
-            
+
             _searchTimer.Tick += async (s, e) =>
             {
                 _searchTimer.Stop();
                 await SearchArea();
             };
-            
+
             _searchTimer.Start();
         }
 
@@ -315,13 +312,13 @@ namespace Forms.ViewModels.AdministativeStaff
                 return;
             }
 
-            Task.Run(async () => 
+            Task.Run(async () =>
             {
                 try
                 {
                     await Application.Current.Dispatcher.InvokeAsync(() => IsLoading = true);
                     var floors = await _generalInfoService.GetFloorsByBlockAsync(value.BlockId);
-                    await Application.Current.Dispatcher.InvokeAsync(() => 
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         Floors = new ObservableCollection<FloorResponseDTO>(floors);
                         IsLoading = false;
@@ -330,7 +327,7 @@ namespace Forms.ViewModels.AdministativeStaff
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error loading floors: {ex.Message}");
-                    await Application.Current.Dispatcher.InvokeAsync(() => 
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         MessageBox.Show("Error loading floors. Please try again.");
                         IsLoading = false;
@@ -382,7 +379,7 @@ namespace Forms.ViewModels.AdministativeStaff
             _searchFloorTimer.Start();
         }
 
-        
+
         private async Task SearchFloor()
         {
             if (SelectedBlock == null) return;
@@ -391,9 +388,9 @@ namespace Forms.ViewModels.AdministativeStaff
             {
                 IsLoading = true;
                 var results = await _generalInfoService.SearchFloorsAsync(
-                    SelectedBlock.BlockId, 
+                    SelectedBlock.BlockId,
                     SearchFloorText);
-                
+
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Floors = new ObservableCollection<FloorResponseDTO>(results);
@@ -415,49 +412,5 @@ namespace Forms.ViewModels.AdministativeStaff
                 IsLoading = false;
             }
         }
-
-
-        private void InitializeCharts()
-        {
-            AreaPieModel = new PlotModel {};
-            AreaPieModel.Series.Add(new PieSeries());
-        }
-
-        private void UpdateAreaChart()
-        {
-            var pieSeries = new PieSeries
-            {
-                InsideLabelFormat = "{1:P1}", 
-                OutsideLabelFormat = "{0}: {2}", 
-                StrokeThickness = 1,
-                AngleSpan = 360,
-                StartAngle = 0
-            };
-
-            var colors = new[] 
-            { 
-                OxyColor.Parse("#2196F3"),
-                OxyColor.Parse("#4CAF50"), 
-                OxyColor.Parse("#FFC107"), 
-                OxyColor.Parse("#9C27B0") 
-            };
-
-            int colorIndex = 0;
-            foreach (var area in Areas)
-            {
-                pieSeries.Slices.Add(new PieSlice(
-                    area.AreaName,
-                    area.BlockCount)
-                {
-                    Fill = colors[colorIndex % colors.Length]
-                });
-                colorIndex++;
-            }
-
-            AreaPieModel.Series.Clear();
-            AreaPieModel.Series.Add(pieSeries);
-            AreaPieModel.InvalidatePlot(true);
-        }
-
     }
 }

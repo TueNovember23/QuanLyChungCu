@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Folder Include="ViewModels\Accountant\" />
-    <Folder Include="Views\Accountant\" />
   </ItemGroup>
 
   <ItemGroup>
