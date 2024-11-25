@@ -17,6 +17,8 @@ public partial class Resident
 
     public DateOnly? MoveInDate { get; set; }
 
+    public DateOnly? MoveOutDate { get; set; }
+
     public int ApartmentId { get; set; }
 
     public virtual Apartment Apartment { get; set; } = null!;
