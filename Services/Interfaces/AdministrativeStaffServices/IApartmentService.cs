@@ -1,4 +1,5 @@
-﻿using Services.DTOs.ApartmentDTO;
+﻿using Repositories.Repositories.Entities;
+using Services.DTOs.ApartmentDTO;
 
 namespace Services.Interfaces.AdministrativeStaffServices
 {
@@ -6,5 +7,6 @@ namespace Services.Interfaces.AdministrativeStaffServices
     {
         public Task<List<ResponseApartmentDTO>> GetAll();
         public Task<List<ResponseApartmentDTO>> Search(string searchText);
+        public Task<Apartment?> GetApartmentByCode(string code);
     }
 }

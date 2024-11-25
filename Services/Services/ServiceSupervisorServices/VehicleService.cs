@@ -99,8 +99,8 @@ namespace Services.Services.ServiceSupervisorServices
 
         public async Task<List<ApartmentDTO>> GetAllApartmentsAsync()
         {
-            var apartments = await _unitOfWork.GetRepository<Apartment>()
-                .FindListAsync(a => !a.IsDeleted);
+            var apartments = await _unitOfWork.GetRepository<Apartment>().Entities
+                .ToListAsync();
 
             return apartments
                 .Where(a => a.ApartmentCode != null)

@@ -7,7 +7,7 @@ using AutoMapper;
 
 namespace Services.Services.AdministrativeStaffServices
 {
-    public class ApartmentService(IUnitOfWork unitOfWork, IMapper mapper) : IApartmentService
+    public class ApartmentService(IUnitOfWork unitOfWork) : IApartmentService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         public async Task<List<ResponseApartmentDTO>> GetAll()
@@ -57,5 +57,12 @@ namespace Services.Services.AdministrativeStaffServices
             return response;
         }
 
+        public async Task<Apartment?> GetApartmentByCode(string code)
+        {
+            return await _unitOfWork.GetRepository<Apartment>().Entities
+                .Include(apartment => apartment.Floor.Block)
+                .Include(apartment => apartment.Representatives)
+                .FirstOrDefaultAsync(apartment => apartment.ApartmentCode == code);
+        }
     }
 }

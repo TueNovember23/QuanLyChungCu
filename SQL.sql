@@ -123,6 +123,7 @@ create table Resident (
     DateOfBirth date,
     RelationShipWithOwner nvarchar(50),
     MoveInDate date,
+    MoveOutDate date,
     ApartmentID int not null,
     constraint FK_Resident_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
 )

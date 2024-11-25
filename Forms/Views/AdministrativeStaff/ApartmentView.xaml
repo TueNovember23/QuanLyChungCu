@@ -53,7 +53,10 @@
                 <DataGridTemplateColumn Header="Danh sách cư dân" Width="auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Xem danh sách" Width="auto" Height="30" Command="{Binding DataContext.ViewResidentsCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentId}" />
+                            <Button Content="Xem danh sách" Width="auto" Height="30" 
+                                    Command="{Binding DataContext.ViewResidentsCommand,
+                                                RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                    CommandParameter="{Binding ApartmentCode}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -61,7 +64,7 @@
                 <DataGridTemplateColumn Header="Người đại diện" Width="auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Thông tin" Width="auto" Height="30" Command="{Binding DataContext.ViewResentativeCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentId}" />
+                            <Button Content="Thông tin" Width="auto" Height="30" Command="{Binding DataContext.ViewResentativeCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentCode}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -70,7 +73,7 @@
                 <DataGridTemplateColumn Header="Sửa thông tin" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Chỉnh sửa" Width="auto" Height="30" Command="{Binding DataContext.EditApartmentCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentId}" />
+                            <Button Content="Chỉnh sửa" Width="auto" Height="30" Command="{Binding DataContext.EditApartmentCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentCode}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
