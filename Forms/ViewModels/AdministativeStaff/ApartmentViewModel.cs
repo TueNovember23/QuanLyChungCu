@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Forms.Views.AdministrativeStaff;
 using Services.DTOs.ApartmentDTO;
-using Services.Interfaces.AccountantServices;
+using Services.Interfaces.AdministrativeStaffServices;
 using System.Collections.ObjectModel;
 
 namespace Forms.ViewModels.AdministrativeStaff
@@ -13,6 +14,12 @@ namespace Forms.ViewModels.AdministrativeStaff
         [ObservableProperty]
         private ObservableCollection<ResponseApartmentDTO> apartments = [];
 
+        [ObservableProperty]
+        private ObservableCollection<ResponseApartmentDTO> filteredApartments = [];
+
+        [ObservableProperty]
+        private string searchText = "";
+
         public ApartmentViewModel(IApartmentService apartmentService)
         {
             _apartmentService = apartmentService;
@@ -22,19 +29,52 @@ namespace Forms.ViewModels.AdministrativeStaff
         private async Task LoadApartmentsAsync()
         {
             var apartmentList = await _apartmentService.GetAll();
-            Apartments = new ObservableCollection<ResponseApartmentDTO>(apartmentList);
+            FilteredApartments = Apartments = new ObservableCollection<ResponseApartmentDTO>(apartmentList);
         }
 
         [RelayCommand]
-        private void ViewResidents(int apartmentId)
+        private void Refresh()
         {
-            
+            // Xóa nội dung tìm kiếm
+            SearchText = string.Empty;
+            // Trả lại danh sách căn hộ ban đầu
+            FilteredApartments = new ObservableCollection<ResponseApartmentDTO>(Apartments);
         }
+
+        [RelayCommand]
+        private async Task Search()
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                FilteredApartments = new ObservableCollection<ResponseApartmentDTO>(Apartments);
+            }
+            else
+            {
+                var result = await _apartmentService.Search(SearchText);
+                FilteredApartments = new ObservableCollection<ResponseApartmentDTO>(result);
+            }
+        }
+
+
+        [RelayCommand]
+        private void ViewResidents(string apartmentCode)
+        {
+            var residentsView = new ResidentsOfApartmentView(_apartmentService, apartmentCode);
+            residentsView.ShowDialog();
+        }
+
 
         [RelayCommand]
         private void EditApartment(int apartmentId)
         {
-            
+            System.Diagnostics.Debug.WriteLine($"EditApartment called for ApartmentId: {apartmentId}");
         }
+
+        [RelayCommand]
+        private void ViewResentativeCommand(int apartmentId)
+        {
+            System.Diagnostics.Debug.WriteLine($"ViewResentativeCommand called for ApartmentId: {apartmentId}");
+        }
+
     }
 }
