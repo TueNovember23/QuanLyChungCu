@@ -1,5 +1,8 @@
 ﻿using Core;
+using Forms.Views.ServiceSupervisor;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
+using Services.Interfaces.ServiceSupervisorServices;
 using System.Configuration;
 using System.Data;
 using System.Windows;
@@ -18,7 +21,8 @@ namespace Forms
         {
             ConfigureServices();
             InitializeComponent();
-            this.DispatcherUnhandledException += OnDispatcherUnhandledException;
+            RegisterCommunityRoomView f = new(App.ServiceProvider.GetService<ICommunityRoomService>());
+            //this.DispatcherUnhandledException += OnDispatcherUnhandledException;
         }
 
         private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)

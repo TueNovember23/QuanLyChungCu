@@ -13,6 +13,9 @@ using Services.Services.ServiceSupervisorServices;
 using Services.Services.SharedServices;
 using Services.Services.AdministrativeStaffServices;
 using Services.Interfaces.AdministrativeStaffServices;
+using Services.Interfaces.AccountantServices;
+using Services.Services.AccountantServices;
+using Forms.ViewModels.Accountant;
 
 
 namespace Forms
@@ -34,6 +37,7 @@ namespace Forms
             services.AddScoped<ApartmentViewModel>();
             services.AddScoped<ParkingViewModel>();
             services.AddScoped<RegisterParkingViewModel>();
+            services.AddScoped<RepairInvoiceViewModel>();
         }
 
         public static void AddServices(IServiceCollection services)
@@ -41,8 +45,8 @@ namespace Forms
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IApartmentService, ApartmentService>();
             services.AddScoped<IVehicleService, VehicleService>();
-
-
+            services.AddScoped<ICommunityRoomService, CommunityRoomService>();
+            services.AddScoped<IRepairInvoiceService, RepairInvoiceService>();
         }
 
         public static void AddRepositories(IServiceCollection services)
