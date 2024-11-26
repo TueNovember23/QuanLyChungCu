@@ -21,6 +21,8 @@ namespace Services.DTOs.ResidentDTO
 
         public DateOnly? MoveInDate { get; set; }
 
+        public DateOnly? MoveOutDate { get; set; }
+
         public string Apartment { get; set; } = "";
     }
 }

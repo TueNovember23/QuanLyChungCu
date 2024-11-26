@@ -4,6 +4,8 @@ using Repositories.Interfaces;
 using Services.DTOs.ApartmentDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using AutoMapper;
+using Core;
+using Services.DTOs.ResidentDTO;
 
 namespace Services.Services.AdministrativeStaffServices
 {
@@ -62,7 +64,12 @@ namespace Services.Services.AdministrativeStaffServices
             return await _unitOfWork.GetRepository<Apartment>().Entities
                 .Include(apartment => apartment.Floor.Block)
                 .Include(apartment => apartment.Representatives)
-                .FirstOrDefaultAsync(apartment => apartment.ApartmentCode == code);
+                .FirstOrDefaultAsync(apartment => apartment.ApartmentCode == code) ?? throw new BusinessException($"Căn hộ {code} không tồn tại.");
+        }
+
+        public void RegisterResident(CreateResidentDTO resident)
+        {
+
         }
     }
 }
