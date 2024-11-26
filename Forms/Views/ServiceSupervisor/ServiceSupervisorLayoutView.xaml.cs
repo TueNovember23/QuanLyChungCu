@@ -29,6 +29,12 @@ namespace Forms.Views.ServiceSupervisor
             LoadUserControl(new RegisterParkingView());
         }
 
+        private void EquipmentViewButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            LoadUserControl(new EquipmentView());
+        }
+
         private void LoadUserControl(UserControl userControl)
         {
             RenderPages.Children.Clear();

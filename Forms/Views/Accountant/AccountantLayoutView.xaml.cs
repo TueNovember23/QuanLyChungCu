@@ -31,13 +31,18 @@ namespace Forms.Views.Accountant
             LoadUserControl(new ViolationView());
         }
 
-        private void ParkingViewButton_Click(object sender, RoutedEventArgs e)
+        private void ViolationViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new ViolationView());
+        }
+
+        private void PaymentViewButton_Click(object sender, RoutedEventArgs e)
         {
 
             LoadUserControl(new PaymentView());
         }
 
-        private void RegisterParkingViewButton_Click(object sender, RoutedEventArgs e)
+        private void InvoiceViewButton_Click(object sender, RoutedEventArgs e)
         {
             LoadUserControl(new InvoiceView());
         }
