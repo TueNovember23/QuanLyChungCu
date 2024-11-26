@@ -33,6 +33,11 @@ namespace Forms.Views.AdministrativeStaff
             //LoadUserControl(new ApartmentView());
         }
 
+        private void DepartmentViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new DepartmentView());
+        }
+
         private void RegulationViewButton_Click(object sender, RoutedEventArgs e)
         {
             LoadUserControl(new RegulationView());

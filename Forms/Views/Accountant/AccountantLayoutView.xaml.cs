@@ -1,38 +1,50 @@
-﻿using System;
+﻿using Forms.Views.ServiceSupervisor;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
-namespace Forms.Views.ServiceSupervisor
+namespace Forms.Views.Accountant
 {
-    public partial class ServiceSupervisorLayoutView : Window
+    /// <summary>
+    /// Interaction logic for AccountantLayoutView.xaml
+    /// </summary>
+    public partial class AccountantLayoutView : Window
     {
-        public ServiceSupervisorLayoutView()
+        public AccountantLayoutView()
         {
             InitializeComponent();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadUserControl(new ParkingView());
+            LoadUserControl(new ViolationView());
         }
 
-        private void ParkingViewButton_Click(object sender, RoutedEventArgs e)
+        private void ViolationViewButton_Click(object sender, RoutedEventArgs e)
         {
-            
-            LoadUserControl(new ParkingView());
+            LoadUserControl(new ViolationView());
         }
 
-        private void RegisterParkingViewButton_Click(object sender, RoutedEventArgs e)
+        private void PaymentViewButton_Click(object sender, RoutedEventArgs e)
         {
-            LoadUserControl(new RegisterParkingView());
+
+            LoadUserControl(new PaymentView());
         }
 
-        private void EquipmentViewButton_Click(object sender, RoutedEventArgs e)
+        private void InvoiceViewButton_Click(object sender, RoutedEventArgs e)
         {
-
-            LoadUserControl(new EquipmentView());
+            LoadUserControl(new InvoiceView());
         }
 
         private void LoadUserControl(UserControl userControl)

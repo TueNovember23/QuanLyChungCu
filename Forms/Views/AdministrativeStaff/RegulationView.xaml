@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1100">
 
-    <Grid HorizontalAlignment="Left" Width="1100">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
