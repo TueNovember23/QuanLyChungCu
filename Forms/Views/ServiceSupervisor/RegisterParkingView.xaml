@@ -25,7 +25,7 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <Grid HorizontalAlignment="Left" Width="1100">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
