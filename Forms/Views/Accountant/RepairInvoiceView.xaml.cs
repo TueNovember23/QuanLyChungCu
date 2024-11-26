@@ -1,4 +1,5 @@
 ﻿using Forms.ViewModels.Accountant;
+using Forms.ViewModels.AdministrativeStaff;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -22,10 +23,11 @@ namespace Forms.Views.Accountant
     /// </summary>
     public partial class RepairInvoiceView : UserControl
     {
+        // Parameterless constructor
         public RepairInvoiceView()
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider?.GetService<RepairInvoiceViewModel>();
+            DataContext = App.ServiceProvider?.GetService<RepairInvoiceViewModel>()!;
         }
     }
 }
