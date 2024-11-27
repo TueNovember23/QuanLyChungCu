@@ -73,24 +73,24 @@
             </materialDesign:Card>
 
             <!-- Thông tin xe và chủ xe -->
-            <materialDesign:Card Grid.Column="1" Margin="11,16,12,0" UniformCornerRadius="20" Height="350" VerticalAlignment="Top">
+            <materialDesign:Card Grid.Column="1" Margin="11,0,12,0" UniformCornerRadius="20" Height="750" VerticalAlignment="Center">
                 <StackPanel Margin="16">
                     <TextBlock Text="Thông tin xe và chủ xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
                     <!-- Thông tin căn hộ -->
 
                     <TextBox materialDesign:HintAssist.Hint="Mã căn hộ" 
-                 Margin="0,0,0,20" 
+                 Margin="0,0,0,25" 
                  Text="{Binding SelectedApartmentCode}"
                  IsReadOnly="True"/>
 
                     <!-- Thông tin xe -->
                     <ComboBox materialDesign:HintAssist.Hint="Loại xe *" 
-                Margin="0,0,0,20" 
+                Margin="0,0,0,25" 
                 ItemsSource="{Binding VehicleTypes}" 
                 SelectedItem="{Binding SelectedVehicleType}"/>
                     <TextBox materialDesign:HintAssist.Hint="Biển số xe *" 
-                 Margin="0,0,0,20" 
+                 Margin="0,0,0,25" 
                  Text="{Binding VehicleNumber}"
                  IsEnabled="{Binding IsLicensePlateRequired}"/>
 
@@ -98,33 +98,14 @@
                     <!-- Thông tin chủ xe -->
 
                     <TextBox materialDesign:HintAssist.Hint="Tên chủ xe *" 
-                 Margin="0,0,0,16" 
+                 Margin="0,0,0,25" 
                  Text="{Binding VehicleOwner}"/>
 
                     <!-- Nút đăng ký -->
                     <Button Content="Đăng ký thông tin xe" 
                 Style="{StaticResource MaterialDesignRaisedButton}" 
                 Command="{Binding RegisterCommand}"
-                Margin="0,20,0,0"/>
-                </StackPanel>
-            </materialDesign:Card>
-
-            <materialDesign:Card Grid.Column="1" Margin="11,404,12,16" UniformCornerRadius="20">
-                <StackPanel Margin="16,16,16,0" Height="318" VerticalAlignment="Top">
-                    <TextBlock Text="Lọc thông tin" 
-                            FontSize="18" 
-                            FontWeight="SemiBold" 
-                            Margin="0,0,0,20"/>
-
-                    <ComboBox materialDesign:HintAssist.Hint="Lọc theo tầng" 
-                            Margin="0,0,0,20" 
-                            ItemsSource="{Binding FilterFloors}" 
-                            SelectedItem="{Binding Path=SelectedFloors, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <ComboBox materialDesign:HintAssist.Hint="Lọc theo căn hộ" 
-                            Margin="0,0,0,20" 
-                            ItemsSource="{Binding FilterApartments}" 
-                            SelectedItem="{Binding Path=SelectedApartments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Margin="0,25,0,0" Height="46"/>
                 </StackPanel>
             </materialDesign:Card>
         </Grid>

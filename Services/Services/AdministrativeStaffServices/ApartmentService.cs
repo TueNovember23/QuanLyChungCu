@@ -12,6 +12,12 @@ namespace Services.Services.AdministrativeStaffServices
     public class ApartmentService(IUnitOfWork unitOfWork) : IApartmentService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+
+        //public ApartmentService(IUnitOfWork unitOfWork)
+        //{
+        //    _unitOfWork = unitOfWork;
+        //}
+
         public async Task<List<ResponseApartmentDTO>> GetAll()
         {
             List<ResponseApartmentDTO> apartments = await _unitOfWork.GetRepository<Apartment>().Entities
@@ -88,6 +94,38 @@ namespace Services.Services.AdministrativeStaffServices
         public void RegisterResident(CreateResidentDTO resident)
         {
 
+        }
+
+        public async Task<List<ResponseApartmentDTO>> GetAllApartmentForViolation()
+        {
+            try
+            {
+                var repository = _unitOfWork.GetRepository<Apartment>();
+                // Use ToListAsync() first to materialize the data before projecting
+                var apartments = await repository.Entities
+                    .AsNoTracking()
+                    .Include(a => a.Floor)
+                        .ThenInclude(f => f.Block)
+                    .ToListAsync();
+
+                // Then perform the projection on the materialized data
+                var result = apartments.Select(apartment => new ResponseApartmentDTO
+                {
+                    ApartmentId = apartment.ApartmentId,
+                    ApartmentCode = apartment.ApartmentCode!,
+                    Area = apartment.Area,
+                    NumberOfPeople = apartment.NumberOfPeople,
+                    Block = apartment.Floor.Block.BlockCode,
+                    Floor = apartment.Floor.FloorNumber,
+                    Status = apartment.Status
+                }).ToList();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Error getting apartments: {ex.Message}");
+            }
         }
     }
 }

@@ -43,14 +43,17 @@
                                 </TextBox.InputBindings>
                             </TextBox>
 
-                            <!-- Filter Button -->
+                            <!-- Refresh Button -->
                             <Button Grid.Column="1" Margin="8,0,0,0"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Command="{Binding ShowFiltersCommand}">
-                                <materialDesign:PackIcon Kind="Filter"/>
+                                 Style="{StaticResource MaterialDesignIconButton}"
+                                 Command="{Binding LoadRegulationsCommand}"
+                                 ToolTip="Làm mới danh sách">
+                                <materialDesign:PackIcon Kind="Refresh"/>
                             </Button>
                         </Grid>
                     </StackPanel>
+
+                   
 
                     <!-- Violations List -->
                     <ListView ItemsSource="{Binding Violations}"

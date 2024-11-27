@@ -13,13 +13,15 @@ namespace Services.MapperProfile
     {
         public RegulationProfile()
         {
-            CreateMap<Regulation, RegulationDTO>()
+            CreateMap<Regulation, RegulationResponseDTO>()
                 .ForMember(dest => dest.CreatedDate,
-                          opt => opt.MapFrom(src => src.CreatedDate.ToDateTime(TimeOnly.MinValue)));
+                        opt => opt.MapFrom(src => src.CreatedDate.ToDateTime(TimeOnly.MinValue)));
 
-            CreateMap<RegulationDTO, Regulation>()
+            CreateMap<CreateRegulationDTO, Regulation>();
+
+            CreateMap<RegulationResponseDTO, Regulation>()
                 .ForMember(dest => dest.CreatedDate,
-                          opt => opt.MapFrom(src => DateOnly.FromDateTime(src.CreatedDate)));
+                        opt => opt.MapFrom(src => DateOnly.FromDateTime(src.CreatedDate)));
         }
     }
 }
