@@ -11,25 +11,12 @@ using System.Threading;
 
 namespace Forms.ViewModels.ServiceSupervisor
 {
-    public partial class ParkingViewModel : ObservableObject, IDisposable
+    public partial class ParkingViewModel : ObservableObject
     {
-        private readonly IVehicleService _vehicleService;
-        private CancellationTokenSource? _cts;
+        private readonly IParkingService _parkingService;
 
         [ObservableProperty]
         private ObservableCollection<VehicleResponseDTO> _vehicles = new();
-
-        [ObservableProperty]
-        private VehicleResponseDTO? _selectedVehicle;
-
-        [ObservableProperty]
-        private ObservableCollection<string> _vehicleTypes = new() { "Xe đạp", "Xe máy", "Ô tô", "Xe máy điện", "Ô tô điện" };
-
-        [ObservableProperty]
-        private string _selectedVehicleType = string.Empty;
-
-        [ObservableProperty]
-        private string _searchText = string.Empty;
 
         [ObservableProperty]
         private int _bicycleCount;
@@ -39,27 +26,56 @@ namespace Forms.ViewModels.ServiceSupervisor
         private int _carCount;
 
         [ObservableProperty]
-        private bool _isLicensePlateRequired = true;
+        private VehicleResponseDTO? _selectedVehicle;
 
         [ObservableProperty]
-        private bool _isLoading = false;
+        private string _selectedApartmentCode = string.Empty;
 
-        public ICommand SearchCommand { get; }
-        public ICommand DeleteCommand { get; }
+        [ObservableProperty]
+        private string _selectedVehicleType = string.Empty;
 
-        public ParkingViewModel(IVehicleService vehicleService)
+        [ObservableProperty]
+        private string _selectedVehicleNumber = string.Empty;
+
+        [ObservableProperty]
+        private string _selectedVehicleOwner = string.Empty;
+
+        [ObservableProperty]
+        private string _selectedVehicleStatus = string.Empty;
+
+        [ObservableProperty]
+        private ObservableCollection<string> _vehicleStatuses = new() { "Đang gửi", "Huỷ gửi" };
+
+        [ObservableProperty]
+        private bool _isLicensePlateEnabled = true;
+
+        [ObservableProperty]
+        private ObservableCollection<string> _vehicleTypes = new()
+    { "Xe đạp", "Xe máy", "Xe máy điện", "Ô tô", "Ô tô điện" };
+
+        [ObservableProperty]
+        private bool _isLoading;
+
+        [ObservableProperty]
+        private string _searchText = string.Empty;
+
+        public ParkingViewModel(IParkingService parkingService)
         {
-            _vehicleService = vehicleService ?? throw new ArgumentNullException(nameof(vehicleService));
-            
-            _vehicles = new ObservableCollection<VehicleResponseDTO>();
-            _vehicleTypes = new ObservableCollection<string> { "Xe đạp", "Xe máy", "Ô tô", "Xe máy điện", "Ô tô điện" };
-            _selectedVehicleType = string.Empty;
-            _searchText = string.Empty;
-
-            SearchCommand = new RelayCommand(async () => await SearchVehiclesAsync());
-            DeleteCommand = new RelayCommand<VehicleResponseDTO?>(async vehicle => await DeleteVehicleAsync(vehicle));
-
+            _parkingService = parkingService;
             _ = LoadVehiclesAsync();
+        }
+
+        partial void OnSelectedVehicleChanged(VehicleResponseDTO? value)
+        {
+            if (value != null)
+            {
+                SelectedApartmentCode = value.ApartmentCode;
+                SelectedVehicleType = value.VehicleType;
+                SelectedVehicleNumber = value.VehicleNumber?.Trim();
+                SelectedVehicleOwner = value.VehicleOwner;
+                SelectedVehicleStatus = value.Status;
+                IsLicensePlateEnabled = value.VehicleType != "Xe đạp";
+            }
         }
 
         [RelayCommand]
@@ -68,20 +84,9 @@ namespace Forms.ViewModels.ServiceSupervisor
             try
             {
                 IsLoading = true;
-                _cts?.Cancel();
-                _cts = new CancellationTokenSource();
-
-                var vehicles = await _vehicleService.GetAllVehiclesAsync();
-                
-                await Application.Current.Dispatcher.InvokeAsync(() =>
-                {
-                    Vehicles.Clear();
-                    foreach (var vehicle in vehicles)
-                    {
-                        Vehicles.Add(vehicle);
-                    }
-                    UpdateVehicleCounts();
-                });
+                var vehicles = await _parkingService.GetAllVehiclesAsync();
+                var statistics = await _parkingService.GetVehicleStatisticsAsync();
+                await UpdateUI(vehicles, statistics);
             }
             catch (Exception ex)
             {
@@ -97,25 +102,23 @@ namespace Forms.ViewModels.ServiceSupervisor
         [RelayCommand]
         private async Task SearchVehiclesAsync()
         {
-            if (IsLoading) return;
-
             try
             {
                 IsLoading = true;
+                var vehicles = await _parkingService.GetAllVehiclesAsync();
 
-                var vehicles = string.IsNullOrWhiteSpace(SearchText) 
-                    ? await _vehicleService.GetAllVehiclesAsync()
-                    : await _vehicleService.SearchVehiclesAsync(SearchText);
-
-                await Application.Current.Dispatcher.InvokeAsync(() =>
+                if (!string.IsNullOrWhiteSpace(SearchText))
                 {
-                    Vehicles.Clear();
-                    foreach (var vehicle in vehicles)
-                    {
-                        Vehicles.Add(vehicle);
-                    }
-                    UpdateVehicleCounts();
-                });
+                    vehicles = vehicles.Where(v =>
+                        (!string.IsNullOrEmpty(v.VehicleNumber) &&
+                         v.VehicleNumber.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(v.VehicleOwner) &&
+                         v.VehicleOwner.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    ).ToList();
+                }
+
+                var statistics = await _parkingService.GetVehicleStatisticsAsync();
+                await UpdateUI(vehicles, statistics);
             }
             catch (Exception ex)
             {
@@ -129,32 +132,53 @@ namespace Forms.ViewModels.ServiceSupervisor
         }
 
         [RelayCommand]
-        private async Task DeleteVehicleAsync(VehicleResponseDTO? vehicle)
+        private async Task EditVehicleAsync()
         {
-            if (vehicle == null || IsLoading) return;
+            if (SelectedVehicle == null)
+            {
+                MessageBox.Show("Vui lòng chọn xe cần sửa!");
+                return;
+            }
 
-            var result = MessageBox.Show(
-                $"Bạn có chắc muốn xóa xe {vehicle.VehicleNumber}?",
-                "Xác nhận",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result != MessageBoxResult.Yes) return;
+            if (string.IsNullOrWhiteSpace(SelectedVehicleOwner) ||
+                string.IsNullOrWhiteSpace(SelectedVehicleType) ||
+                string.IsNullOrWhiteSpace(SelectedVehicleStatus) ||
+                (SelectedVehicleType != "Xe đạp" && string.IsNullOrWhiteSpace(SelectedVehicleNumber)))
+            {
+                MessageBox.Show("Vui lòng nhập đầy đủ thông tin!");
+                return;
+            }
 
             try
             {
                 IsLoading = true;
-                await _vehicleService.DeleteVehicleAsync(vehicle.VehicleNumber);
-                
-                Vehicles.Remove(vehicle);
-                UpdateVehicleCounts();
-                
-                MessageBox.Show("Xóa xe thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                var updatedVehicle = new VehicleDTO
+                {
+                    VehicleNumber = SelectedVehicleType == "Xe đạp" ? "" : SelectedVehicleNumber?.Trim(), // Add trim
+                    VehicleType = SelectedVehicleType,
+                    VehicleOwner = SelectedVehicleOwner,
+                    ApartmentId = SelectedVehicle.ApartmentId,
+                    Status = SelectedVehicleStatus
+                };
+
+                var success = await _parkingService.UpdateVehicleAsync(updatedVehicle);
+
+                if (success)
+                {
+                    MessageBox.Show("Cập nhật thông tin xe thành công!");
+                    await LoadVehiclesAsync();
+                    ClearSelection();
+                }
+                else
+                {
+                    MessageBox.Show("Không thể cập nhật thông tin xe!");
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Không thể xóa xe!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                Debug.WriteLine($"Delete error: {ex}");
+                MessageBox.Show("Có lỗi xảy ra khi cập nhật thông tin xe!");
+                Debug.WriteLine($"Edit error: {ex}");
             }
             finally
             {
@@ -162,28 +186,30 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
         }
 
-        private void UpdateVehicleCounts()
+        private void ClearSelection()
         {
-            BicycleCount = Vehicles.Count(v => v.VehicleType == "Xe đạp");
-            MotorcycleCount = Vehicles.Count(v => 
-                v.VehicleType == "Xe máy" || v.VehicleType == "Xe máy điện");
-            CarCount = Vehicles.Count(v => 
-                v.VehicleType == "Ô tô" || v.VehicleType == "Ô tô điện");
+            SelectedVehicle = null;
+            SelectedVehicleNumber = string.Empty;
+            SelectedVehicleOwner = string.Empty;
+            SelectedVehicleType = string.Empty;
+            SelectedApartmentCode = string.Empty;
+            SelectedVehicleStatus = string.Empty;
         }
 
-        partial void OnSelectedVehicleTypeChanged(string value)
+        private async Task UpdateUI(List<VehicleResponseDTO> vehicles, VehicleStatisticsDTO statistics)
         {
-            IsLicensePlateRequired = value != "Xe đạp";
-            if (!IsLicensePlateRequired && SelectedVehicle != null)
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                SelectedVehicle.VehicleNumber = string.Empty;
-            }
-        }
+                Vehicles.Clear();
+                foreach (var vehicle in vehicles)
+                {
+                    Vehicles.Add(vehicle);
+                }
 
-        public void Dispose()
-        {
-            _cts?.Cancel();
-            _cts?.Dispose();
+                BicycleCount = statistics.BicycleCount;
+                MotorcycleCount = statistics.MotorcycleCount;
+                CarCount = statistics.CarCount;
+            });
         }
     }
 }
