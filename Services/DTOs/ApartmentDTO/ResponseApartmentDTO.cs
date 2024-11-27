@@ -12,5 +12,8 @@
         public int? NumberOfPeople { get; set; }
 
         public string? Status { get; set; }
+
+        public int ApartmentId { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

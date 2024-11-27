@@ -46,12 +46,6 @@
                                 </TextBox.InputBindings>
                             </TextBox>
 
-                            <!-- Filter Button Content -->
-                            <Button Grid.Column="1" Margin="8,0,0,0"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Command="{Binding ShowFiltersCommand}">
-                                <materialDesign:PackIcon Kind="Filter"/>
-                            </Button>
                         </Grid>
 
                         <!-- Category Filter and Refresh Row -->
@@ -87,8 +81,7 @@
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <materialDesign:PackIcon Kind="{Binding CategoryIcon}" 
-                                                                    Margin="0,0,8,0"/>
+
                                                 <TextBlock Text="{Binding Category}"/>
                                             </StackPanel>
                                         </DataTemplate>
@@ -97,20 +90,17 @@
                                 <GridViewColumn Header="Tiêu đề" 
                                                 DisplayMemberBinding="{Binding Title}" 
                                                 Width="200"/>
-                                <GridViewColumn Header="Ngày tạo" Width="120">
+                                <!--<GridViewColumn Header="Ngày tạo" Width="120">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding CreatedDate, StringFormat={}{0:dd/MM/yyyy}}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                </GridViewColumn>-->
                                 <GridViewColumn Header="Mức độ" Width="120">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <materialDesign:PackIcon Kind="{Binding PriorityIcon}" 
-                                                                    Foreground="{Binding PriorityColor}"
-                                                                    Margin="0,0,8,0"/>
                                                 <TextBlock Text="{Binding Priority}"/>
                                             </StackPanel>
                                         </DataTemplate>
@@ -177,27 +167,28 @@
                                     Style="{StaticResource MaterialDesignOutlinedButton}"
                                     Command="{Binding CreateNewCommand}"
                                     Margin="0,0,8,0"/>
-                            <Button Content="Xuất PDF"
+                            <!--<Button Content="Nhập PDF"
                                     Style="{StaticResource MaterialDesignOutlinedButton}"
                                     Command="{Binding ExportToPdfCommand}"
-                                    Margin="0,0,8,0"/>
+                                    Margin="0,0,8,0"/>-->
                             <Button Content="Lưu"
                                     Style="{StaticResource MaterialDesignRaisedButton}"
                                     Command="{Binding SaveCommand}"/>
                         </StackPanel>
                         <!-- Loading Indicator -->
-                        <materialDesign:Card 
-                            Grid.ColumnSpan="2"
-                            Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Center">
-                            <ProgressBar 
-                                Style="{StaticResource MaterialDesignCircularProgressBar}"
-                                IsIndeterminate="True"
-                                Margin="16"/>
-                        </materialDesign:Card>
+                       
                     </StackPanel>
                 </ScrollViewer>
+            </materialDesign:Card>
+            <materialDesign:Card 
+                 Grid.ColumnSpan="2"
+                 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                 HorizontalAlignment="Center" 
+                 VerticalAlignment="Center">
+                            <ProgressBar 
+                     Style="{StaticResource MaterialDesignCircularProgressBar}"
+                     IsIndeterminate="True"
+                     Margin="16"/>
             </materialDesign:Card>
         </Grid>
     </Grid>

@@ -16,135 +16,76 @@ namespace Services.Services.AdministrativeStaffServices
 {
     public class RegulationService : IRegulationService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRegulationRepository _regulationRepository;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RegulationService(IUnitOfWork unitOfWork, IMapper mapper)
+        public RegulationService(IRegulationRepository regulationRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
+            _regulationRepository = regulationRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<RegulationDTO>> GetAllRegulationsAsync()
+        public async Task<IEnumerable<RegulationResponseDTO>> GetAllAsync()
         {
-            var regulations = await _unitOfWork.GetRepository<Regulation>().GetAllAsync();
-            return _mapper.Map<List<RegulationDTO>>(regulations);
+            var regulations = await _regulationRepository.GetRegulaAllAsync();
+            return _mapper.Map<IEnumerable<RegulationResponseDTO>>(regulations);
         }
 
-        public async Task<RegulationDTO> GetRegulationByIdAsync(int id)
+        public async Task<RegulationResponseDTO?> GetByIdAsync(int id)
         {
-            var regulation = await _unitOfWork.GetRepository<Regulation>().GetByIdAsync(id);
-            return _mapper.Map<RegulationDTO>(regulation);
+            var regulation = await _regulationRepository.GetRegulaByIdAsync(id);
+            return _mapper.Map<RegulationResponseDTO>(regulation);
         }
 
-        public async Task<RegulationDTO> CreateRegulationAsync(RegulationDTO regulationDto)
+        public async Task<IEnumerable<RegulationResponseDTO>> SearchAsync(string searchText)
         {
-            try
-            {
-                // 1. Validate input
-                if (string.IsNullOrWhiteSpace(regulationDto.Title))
-                    throw new BusinessException("Tiêu đề không được để trống");
-                
-                if (string.IsNullOrWhiteSpace(regulationDto.Content))
-                    throw new BusinessException("Nội dung không được để trống");
-                    
-                if (!RegulationConstantsService.Categories.Contains(regulationDto.Category))
-                    throw new BusinessException("Phân loại không hợp lệ");
-                    
-                if (!RegulationConstantsService.PriorityLevels.Contains(regulationDto.Priority))
-                    throw new BusinessException("Mức độ ưu tiên không hợp lệ");
-
-                // Check for duplicate title
-                var existingRegulation = (await _unitOfWork.GetRepository<Regulation>().GetAllAsync())
-                    .FirstOrDefault(r => r.Title.Equals(regulationDto.Title, StringComparison.OrdinalIgnoreCase));
-                    
-                if (existingRegulation != null)
-                    throw new BusinessException("Đã tồn tại nội quy với tiêu đề này");
-
-                // Map and save entity
-                var regulation = new Regulation
-                {
-                    Title = regulationDto.Title,
-                    Content = regulationDto.Content,
-                    Category = regulationDto.Category,
-                    Priority = regulationDto.Priority,
-                    IsActive = regulationDto.IsActive,
-                    CreatedDate = DateOnly.FromDateTime(DateTime.Now)
-                };
-
-                await _unitOfWork.GetRepository<Regulation>().InsertAsync(regulation);
-                await _unitOfWork.SaveAsync();
-
-                return _mapper.Map<RegulationDTO>(regulation);
-            }
-            catch (Exception ex)
-            {
-                throw new BusinessException($"Lỗi khi tạo nội quy: {ex.Message}");
-            }
+            var regulations = await _regulationRepository.SearchRegulaAsync(searchText);
+            return _mapper.Map<IEnumerable<RegulationResponseDTO>>(regulations);
         }
 
-        public async Task<RegulationDTO> UpdateRegulationAsync(RegulationDTO regulationDto)
+        public async Task<RegulationResponseDTO> CreateAsync(CreateRegulationDTO dto)
         {
-            var regulation = await _unitOfWork.GetRepository<Regulation>().GetByIdAsync(regulationDto.RegulationId);
+            if (!dto.IsValid())
+                throw new BusinessException("Dữ liệu không hợp lệ");
+
+            var regulation = _mapper.Map<Regulation>(dto);
+            regulation.CreatedDate = DateOnly.FromDateTime(DateTime.Now);
+
+            await _regulationRepository.AddRegulaAsync(regulation);
+            await _unitOfWork.SaveAsync();
+
+            return _mapper.Map<RegulationResponseDTO>(regulation);
+        }
+
+        public async Task<RegulationResponseDTO> UpdateAsync(RegulationResponseDTO dto)
+        {
+            var regulation = await _regulationRepository.GetRegulaByIdAsync(dto.RegulationId);
             if (regulation == null)
                 throw new BusinessException("Không tìm thấy nội quy");
 
-            // Thêm validation
-            if (string.IsNullOrWhiteSpace(regulationDto.Title))
-                throw new BusinessException("Tiêu đề không được để trống");
-            
-            if (string.IsNullOrWhiteSpace(regulationDto.Content))
-                throw new BusinessException("Nội dung không được để trống");
-                
-            if (!RegulationConstantsService.Categories.Contains(regulationDto.Category))
-                throw new BusinessException("Phân loại không hợp lệ");
-                
-            if (!RegulationConstantsService.PriorityLevels.Contains(regulationDto.Priority))
-                throw new BusinessException("Mức độ ưu tiên không hợp lệ");
-
-            // Cập nhật tất cả các trường
-            regulation.Title = regulationDto.Title;
-            regulation.Content = regulationDto.Content;
-            regulation.Category = regulationDto.Category;
-            regulation.Priority = regulationDto.Priority; 
-            regulation.IsActive = regulationDto.IsActive;
-
+            _mapper.Map(dto, regulation);
+            _regulationRepository.UpdateRegula(regulation);
             await _unitOfWork.SaveAsync();
-            return _mapper.Map<RegulationDTO>(regulation);
+
+            return _mapper.Map<RegulationResponseDTO>(regulation);
         }
 
-        public async Task<bool> DeleteRegulationAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            var regulation = await _unitOfWork.GetRepository<Regulation>().GetByIdAsync(id);
-            if (regulation == null)
-                return false;
-
-            // Check for violations
-            if (regulation.Violations.Any())
-                throw new BusinessException("Không thể xóa nội quy đã có vi phạm");
-
-            await _unitOfWork.GetRepository<Regulation>().DeleteAsync(regulation);
+            await _regulationRepository.DeleteRegulaAsync(id);
             await _unitOfWork.SaveAsync();
-            return true;
         }
 
-        public async Task<List<RegulationDTO>> SearchRegulationsAsync(string searchText, string category)
+        public Task<List<string>> GetCategoriesAsync()
         {
-            var regulations = await _unitOfWork.GetRepository<Regulation>().GetAllAsync();
-            var dtos = _mapper.Map<List<RegulationDTO>>(regulations);
-
-            return dtos.Where(r =>
-                (string.IsNullOrEmpty(searchText) ||
-                 r.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
-                (string.IsNullOrEmpty(category) ||
-                 r.Category == category)
-            ).ToList();
+            return Task.FromResult(RegulationConstantsService.Categories);
         }
 
-        public async Task<byte[]> ExportToPdfAsync(RegulationDTO regulation)
+        public Task<List<string>> GetPriorityLevelsAsync()
         {
-            // Implement PDF export logic here
-            throw new NotImplementedException();
+            return Task.FromResult(RegulationConstantsService.PriorityLevels);
         }
     }
 }

@@ -8,5 +8,7 @@ namespace Services.Interfaces.AdministrativeStaffServices
         public Task<List<ResponseApartmentDTO>> GetAll();
         public Task<List<ResponseApartmentDTO>> Search(string searchText);
         public Task<Apartment?> GetApartmentByCode(string code);
+
+        public Task<List<ResponseApartmentDTO>> GetAllApartmentForViolation();
     }
 }

@@ -252,19 +252,10 @@ CREATE TABLE Regulation (
     RegulationId int IDENTITY(1, 1) PRIMARY KEY,
     Title nvarchar(100) NOT NULL,
     Content nvarchar(255) NOT NULL,
-<<<<<<< HEAD
     Category nvarchar(50) NOT NULL,
     Priority nvarchar(20) NOT NULL,
     IsActive bit NOT NULL DEFAULT 1,
     CreatedDate date DEFAULT GETDATE() NOT NULL
-=======
-    CreatedDate date DEFAULT GETDATE() NOT NULL,
-    Category nvarchar(20) NOT NULL DEFAULT N'Khác',
-    Priority nvarchar(20) NOT NULL DEFAULT N'Trung bình',
-    IsActive bit NOT NULL DEFAULT 1,
-    CONSTRAINT CK_Regulation_Category CHECK (Category IN (N'An ninh', N'Vệ sinh', N'Phòng cháy', N'Sinh hoạt', N'Khác')),
-    CONSTRAINT CK_Regulation_Priority CHECK (Priority IN (N'Cao', N'Trung bình', N'Thấp'))
->>>>>>> bd1aeb35a4d7a953502912186c93c2d7a9349abc
 )
 
 CREATE TABLE Violation (

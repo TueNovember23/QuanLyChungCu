@@ -1,4 +1,5 @@
 ﻿using Forms.ViewModels;
+using Forms.ViewModels.Accountant;
 using Forms.ViewModels.AdministativeStaff;
 using Forms.ViewModels.AdministrativeStaff;
 using Forms.ViewModels.ServiceSupervisor;
@@ -7,10 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Repositories.Interfaces;
 using Repositories.Repositories;
 using Repositories.Repositories.Base;
+using Services.Interfaces.AccountantServices;
 using Services.Interfaces.AdministrativeStaffServices;
 using Services.Interfaces.ServiceSupervisorServices;
 using Services.Interfaces.SharedServices;
 using Services.MapperProfile;
+using Services.Services.AccountantServices;
 using Services.Services.AdministrativeStaffServices;
 using Services.Services.ServiceSupervisorServices;
 using Services.Services.SharedServices;
@@ -37,7 +40,9 @@ namespace Forms
             services.AddScoped<RegisterParkingViewModel>();
             services.AddScoped<RegulationViewModel>();
             services.AddScoped<GeneralInfoViewModel>();
-
+            services.AddScoped<ViolationViewModel>();
+            services.AddScoped<DepartmentViewModel>();
+            services.AddScoped<ViolationViewModel>();
         }
 
         public static void AddServices(IServiceCollection services)
@@ -48,6 +53,10 @@ namespace Forms
             services.AddScoped<IParkingService, ParkingService>();
             services.AddScoped<IRegulationService, RegulationService>();
             services.AddScoped<IGeneralInfoService, GeneralInfoService>();
+            services.AddScoped<IViolationService, ViolationService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<IViolationService, ViolationService>();
+            services.AddScoped<IRegulationService, RegulationService>();
         }
 
         public static void AddRepositories(IServiceCollection services)
@@ -56,6 +65,9 @@ namespace Forms
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IVehicleRepository, VehicleRepository>();
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IViolationRepository, ViolationRepository>();
+            services.AddScoped<IRegulationRepository, RegulationRepository>();
         }
 
         public static void AddDatabase(IServiceCollection services)

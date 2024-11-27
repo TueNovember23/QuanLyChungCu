@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Forms.ViewModels.Accountant;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,7 @@ namespace Forms.Views.Accountant
         public ViolationView()
         {
             InitializeComponent();
+            DataContext = App.ServiceProvider?.GetService<ViolationViewModel>();
         }
     }
 }
