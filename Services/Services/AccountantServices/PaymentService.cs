@@ -33,18 +33,19 @@ namespace Services.Services.AccountantServices
         public async Task<List<ResponsePaymentDTO>> GetPayments(int month, int year, string status)
         {
             var query = _unitOfWork.GetRepository<Invoice>().Entities
-                .Include(i => i.WaterInvoices)
-                //.Include(i => i.ManagementFeeInvoices)
+                .Include(i => i.WaterInvoices).ThenInclude(wi => wi.Apartment)
+                //.Include(i => i.ManagementFeeInvoice)
                 .Include(i => i.VechicleInvoices)
-                .Where(i => i.Month == month && i.Year == year);
+
+                .Where(i => i.Month == month && i.Year == year).ToList();
 
             if (status != "Tất cả")
             {
-                query = query.Where(i => i.Status == status);
+                query = query.Where(i => i.Status == status).ToList();
             }
 
 
-            return await query.Select(invoice => new ResponsePaymentDTO
+            return query.Select(invoice => new ResponsePaymentDTO
             {
                 InvoiceId = invoice.InvoiceId,
                 InvoiceCode = $"INV{invoice.InvoiceId:D6}",
@@ -56,7 +57,7 @@ namespace Services.Services.AccountantServices
                 ? invoice.CreatedDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(15)
                 : DateTime.MinValue,
                 Status = invoice.Status
-            }).ToListAsync();
+            }).ToList();
         }
 
         public Task ProcessPayment(ProcessPaymentDTO payment)
@@ -67,7 +68,7 @@ namespace Services.Services.AccountantServices
         public async Task<List<ResponsePaymentDTO>> SearchPayments(string searchText, int month, int year, string status)
         {
             var query = _unitOfWork.GetRepository<Invoice>().Entities
-                .Include(i => i.WaterInvoices)
+                .Include(i => i.WaterInvoices).ThenInclude(wi => wi.Apartment)
                 //.Include(i => i.ManagementFeeInvoices)
                 .Include(i => i.VechicleInvoices)
                 .Where(i =>

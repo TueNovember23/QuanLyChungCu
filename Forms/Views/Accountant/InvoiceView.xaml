@@ -110,30 +110,6 @@
                 </Grid>
             </TabItem>
 
-            <!-- Tab Tiền điện -->
-            <TabItem>
-                <TabItem.Header>
-                    <StackPanel Height="auto">
-                        <materialDesign:PackIcon Kind="LightningBolt" Width="24" Height="24"
-                                               HorizontalAlignment="Center"/>
-                        <TextBlock Text="Điện" TextAlignment="Center"/>
-                    </StackPanel>
-                </TabItem.Header>
-
-                <DataGrid ItemsSource="{Binding ElectricityInvoices}"
-                         AutoGenerateColumns="False"
-                         IsReadOnly="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
-                        <DataGridTextColumn Header="Chỉ số cũ" Binding="{Binding OldIndex}"/>
-                        <DataGridTextColumn Header="Chỉ số mới" Binding="{Binding NewIndex}"/>
-                        <DataGridTextColumn Header="Tiêu thụ" Binding="{Binding Usage}"/>
-                        <DataGridTextColumn Header="Đơn giá" Binding="{Binding UnitPrice}"/>
-                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding Total}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
             <!-- Modified Water Tab -->
             <TabItem>
                 <TabItem.Header>
