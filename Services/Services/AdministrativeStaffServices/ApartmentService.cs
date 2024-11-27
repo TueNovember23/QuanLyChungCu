@@ -42,6 +42,9 @@ namespace Services.Services.AdministrativeStaffServices
                     (apartment.ApartmentCode != null && apartment.ApartmentCode.Contains(searchText)) ||
                     (apartment.Floor.Block.BlockCode != null && apartment.Floor.Block.BlockCode.Contains(searchText)) ||
                     apartment.Floor.FloorNumber.ToString().Contains(searchText) ||
+                    apartment.Residents.Any(r =>
+                        (r.FullName != null && r.FullName.Contains(searchText)) ||
+                        (r.ResidentId != null && r.ResidentId.Contains(searchText))) ||
                     (apartment.Status != null && apartment.Status.Contains(searchText)) ||
                     apartment.Representatives.Any(r => r.FullName != null && r.FullName.Contains(searchText))
                 );
@@ -61,10 +64,25 @@ namespace Services.Services.AdministrativeStaffServices
 
         public async Task<Apartment?> GetApartmentByCode(string code)
         {
-            return await _unitOfWork.GetRepository<Apartment>().Entities
-                .Include(apartment => apartment.Floor.Block)
-                .Include(apartment => apartment.Representatives)
-                .FirstOrDefaultAsync(apartment => apartment.ApartmentCode == code) ?? throw new BusinessException($"Căn hộ {code} không tồn tại.");
+            return await _unitOfWork.GetRepository<Apartment>().Entities.FirstOrDefaultAsync(_ => _.ApartmentCode == code);
+        }
+
+        public async Task<List<ResponseResidentDTO>> GetResidentsOfApartment(string apartmentCode)
+        {
+            List<ResponseResidentDTO> residents = [];
+            residents = await _unitOfWork.GetRepository<Resident>().Entities.Where(_ => _.Apartment.ApartmentCode == apartmentCode)
+                .Select(r => new ResponseResidentDTO
+                {
+                    ResidentId = r.ResidentId,
+                    FullName = r.FullName,
+                    Gender = r.Gender,
+                    DateOfBirth = r.DateOfBirth.HasValue ? r.DateOfBirth.Value.ToString("dd/MM/yyyy") : null,
+                    RelationShipWithOwner = r.RelationShipWithOwner,
+                    MoveInDate = r.MoveInDate.HasValue ? r.MoveInDate.Value.ToString("dd/MM/yyyy") : null,
+                    IsCurrentlyLiving = r.MoveOutDate == null ? "Đang ở" : "Đã chuyển đi"
+                }).OrderByDescending(r => r.RelationShipWithOwner == "Chủ hộ")
+                                                  .ThenBy(r => r.IsCurrentlyLiving == "Đã chuyển đi").ToListAsync();
+            return residents;
         }
 
         public void RegisterResident(CreateResidentDTO resident)

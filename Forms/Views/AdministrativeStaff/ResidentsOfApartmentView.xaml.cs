@@ -1,4 +1,7 @@
-﻿using Repositories.Repositories.Entities;
+﻿using Core;
+using Repositories.Repositories.Entities;
+using Services.DTOs.ApartmentDTO;
+using Services.DTOs.ResidentDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using System.Windows;
 
@@ -8,6 +11,7 @@ namespace Forms.Views.AdministrativeStaff
     {
         private readonly IApartmentService _apartmentService;
         private Apartment? _apartment;
+        private List<ResponseResidentDTO> _residents;
 
         public ResidentsOfApartmentView(IApartmentService service, string apartmentCode)
         {
@@ -20,24 +24,13 @@ namespace Forms.Views.AdministrativeStaff
 
         public async Task InitializeAsync(string apartmentCode)
         {
-                _apartment = await _apartmentService.GetApartmentByCode(apartmentCode)
-                             ?? throw new Exception($"Căn hộ {apartmentCode} không tồn tại");
+            _apartment = await _apartmentService.GetApartmentByCode(apartmentCode)
+                         ?? throw new BusinessException($"Căn hộ {apartmentCode} không tồn tại");
 
-                ApartmentCodeTxt.Text = $"Căn hộ {apartmentCode}";
+            ApartmentCodeTxt.Text = $"Căn hộ {apartmentCode}";
 
-                ResidentsDataGrid.ItemsSource = _apartment.Residents
-                                                .Select(r => new
-                                                {
-                                                    ResidentId = r.ResidentId,
-                                                    FullName = r.FullName,
-                                                    Gender = r.Gender,
-                                                    DateOfBirth = r.DateOfBirth?.ToString("dd/MM/yyyy"),
-                                                    RelationShipWithOwner = r.RelationShipWithOwner,
-                                                    MoveInDate = r.MoveInDate?.ToString("dd/MM/yyyy"),
-                                                    IsCurrentlyLiving = r.MoveOutDate == null ? "Đang ở" : "Đã chuyển đi"
-                                                }).OrderByDescending(r => r.RelationShipWithOwner == "Chủ hộ") 
-                                                  .ThenBy(r => r.IsCurrentlyLiving == "Đã chuyển đi")
-                                                  .ToList();
+            _residents = await _apartmentService.GetResidentsOfApartment(apartmentCode);
+            ResidentsDataGrid.ItemsSource = _residents;
         }
 
         private void EditResident_Click(object sender, RoutedEventArgs e)

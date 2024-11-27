@@ -19,7 +19,7 @@ public partial class Apartment
 
     public int FloorId { get; set; }
     
-    public bool IsDeleted { get; set; }
+    // public bool IsDeleted { get; set; }
 
     public virtual ICollection<CommunityRoomBooking> CommunityRoomBookings { get; set; } = new List<CommunityRoomBooking>();
 
