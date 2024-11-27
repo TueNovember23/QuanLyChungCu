@@ -1,0 +1,166 @@
+﻿<UserControl x:Class="Forms.Views.Accountant.PaymentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:header="clr-namespace:Forms.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="850" d:DesignWidth="1200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <header:Header Grid.Row="0"/>
+
+        <!-- Control Panel -->
+        <materialDesign:Card Grid.Row="1" Margin="16,8,16,16" UniformCornerRadius="15">
+            <Grid Margin="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left side - Filters -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <ComboBox materialDesign:HintAssist.Hint="Tháng"
+                             Width="100" Margin="0,0,16,0"
+                             ItemsSource="{Binding Months}"
+                             SelectedItem="{Binding SelectedMonth}"/>
+
+                    <ComboBox materialDesign:HintAssist.Hint="Năm"
+                             Width="100" Margin="0,0,16,0"
+                             ItemsSource="{Binding Years}"
+                             SelectedItem="{Binding SelectedYear}"/>
+
+                    <ComboBox materialDesign:HintAssist.Hint="Trạng thái"
+                             Width="150" Margin="0,0,16,0"
+                             ItemsSource="{Binding PaymentStatuses}"
+                             SelectedItem="{Binding SelectedStatus}"/>
+
+                    <TextBox materialDesign:HintAssist.Hint="Tìm kiếm căn hộ"
+                            Width="200"
+                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+
+                <!-- Right side - Actions -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Command="{Binding RefreshCommand}"
+                            Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Refresh" Margin="0,0,8,0"/>
+                            <TextBlock Text="Làm mới"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="2" Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel - Payment List -->
+            <materialDesign:Card Grid.Column="0" Margin="0,0,8,0" UniformCornerRadius="15">
+                <DockPanel>
+                    <DataGrid ItemsSource="{Binding Payments}"
+                            SelectedItem="{Binding SelectedPayment}"
+                            AutoGenerateColumns="False"
+                            IsReadOnly="True"
+                            Margin="16">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceCode}"/>
+                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                            <DataGridTextColumn Header="Tổng tiền" Binding="{Binding TotalAmount, StringFormat={}{0:N0} VNĐ}"/>
+                            <DataGridTextColumn Header="Đã thanh toán" Binding="{Binding PaidAmount, StringFormat={}{0:N0} VNĐ}"/>
+                            <DataGridTextColumn Header="Còn lại" Binding="{Binding RemainingAmount, StringFormat={}{0:N0} VNĐ}"/>
+                            <DataGridTextColumn Header="Hạn thanh toán" Binding="{Binding DueDate, StringFormat=dd/MM/yyyy}"/>
+                            <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </materialDesign:Card>
+
+            <!-- Right Panel - Payment Details -->
+            <materialDesign:Card Grid.Column="1" Margin="8,0,0,0" UniformCornerRadius="15">
+                <ScrollViewer>
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Chi tiết thanh toán" 
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                 Margin="0,0,0,16"/>
+
+                        <!-- Payment Info -->
+                        <TextBox materialDesign:HintAssist.Hint="Mã hóa đơn"
+                                Text="{Binding SelectedPayment.InvoiceCode}"
+                                IsReadOnly="True"
+                                Margin="0,0,0,16"/>
+
+                        <TextBox materialDesign:HintAssist.Hint="Căn hộ"
+                                Text="{Binding SelectedPayment.ApartmentCode}"
+                                IsReadOnly="True"
+                                Margin="0,0,0,16"/>
+
+                        <TextBox materialDesign:HintAssist.Hint="Tổng tiền"
+                                Text="{Binding SelectedPayment.TotalAmount, StringFormat={}{0:N0} VNĐ}"
+                                IsReadOnly="True"
+                                Margin="0,0,0,16"/>
+
+                        <!-- Payment Processing -->
+                        <TextBox materialDesign:HintAssist.Hint="Số tiền thanh toán *"
+                                Text="{Binding PaymentAmount, UpdateSourceTrigger=PropertyChanged}"
+                                Margin="0,0,0,16"/>
+
+                        <ComboBox materialDesign:HintAssist.Hint="Phương thức thanh toán *"
+                                 ItemsSource="{Binding PaymentMethods}"
+                                 SelectedItem="{Binding SelectedPaymentMethod}"
+                                 Margin="0,0,0,16"/>
+
+                        <TextBox materialDesign:HintAssist.Hint="Ghi chú"
+                                Text="{Binding PaymentNote}"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                AcceptsReturn="True"
+                                TextWrapping="Wrap"
+                                Height="53"
+                                Margin="0,0,0,16"/>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Xác nhận thanh toán"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Command="{Binding ProcessPaymentCommand}"
+                                    Margin="0,0,8,0"/>
+                            <Button Content="In biên nhận"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Command="{Binding PrintReceiptCommand}"/>
+                        </StackPanel>
+
+                        <!-- Payment History -->
+                        <Expander Header="Lịch sử thanh toán" Margin="0,16,0,0">
+                            <ListView ItemsSource="{Binding PaymentHistory}"
+                                    MaxHeight="200"
+                                    Margin="0,8,0,0" d:ItemsSource="{d:SampleData ItemCount=5}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Ngày" DisplayMemberBinding="{Binding Date, StringFormat=dd/MM/yyyy}"/>
+                                        <GridViewColumn Header="Số tiền" DisplayMemberBinding="{Binding Amount, StringFormat={}{0:N0} VNĐ}"/>
+                                        <GridViewColumn Header="Phương thức" DisplayMemberBinding="{Binding Method}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Expander>
+                    </StackPanel>
+                </ScrollViewer>
+            </materialDesign:Card>
+        </Grid>
+
+        
+    </Grid>
+</UserControl>

@@ -21,7 +21,7 @@ namespace Forms
         {
             ConfigureServices();
             InitializeComponent();
-            RegisterCommunityRoomView f = new(App.ServiceProvider.GetService<ICommunityRoomService>());
+            //RegisterCommunityRoomView f = new(App.ServiceProvider.GetService<ICommunityRoomService>());
             //this.DispatcherUnhandledException += OnDispatcherUnhandledException;
         }
 

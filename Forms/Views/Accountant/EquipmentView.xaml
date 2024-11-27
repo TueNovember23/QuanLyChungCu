@@ -1,0 +1,197 @@
+﻿<UserControl x:Class="Forms.Views.Accountant.EquipmentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:header="clr-namespace:Forms.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="850" d:DesignWidth="1100">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <header:Header Grid.Row="0"/>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel - Equipment List and Details -->
+            <Grid Grid.Column="0" Margin="0,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Search and Filter -->
+                <materialDesign:Card Grid.Row="0" Margin="0,0,0,20" UniformCornerRadius="15">
+                    <Grid Margin="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 materialDesign:HintAssist.Hint="Tìm kiếm thiết bị..."
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <ComboBox Grid.Column="1" Margin="10,0,0,0"
+                                  materialDesign:HintAssist.Hint="Khu vực"
+                                  ItemsSource="{Binding Areas}"
+                                  SelectedItem="{Binding SelectedArea}"
+                                  MinWidth="150"/>
+
+                        <Button Grid.Column="2" Margin="10,0,0,0"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Command="{Binding RefreshCommand}">
+                            <materialDesign:PackIcon Kind="Refresh"/>
+                        </Button>
+                    </Grid>
+                </materialDesign:Card>
+
+                <!-- Equipment List -->
+                <materialDesign:Card Grid.Row="1" UniformCornerRadius="15" VerticalAlignment="Stretch">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" 
+                                 Text="Danh sách thiết bị" 
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                 Margin="15,15,15,10"/>
+
+                        <DataGrid DockPanel.Dock="Top"
+                                  Margin="15"
+                                  ItemsSource="{Binding Equipments}"
+                                  SelectedItem="{Binding SelectedEquipment}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="True"
+                                  VerticalScrollBarVisibility="Auto"
+                                  materialDesign:DataGridAssist.CellPadding="13"
+                                  materialDesign:DataGridAssist.CornerRadius="3">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Mã thiết bị" Binding="{Binding EquipmentId}"/>
+                                <DataGridTextColumn Header="Tên thiết bị" Binding="{Binding EquipmentName}"/>
+                                <DataGridTextColumn Header="Khu vực" Binding="{Binding AreaName}"/>
+                                <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}"/>
+                                <DataGridTextColumn Header="Lần kiểm tra cuối" Binding="{Binding LastMaintenanceDate}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </materialDesign:Card>
+            </Grid>
+
+            <!-- Right Panel (giữ nguyên phần này) -->
+            <!-- Right Panel - Actions and Status -->
+            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                <!-- Quick Actions -->
+                <materialDesign:Card UniformCornerRadius="15" Margin="0,0,0,20">
+                    <StackPanel Margin="15">
+                        <TextBlock Text="Thao tác nhanh"
+                                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                     Margin="0,0,0,15"/>
+
+                        <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Command="{Binding AddNewEquipmentCommand}"
+                                    Margin="0,0,0,10">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Plus" Margin="0,0,8,0"/>
+                                <TextBlock Text="Thêm thiết bị mới"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Command="{Binding ScheduleMaintenanceCommand}"
+                                    Margin="0,0,0,10">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Calendar" Margin="0,0,8,0"/>
+                                <TextBlock Text="Lập lịch bảo trì"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Equipment Details -->
+                <materialDesign:Card UniformCornerRadius="15">
+                    <StackPanel Margin="15">
+                        <TextBlock Text="Chi tiết thiết bị"
+                                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                     Margin="0,0,0,15"/>
+
+                        <TextBox materialDesign:HintAssist.Hint="Tên thiết bị"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding SelectedEquipment.Name}"
+                                     Margin="0,0,0,10"/>
+
+                        <ComboBox materialDesign:HintAssist.Hint="Khu vực"
+                                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                      ItemsSource="{Binding Areas}"
+                                      SelectedItem="{Binding SelectedEquipment.Area}"
+                                      Margin="0,0,0,10"/>
+
+                        <TextBox materialDesign:HintAssist.Hint="Ghi chú"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding SelectedEquipment.Notes}"
+                                     TextWrapping="Wrap"
+                                     AcceptsReturn="True"
+                                     Height="75"
+                                     Margin="0,0,0,10"/>
+
+                        <!-- Status Section -->
+                        <Expander Header="Trạng thái và Bảo trì" Margin="0,10,0,10">
+                            <StackPanel Margin="0,10,0,0">
+                                <ComboBox materialDesign:HintAssist.Hint="Trạng thái"
+                                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                              ItemsSource="{Binding StatusList}"
+                                              SelectedItem="{Binding SelectedEquipment.Status}"
+                                              Margin="0,0,0,10"/>
+
+                                <DatePicker materialDesign:HintAssist.Hint="Ngày kiểm tra cuối"
+                                               Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                               SelectedDate="{Binding SelectedEquipment.LastCheckDate}"
+                                               Margin="0,0,0,10"/>
+
+                                <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                                            Command="{Binding ReportIssueCommand}"
+                                            Background="#d32f2f"
+                                            Margin="0,10,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Alert" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Báo cáo sự cố"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Expander>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
+                            <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                                        Command="{Binding SaveChangesCommand}"
+                                        Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ContentSave" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Lưu thay đổi"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        Command="{Binding CancelChangesCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Cancel" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Hủy"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

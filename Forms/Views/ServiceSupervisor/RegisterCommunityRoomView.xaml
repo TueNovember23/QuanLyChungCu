@@ -1,5 +1,5 @@
 ﻿<UserControl x:Class="Forms.Views.ServiceSupervisor.RegisterCommunityRoomView"
-                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,139 +8,146 @@
              xmlns:header="clr-namespace:Forms.Views"
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1100">
-
-    <!--<UserControl.DataContext>
-        <local:RegisterCommunityRoomBookingViewModel />
-    </UserControl.DataContext>-->
-
     <Grid HorizontalAlignment="Left" Width="1100">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="8*" />
-            <ColumnDefinition Width="4*" />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Search -->
+            <RowDefinition Height="*"/>
+            <!-- Content -->
+        </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Grid.Column="0" Background="#F6F6F8" Grid.ColumnSpan="2" Margin="0,0,1,0" Name="RenderHeader">
-            <header:Header />
-        </Grid>
+        <header:Header Grid.Row="0"/>
 
-        <!-- Danh sách đăng ký -->
-        <Grid Grid.Column="0" Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <!-- Search Box -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
+            <TextBox Width="300" Height="40" Padding="10 10"
+                     VerticalAlignment="Center"
+                     materialDesign:HintAssist.Hint="Tìm kiếm phòng sinh hoạt chung"
+                     materialDesign:TextFieldAssist.DecorationVisibility="Visible"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Content="Làm mới"
+                    Width="120" Height="40" Margin="10 0"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Command="{Binding RefreshCommand}" />
+        </StackPanel>
 
-            <materialDesign:Card Grid.Row="1" Margin="16 60 16 16" UniformCornerRadius="20">
-                <StackPanel>
-                    <Grid Margin="16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Danh sách đăng ký phòng" FontSize="18" FontWeight="SemiBold"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Margin="8,0">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="FileExcel"/>
-                                    <TextBlock Text="Xuất Excel"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Style="{StaticResource MaterialDesignOutlinedButton}">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Refresh"/>
-                                    <TextBlock Text="Làm mới"/>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
+        <!-- Main Content -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                    <DataGrid x:Name="BookingDataGrid" AutoGenerateColumns="False" Margin="16">
+            <!-- Danh sách đặt phòng -->
+            <materialDesign:Card Grid.Column="0" Margin="10" UniformCornerRadius="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Danh sách đặt phòng" 
+                             FontSize="20" 
+                             FontWeight="Medium"
+                             Margin="16"/>
+
+                    <DataGrid Grid.Row="1" 
+                             ItemsSource="{Binding Bookings}"
+                             AutoGenerateColumns="False"
+                             IsReadOnly="True"
+                             Margin="16">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Mã đăng ký" Binding="{Binding BookingId}" />
-                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}" />
-                            <DataGridTextColumn Header="Ngày đăng ký" Binding="{Binding BookingDate}" />
-                            <DataGridTextColumn Header="Giờ bắt đầu" Binding="{Binding StartTime}" />
-                            <DataGridTextColumn Header="Giờ kết thúc" Binding="{Binding EndTime}" />
-                            <DataGridTextColumn Header="Số người" Binding="{Binding NumberOfPeople}" />
-                            <DataGridTemplateColumn Header="Thao tác">
+                            <DataGridTextColumn Header="Mã căn hộ" 
+                                              Binding="{Binding ApartmentCode}" 
+                                              Width="auto"/>
+                            <DataGridTextColumn Header="Tên phòng" 
+                                              Binding="{Binding RoomName}" 
+                                              Width="auto"/>
+                            <DataGridTextColumn Header="Ngày đặt" 
+                                              Binding="{Binding BookingDate}" 
+                                              Width="auto"/>
+                            <DataGridTextColumn Header="Giờ bắt đầu" 
+                                              Binding="{Binding StartTime}" 
+                                              Width="auto"/>
+                            <DataGridTextColumn Header="Giờ kết thúc" 
+                                              Binding="{Binding EndTime}" 
+                                              Width="auto"/>
+                            <DataGridTextColumn Header="Số người" 
+                                              Binding="{Binding NumberOfPeople}" 
+                                              Width="auto"/>
+
+                            <DataGridTemplateColumn Header="Thao tác" Width="auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Content="Xóa" Click="DeleteCommand_Execute" />
-                                        </StackPanel>
+                                        <Button Content="Xóa"
+                                                Command="{Binding DataContext.DeleteBookingCommand, 
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding BookingId}"
+                                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                Margin="5"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+                </Grid>
+            </materialDesign:Card>
+
+            <!-- Form đăng ký -->
+            <materialDesign:Card Grid.Column="1" Margin="10" UniformCornerRadius="15">
+                <StackPanel Margin="16">
+                    <TextBlock Text="Đăng ký phòng sinh hoạt chung" 
+                             FontSize="20" 
+                             FontWeight="Medium"
+                             Margin="0 0 0 16"/>
+
+                    <ComboBox materialDesign:HintAssist.Hint="Chọn phòng"
+                             ItemsSource="{Binding Rooms}"
+                             SelectedItem="{Binding SelectedRoom}"
+                             DisplayMemberPath="RoomName"
+                             Margin="0 8"/>
+
+                    <DatePicker materialDesign:HintAssist.Hint="Ngày đặt phòng"
+                               SelectedDate="{Binding BookingDate}"
+                               Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                               Margin="0 8"/>
+
+                    <Grid Margin="0 8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <materialDesign:TimePicker 
+                            Grid.Column="0"
+                            materialDesign:HintAssist.Hint="Giờ bắt đầu"
+                            SelectedTime="{Binding StartTime}"
+                            Style="{StaticResource MaterialDesignOutlinedTimePicker}"
+                            Margin="0 0 4 0"/>
+
+                        <materialDesign:TimePicker 
+                            Grid.Column="1"
+                            materialDesign:HintAssist.Hint="Giờ kết thúc"
+                            SelectedTime="{Binding EndTime}"
+                            Style="{StaticResource MaterialDesignOutlinedTimePicker}"
+                            Margin="4 0 0 0"/>
+                    </Grid>
+
+                    <TextBox materialDesign:HintAssist.Hint="Số người tham gia"
+                            Text="{Binding NumberOfPeople}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            Margin="0 8"/>
+
+                    <Button Content="Đăng ký"
+                            Command="{Binding RegisterCommand}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Margin="0 16 0 0"/>
                 </StackPanel>
             </materialDesign:Card>
         </Grid>
-
-        <!-- Form đăng ký -->
-        <ScrollViewer Grid.Column="1" Margin="16 60 16 16">
-            <StackPanel>
-                <materialDesign:Card Margin="16" UniformCornerRadius="20">
-                    <StackPanel Margin="16">
-                        <TextBlock Text="Đăng ký phòng sinh hoạt chung" 
-                                 FontSize="18" 
-                                 FontWeight="SemiBold" 
-                                 Margin="0,0,0,16"/>
-
-                        <!-- Thông tin căn hộ -->
-                        <ComboBox materialDesign:HintAssist.Hint="Chọn căn hộ" 
-                                  ItemsSource="{Binding Apartments}" 
-                                  SelectedItem="{Binding SelectedApartment}"
-                                  DisplayMemberPath="ApartmentName"
-                                  Margin="0,0,0,16"/>
-
-                        <!-- Ngày đăng ký -->
-                        <DatePicker materialDesign:HintAssist.Hint="Ngày đăng ký"
-                                    SelectedDate="{Binding BookingDate, Mode=TwoWay}" 
-                                    Margin="0,0,0,16"/>
-
-                        <!-- Thời gian -->
-                        <Grid Margin="0,0,0,16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <materialDesign:TimePicker materialDesign:HintAssist.Hint="Giờ bắt đầu"
-                                                       SelectedTime="{Binding StartTime, Mode=TwoWay}"
-                                                       Margin="0,0,8,0"/>
-                            <materialDesign:TimePicker Grid.Column="1"
-                                                       materialDesign:HintAssist.Hint="Giờ kết thúc"
-                                                       SelectedTime="{Binding EndTime, Mode=TwoWay}"
-                                                       Margin="8,0,0,0"/>
-                        </Grid>
-
-                        <!-- Số người -->
-                        <TextBox materialDesign:HintAssist.Hint="Số người tham gia" 
-                                 Text="{Binding NumberOfPeople, Mode=TwoWay}" 
-                                 Margin="0,0,0,16"/>
-
-                        <!-- Buttons -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Command="{Binding SearchCommand}"
-                                    Margin="0,0,8,0">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Magnify"/>
-                                    <TextBlock Text="Tìm kiếm"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Style="{StaticResource MaterialDesignRaisedButton}"
-                                    Command="{Binding RegisterCommand}">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="ContentSave"/>
-                                    <TextBlock Text="Đăng ký"/>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </StackPanel>
-                </materialDesign:Card>
-            </StackPanel>
-        </ScrollViewer>
     </Grid>
 </UserControl>

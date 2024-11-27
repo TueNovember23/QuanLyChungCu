@@ -1,0 +1,252 @@
+﻿<UserControl x:Class="Forms.Views.Accountant.InvoiceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:header="clr-namespace:Forms.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="850" d:DesignWidth="1200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <header:Header Grid.Row="0"/>
+
+        <!-- Invoice Control Panel -->
+        <materialDesign:Card Grid.Row="1" Margin="16,8,16,16" UniformCornerRadius="15">
+            <Grid Margin="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left side - Controls -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <ComboBox materialDesign:HintAssist.Hint="Tháng"
+                             Width="100" Margin="0,0,16,0"
+                             ItemsSource="{Binding Months}"
+                             SelectedItem="{Binding SelectedMonth}"/>
+
+                    <ComboBox materialDesign:HintAssist.Hint="Năm"
+                             Width="100" Margin="0,0,16,0"
+                             ItemsSource="{Binding Years}"
+                             SelectedItem="{Binding SelectedYear}"/>
+
+                    <ComboBox materialDesign:HintAssist.Hint="Khu vực"
+                             Width="150" Margin="0,0,16,0"
+                             ItemsSource="{Binding Areas}"
+                             SelectedItem="{Binding SelectedArea}"/>
+                </StackPanel>
+
+                <!-- Center - Status -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="16,0">
+                    <materialDesign:PackIcon Kind="Information" 
+                                           Margin="0,0,8,0"
+                                           VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding StatusMessage}"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Right side - Actions -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Command="{Binding GenerateInvoicesCommand}"
+                            Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FileDocument" Margin="0,0,8,0"/>
+                            <TextBlock Text="Tạo hóa đơn"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                            Command="{Binding AutoGenerateCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Robot" Margin="0,0,8,0"/>
+                            <TextBlock Text="Tự động tạo"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Existing TabControl with modifications -->
+        <TabControl Grid.Row="2" 
+                    Style="{StaticResource MaterialDesignTabControl}"
+                    TabStripPlacement="Left"
+                    Margin="16">
+            <!-- Tab Tổng quan -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Height="auto">
+                        <materialDesign:PackIcon Kind="ViewDashboard" Width="24" Height="24"
+                                               HorizontalAlignment="Center"/>
+                        <TextBlock Text="Tổng quan" TextAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <!-- Dashboard Stats -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <materialDesign:Card Grid.Column="0" Margin="8" UniformCornerRadius="8">
+                        <StackPanel Margin="16">
+                            <TextBlock Text="Tổng số hóa đơn" Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+                            <TextBlock Text="{Binding TotalInvoices}" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                        </StackPanel>
+                    </materialDesign:Card>
+
+                    <!-- Add more stat cards -->
+                </Grid>
+            </TabItem>
+
+            <!-- Tab Tiền điện -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Height="auto">
+                        <materialDesign:PackIcon Kind="LightningBolt" Width="24" Height="24"
+                                               HorizontalAlignment="Center"/>
+                        <TextBlock Text="Điện" TextAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <DataGrid ItemsSource="{Binding ElectricityInvoices}"
+                         AutoGenerateColumns="False"
+                         IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                        <DataGridTextColumn Header="Chỉ số cũ" Binding="{Binding OldIndex}"/>
+                        <DataGridTextColumn Header="Chỉ số mới" Binding="{Binding NewIndex}"/>
+                        <DataGridTextColumn Header="Tiêu thụ" Binding="{Binding Usage}"/>
+                        <DataGridTextColumn Header="Đơn giá" Binding="{Binding UnitPrice}"/>
+                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding Total}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <!-- Modified Water Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Height="auto">
+                        <materialDesign:PackIcon Kind="Water" Width="24" Height="24"
+                                               HorizontalAlignment="Center"/>
+                        <TextBlock Text="Nước" TextAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <DataGrid ItemsSource="{Binding WaterInvoices}"
+                         AutoGenerateColumns="False"
+                         IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                        <DataGridTextColumn Header="Số người" Binding="{Binding NumberOfPeople}"/>
+                        <DataGridTextColumn Header="Chỉ số cũ" Binding="{Binding OldIndex}"/>
+                        <DataGridTextColumn Header="Chỉ số mới" Binding="{Binding NewIndex}"/>
+                        <DataGridTextColumn Header="Tiêu thụ" Binding="{Binding Usage}"/>
+                        <DataGridTextColumn Header="Bậc" Binding="{Binding Level}"/>
+                        <DataGridTextColumn Header="Đơn giá" Binding="{Binding UnitPrice}"/>
+                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding Total}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <!-- Modified Parking Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Height="auto">
+                        <materialDesign:PackIcon Kind="Car" Width="24" Height="24"
+                                               HorizontalAlignment="Center"/>
+                        <TextBlock Text="Gửi xe" TextAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <DataGrid ItemsSource="{Binding ParkingInvoices}"
+                         AutoGenerateColumns="False"
+                         IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                        <DataGridTextColumn Header="Số xe máy" Binding="{Binding MotorbikeCount}"/>
+                        <DataGridTextColumn Header="Phí xe máy" Binding="{Binding MotorbikeFee}"/>
+                        <DataGridTextColumn Header="Số ô tô" Binding="{Binding CarCount}"/>
+                        <DataGridTextColumn Header="Phí ô tô" Binding="{Binding CarFee}"/>
+                        <DataGridTextColumn Header="Tổng tiền" Binding="{Binding TotalAmount}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <!-- Tab Phí quản lý -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Height="auto">
+                        <materialDesign:PackIcon Kind="OfficeBuilding" Width="24" Height="24"
+                                               HorizontalAlignment="Center"/>
+                        <TextBlock Text="Quản lý" TextAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+
+            <!-- Tab Tổng hợp hóa đơn -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Height="auto">
+                        <materialDesign:PackIcon Kind="FileDocument" Width="24" Height="24"
+                                               HorizontalAlignment="Center"/>
+                        <TextBlock Text="Tổng hợp" TextAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                                Command="{Binding SendInvoicesCommand}"
+                                Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Send" Margin="0,0,8,0"/>
+                                <TextBlock Text="Gửi hóa đơn"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Command="{Binding ExportInvoicesCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FileExport" Margin="0,0,8,0"/>
+                                <TextBlock Text="Xuất PDF"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1"
+                             ItemsSource="{Binding CombinedInvoices}"
+                             AutoGenerateColumns="False"
+                             IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                            <DataGridTextColumn Header="Tiền điện" Binding="{Binding ElectricityFee}"/>
+                            <DataGridTextColumn Header="Tiền nước" Binding="{Binding WaterFee}"/>
+                            <DataGridTextColumn Header="Phí gửi xe" Binding="{Binding ParkingFee}"/>
+                            <DataGridTextColumn Header="Phí quản lý" Binding="{Binding ManagementFee}"/>
+                            <DataGridTextColumn Header="Tổng cộng" Binding="{Binding TotalAmount}"/>
+                            <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+      
+    </Grid>
+</UserControl>

@@ -12,13 +12,11 @@ namespace Services.Interfaces.ServiceSupervisorServices
 {
     public interface ICommunityRoomService
     {
-        Task<ObservableCollection<CommunityRoomBookingDTO>> GetAllBookingsAsync();
-        Task<bool> CreateBookingAsync(CommunityRoomBooking booking);
-        Task<bool> UpdateBookingAsync(CommunityRoomBooking booking);
-        Task<bool> DeleteBookingAsync(int id);
-        Task<byte[]> GenerateBookingReceiptAsync(int bookingId);
-        Task RegisterCommunityRoomAsync(CommunityRoomBookingDTO bookingDTO);
-        Task<IEnumerable<CommunityRoomBookingDTO>> SearchBookingsAsync(string? apartmentCode, DateTime? bookingDate);
-        Task<IEnumerable<ApartmentDTO>> GetAllApartmentsAsync();
+        Task<List<ResponseCommunityRoomDTO>> GetAll();
+        Task<List<ResponseCommunityRoomDTO>> Search(string searchText);
+        Task<List<ResponseCommunityRoomBookingDTO>> GetBookings();
+        Task<bool> CreateBooking(int communityRoomId, int apartmentId, DateOnly bookingDate,
+            TimeOnly startTime, TimeOnly endTime, int numberOfPeople);
+        Task<bool> DeleteBooking(int bookingId);
     }
 }

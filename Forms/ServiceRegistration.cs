@@ -37,7 +37,12 @@ namespace Forms
             services.AddScoped<ApartmentViewModel>();
             services.AddScoped<ParkingViewModel>();
             services.AddScoped<RegisterParkingViewModel>();
+            services.AddScoped<RegisterCommunityRoomViewModel>();
             services.AddScoped<RepairInvoiceViewModel>();
+            services.AddScoped<EquipmentViewModel>();
+            services.AddScoped<PaymentViewModel>();
+            services.AddScoped<InvoiceViewModel>();
+
         }
 
         public static void AddServices(IServiceCollection services)
@@ -47,6 +52,11 @@ namespace Forms
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<ICommunityRoomService, CommunityRoomService>();
             services.AddScoped<IRepairInvoiceService, RepairInvoiceService>();
+            services.AddScoped<IEquipmentService, EquipmentService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
+
+            
         }
 
         public static void AddRepositories(IServiceCollection services)

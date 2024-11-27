@@ -22,108 +22,98 @@ namespace Services.Services.ServiceSupervisorServices
             _unitOfWork = unitOfWork;
         }
 
-        public Task<bool> CreateBookingAsync(CommunityRoomBooking booking)
+        public async Task<List<ResponseCommunityRoomDTO>> GetAll()
         {
-            throw new NotImplementedException();
+            var rooms = await _unitOfWork.GetRepository<CommunityRoom>().Entities
+                .Include(r => r.CommunityRoomBookings)
+                .Select(room => new ResponseCommunityRoomDTO
+                {
+                    CommunityRoomId = room.CommunityRoomId,
+                    RoomName = room.RoomName,
+                    RoomSize = room.RoomSize,
+                    Location = room.Location,
+                    CurrentBookings = room.CommunityRoomBookings.Count
+                }).ToListAsync();
+            return rooms;
         }
 
-        public Task<bool> DeleteBookingAsync(int id)
+        public async Task<List<ResponseCommunityRoomDTO>> Search(string searchText)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(searchText))
+            {
+                return await GetAll();
+            }
+
+            var query = _unitOfWork.GetRepository<CommunityRoom>().Entities
+                .Include(r => r.CommunityRoomBookings)
+                .Where(room =>
+                    room.RoomName.Contains(searchText) ||
+                    room.Location!.Contains(searchText));
+
+            return await query.Select(room => new ResponseCommunityRoomDTO
+            {
+                CommunityRoomId = room.CommunityRoomId,
+                RoomName = room.RoomName,
+                RoomSize = room.RoomSize,
+                Location = room.Location,
+                CurrentBookings = room.CommunityRoomBookings.Count
+            }).ToListAsync();
         }
 
-        public Task<byte[]> GenerateBookingReceiptAsync(int bookingId)
+        public async Task<List<ResponseCommunityRoomBookingDTO>> GetBookings()
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<ObservableCollection<CommunityRoomBookingDTO>> GetAllBookingsAsync()
-        {
-            var bookings = await _unitOfWork
-                .GetRepository<CommunityRoomBooking>()
-                .Entities
+            return await _unitOfWork.GetRepository<CommunityRoomBooking>().Entities
                 .Include(b => b.Apartment)
-                .ToListAsync();
-
-            // Chuyển đổi dữ liệu sang DTO
-            var bookingDTOs = bookings.Select(b => new CommunityRoomBookingDTO
-            {
-                BookingId = b.CommunityRoomBookingId,
-                BookingDate = b.BookingDate,
-                StartTime = b.StartTime,
-                EndTime = b.EndTime,
-                NumberOfPeople = b.NumberOfPeople,
-                ApartmentCode = b.Apartment.ApartmentCode
-            });
-
-            return new ObservableCollection<CommunityRoomBookingDTO>(bookingDTOs);
+                .Include(b => b.CommunityRoom)
+                .Select(booking => new ResponseCommunityRoomBookingDTO
+                {
+                    BookingId = booking.CommunityRoomBookingId,
+                    ApartmentCode = booking.Apartment.ApartmentCode!,
+                    BookingDate = booking.BookingDate,
+                    StartTime = booking.StartTime,
+                    EndTime = booking.EndTime,
+                    NumberOfPeople = booking.NumberOfPeople,
+                    RoomName = booking.CommunityRoom.RoomName
+                }).ToListAsync();
         }
 
-        public async Task RegisterCommunityRoomAsync(CommunityRoomBookingDTO bookingDTO)
+        public async Task<bool> CreateBooking(int communityRoomId, int apartmentId, DateOnly bookingDate,
+            TimeOnly startTime, TimeOnly endTime, int numberOfPeople)
         {
-            var booking = new CommunityRoomBooking
+            try
             {
-                CommunityRoomBookingId = 0, // Để Entity Framework tự sinh ID
-                BookingDate = bookingDTO.BookingDate,
-                StartTime = bookingDTO.StartTime,
-                EndTime = bookingDTO.EndTime,
-                NumberOfPeople = bookingDTO.NumberOfPeople,
-                ApartmentId = (await _unitOfWork
-                    .GetRepository<Apartment>()
-                    .Entities
-                    .FirstOrDefaultAsync(a => a.ApartmentCode == bookingDTO.ApartmentCode))?.ApartmentId ?? throw new Exception("Apartment not found")
-            };
+                var booking = new CommunityRoomBooking
+                {
+                    CommunityRoomId = communityRoomId,
+                    ApartmentId = apartmentId,
+                    BookingDate = bookingDate,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    NumberOfPeople = numberOfPeople
+                };
 
-            await _unitOfWork.GetRepository<CommunityRoomBooking>().InsertAsync(booking);
-            await _unitOfWork.SaveAsync();
-        }
-
-        public async Task<IEnumerable<CommunityRoomBookingDTO>> SearchBookingsAsync(string? apartmentCode, DateTime? bookingDate)
-        {
-            var query = _unitOfWork.GetRepository<CommunityRoomBooking>().Entities.Include(b => b.Apartment).AsQueryable();
-
-            if (!string.IsNullOrEmpty(apartmentCode))
-            {
-                query = query.Where(b => b.Apartment.ApartmentCode == apartmentCode);
+                await _unitOfWork.GetRepository<CommunityRoomBooking>().InsertAsync(booking);
+                await _unitOfWork.SaveAsync();
+                return true;
             }
-
-            if (bookingDate.HasValue)
+            catch
             {
-                query = query.Where(b => b.BookingDate == DateOnly.FromDateTime(bookingDate.Value));
-
+                return false;
             }
-
-            var results = await query.ToListAsync();
-
-            return results.Select(b => new CommunityRoomBookingDTO
-            {
-                BookingId = b.CommunityRoomBookingId,
-                BookingDate = b.BookingDate,
-                StartTime = b.StartTime,
-                EndTime = b.EndTime,
-                NumberOfPeople = b.NumberOfPeople,
-                ApartmentCode = b.Apartment.ApartmentCode
-            });
         }
 
-        public async Task<IEnumerable<ApartmentDTO>> GetAllApartmentsAsync()
+        public async Task<bool> DeleteBooking(int bookingId)
         {
-            var apartments = await _unitOfWork
-                .GetRepository<Apartment>()
-                .Entities
-                .ToListAsync();
-
-            return apartments.Select(a => new ApartmentDTO
+            try
             {
-                ApartmentId = a.ApartmentId,
-                ApartmentCode = a.ApartmentCode,
-            });
-        }
-
-
-        public Task<bool> UpdateBookingAsync(CommunityRoomBooking booking)
-        {
-            throw new NotImplementedException();
+                await _unitOfWork.GetRepository<CommunityRoomBooking>().DeleteAsync(bookingId);
+                await _unitOfWork.SaveAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

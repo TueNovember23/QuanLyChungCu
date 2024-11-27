@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Repositories.Repositories.Entities;
-using Services.DTOs.ApartmentDTO;
 using Services.DTOs.CommunityRoomBookingDTO;
 using Services.Interfaces.ServiceSupervisorServices;
 using System;
@@ -18,107 +16,85 @@ namespace Forms.ViewModels.ServiceSupervisor
         private readonly ICommunityRoomService _communityRoomService;
 
         [ObservableProperty]
-        private ObservableCollection<CommunityRoomBookingDTO> _bookings;
+        private ObservableCollection<ResponseCommunityRoomBookingDTO> bookings = [];
 
         [ObservableProperty]
-        private ObservableCollection<ApartmentDTO> _apartments;
+        private ObservableCollection<ResponseCommunityRoomDTO> rooms = [];
 
         [ObservableProperty]
-        private ApartmentDTO _selectedApartment;
+        private ResponseCommunityRoomDTO? selectedRoom;
 
         [ObservableProperty]
-        private DateTime? _bookingDate;
+        private DateOnly bookingDate = DateOnly.FromDateTime(DateTime.Today);
 
         [ObservableProperty]
-        private TimeSpan? _startTime;
+        private TimeOnly startTime;
 
         [ObservableProperty]
-        private TimeSpan? _endTime;
+        private TimeOnly endTime;
 
         [ObservableProperty]
-        private string _numberOfPeople;
+        private int numberOfPeople;
 
         public RegisterCommunityRoomViewModel(ICommunityRoomService communityRoomService)
         {
             _communityRoomService = communityRoomService;
-
-            // Khởi tạo danh sách
-            Bookings = new ObservableCollection<CommunityRoomBookingDTO>();
-            Apartments = new ObservableCollection<ApartmentDTO>();
-
-            // Load dữ liệu ban đầu
-            Task.Run(async () =>
-            {
-                await LoadBookingsAsync();
-            });
+            _ = LoadDataAsync();
         }
 
-        // Command: Làm mới danh sách đăng ký
-        [RelayCommand]
-        private async Task LoadBookingsAsync()
+        private async Task LoadDataAsync()
         {
-            var data = await _communityRoomService.GetAllBookingsAsync();
-            if (data != null)
+            var roomList = await _communityRoomService.GetAll();
+            Rooms = new ObservableCollection<ResponseCommunityRoomDTO>(roomList);
+
+            var bookingList = await _communityRoomService.GetBookings();
+            Bookings = new ObservableCollection<ResponseCommunityRoomBookingDTO>(bookingList);
+        }
+
+        [RelayCommand]
+        private async Task Refresh()
+        {
+            await LoadDataAsync();
+        }
+
+        [RelayCommand]
+        private async Task Register()
+        {
+            if (SelectedRoom == null) return;
+
+            var success = await _communityRoomService.CreateBooking(
+                SelectedRoom.CommunityRoomId,
+                0, // Need to get current ApartmentId
+                BookingDate,
+                StartTime,
+                EndTime,
+                NumberOfPeople
+            );
+
+            if (success)
             {
-                Bookings = new ObservableCollection<CommunityRoomBookingDTO>(data);
+                await LoadDataAsync();
+                // Show success message
+            }
+            else
+            {
+                // Show error message
             }
         }
 
-        // Command: Load danh sách căn hộ
-        //[RelayCommand]
-        //private async Task LoadApartmentsAsync()
-        //{
-        //    var data = await _communityRoomService.GetAllApartmentsAsync();
-        //    if (data != null)
-        //    {
-        //        Apartments = new ObservableCollection<ApartmentDTO>(data);
-        //    }
-        //}
-
-        // Command: Đăng ký phòng
         [RelayCommand]
-        private async Task RegisterAsync()
+        private async Task DeleteBooking(int bookingId)
         {
-            if (SelectedApartment == null || BookingDate == null || StartTime == null || EndTime == null || string.IsNullOrEmpty(NumberOfPeople))
+            var success = await _communityRoomService.DeleteBooking(bookingId);
+            if (success)
             {
-                // Thông báo lỗi nếu dữ liệu nhập thiếu
-                throw new InvalidOperationException("Vui lòng điền đầy đủ thông tin đăng ký.");
+                await LoadDataAsync();
+                // Show success message
             }
-
-            var newBooking = new CommunityRoomBookingDTO
+            else
             {
-                ApartmentCode = SelectedApartment.ApartmentCode,
-                BookingDate = new DateOnly(BookingDate.Value.Year, BookingDate.Value.Month, BookingDate.Value.Day),
-
-                StartTime = TimeOnly.FromTimeSpan(StartTime.Value),
-                EndTime = TimeOnly.FromTimeSpan(EndTime.Value),
-                NumberOfPeople = int.Parse(NumberOfPeople)
-            };
-
-            await _communityRoomService.RegisterCommunityRoomAsync(newBooking);
-            await LoadBookingsAsync();
-        }
-
-        // Command: Xóa booking
-        [RelayCommand]
-        private async Task DeleteAsync(CommunityRoomBookingDTO booking)
-        {
-            if (booking == null) return;
-
-            await _communityRoomService.DeleteBookingAsync(booking.BookingId);
-            await LoadBookingsAsync();
-        }
-
-        // Command: Tìm kiếm
-        [RelayCommand]
-        private async Task SearchAsync()
-        {
-            var results = await _communityRoomService.SearchBookingsAsync(SelectedApartment?.ApartmentCode, BookingDate);
-            if (results != null)
-            {
-                Bookings = new ObservableCollection<CommunityRoomBookingDTO>(results);
+                // Show error message
             }
         }
-
     }
 }
