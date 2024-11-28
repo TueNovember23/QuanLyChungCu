@@ -15,6 +15,7 @@ namespace Services.Interfaces.AdministrativeStaffServices
         public Task UpdateResident(string id, UpdateResidentDTO dto);
         public Task MoveResidentOut(string residentId);
         public Task MoveResidentIn(string residentId);
+        public Task<Representative> GetPreresentativeByApartmentCode(string apartmentCode);
         public Task<Resident> GetResidentById(string id);
     }
 }

@@ -71,9 +71,10 @@ namespace Forms.ViewModels.AdministrativeStaff
         }
 
         [RelayCommand]
-        private void ViewResentativeCommand(int apartmentId)
+        private void ViewRepresentative(string apartmentCode)
         {
-            System.Diagnostics.Debug.WriteLine($"ViewResentativeCommand called for ApartmentId: {apartmentId}");
+            var f = new UpdateRepresentativeView(_apartmentService, apartmentCode);
+            f.ShowDialog();
         }
 
     }

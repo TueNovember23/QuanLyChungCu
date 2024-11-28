@@ -173,6 +173,13 @@ namespace Services.Services.AdministrativeStaffServices
             await _unitOfWork.SaveAsync();
         }
 
+        public async Task<Representative> GetPreresentativeByApartmentCode(string apartmentCode)
+        {
+            Representative representative = await _unitOfWork.GetRepository<Representative>().Entities
+                .Where(_ => _.Apartment.ApartmentCode == apartmentCode).FirstOrDefaultAsync() ?? throw new BusinessException($"Người đại diện của căn hộ {apartmentCode} không tòn tại");
+            return representative;
+        }
+
         public async Task<List<ResponseApartmentDTO>> GetAllApartmentForViolation()
         {
             try
