@@ -250,6 +250,11 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Invoice_CreatedBy");
+
+            entity.HasMany(e => e.ManagementFeeInvoice)
+                .WithOne(mfi => mfi.Invoice)
+                .HasForeignKey(mfi => mfi.InvoiceId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Maintenance>(entity =>
