@@ -18,14 +18,14 @@ public partial class Apartment
     public string? Status { get; set; }
 
     public int FloorId { get; set; }
-    
-    // public bool IsDeleted { get; set; }
+
+    public string? RepresentativeId { get; set; }
 
     public virtual ICollection<CommunityRoomBooking> CommunityRoomBookings { get; set; } = new List<CommunityRoomBooking>();
 
     public virtual Floor Floor { get; set; } = null!;
 
-    public virtual ICollection<Representative> Representatives { get; set; } = new List<Representative>();
+    public virtual Representative? Representative { get; set; }
 
     public virtual ICollection<Resident> Residents { get; set; } = new List<Resident>();
 

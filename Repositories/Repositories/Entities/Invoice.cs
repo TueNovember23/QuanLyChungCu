@@ -24,4 +24,5 @@ public partial class Invoice
     public virtual ICollection<VechicleInvoice> VechicleInvoices { get; set; } = new List<VechicleInvoice>();
 
     public virtual ICollection<WaterInvoice> WaterInvoices { get; set; } = new List<WaterInvoice>();
+
 }

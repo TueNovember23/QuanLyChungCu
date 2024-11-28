@@ -17,7 +17,5 @@ public partial class Representative
 
     public string? PhoneNumber { get; set; }
 
-    public int ApartmentId { get; set; }
-
-    public virtual Apartment Apartment { get; set; } = null!;
+    public virtual ICollection<Apartment> Apartments { get; set; } = new List<Apartment>();
 }
