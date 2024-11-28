@@ -1,4 +1,6 @@
-﻿namespace Services.DTOs.ResidentDTO
+﻿using Core;
+
+namespace Services.DTOs.ResidentDTO
 {
     public class CreateResidentDTO
     {
@@ -12,6 +14,14 @@
 
         public string? RelationShipWithOwner { get; set; }
 
-        public int ApartmentCode { get; set; }
+        public string ApartmentCode { get; set; } = null!;
+
+        public void Validate()
+        {
+            if (string.IsNullOrEmpty(ResidentId) || string.IsNullOrEmpty(FullName) || string.IsNullOrEmpty(ApartmentCode))
+            {
+                throw new BusinessException("Vui lòng điền đầy đủ thông tin!");
+            }
+        }
     }
 }
