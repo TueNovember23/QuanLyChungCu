@@ -213,15 +213,6 @@ CREATE TABLE ManagementFeeInvoice (
     constraint FK_ManagementFeeInvoice_ManagementFeeHistory foreign key (ManagementFeeHistoryId) references ManagementFee(ManagementFeeId)
 )
 
-CREATE TABLE VechicleInvoice (
-    VechicleInvoiceId int IDENTITY(1, 1) PRIMARY KEY,
-    TotalAmount FLOAT,
-    InvoiceId int not null,
-    ApartmentId int not null,
-    constraint FK_VechicleInvoice_Invoice foreign key (InvoiceId) references Invoice(InvoiceId),
-    constraint FK_VechicleInvoice_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
-)
-
 -- Chi tiết hóa đơn xe (bảng n-n giữa hóa đơn xe và xe)
 CREATE TABLE VechicleInvoiceDetail (
     VechicleInvoiceId int not null,
