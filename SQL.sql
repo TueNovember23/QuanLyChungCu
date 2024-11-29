@@ -414,6 +414,29 @@ BEGIN
 END;
 GO
 
+create table Resident (
+    ResidentId char(12) primary key,
+    FullName nvarchar(50) NOT NULL,
+    Gender nchar(4),
+    DateOfBirth date,
+    RelationShipWithOwner nvarchar(50),
+    MoveInDate date,
+    MoveOutDate date,
+    ApartmentID int not null,
+    constraint FK_Resident_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
+)
+
+INSERT INTO Resident (ResidentId, FullName, Gender, DateOfBirth, RelationShipWithOwner, MoveInDate, MoveOutDate, ApartmentId)
+VALUES
+('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', N'Chủ hộ', '2015-01-01', NULL, 1),
+('123345678910', N'Nguyễn Thị B', N'Nữ', '1991-01-01', N'Vợ', '2015-01-01', NULL, 1),
+('123445678910', N'Nguyễn Thị B', N'Nữ', '2015-01-01', N'Con', '2015-03-01', NULL, 1),
+('123445678911', N'Nguyễn Văn C', N'Nam', '1960-01-01', N'Cha', '2015-03-01', '2023-01-03', 1)
+
+UPDATE Apartment
+SET NumberOfPeople = 3
+WHERE ApartmentId = 1
+
 -- USE [master]
 -- GO
 -- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE

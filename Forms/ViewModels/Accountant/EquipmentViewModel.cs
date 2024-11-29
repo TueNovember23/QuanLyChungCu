@@ -34,10 +34,37 @@ namespace Forms.ViewModels.Accountant
         [ObservableProperty]
         private string? selectedArea;
 
+        [ObservableProperty]
+        private ObservableCollection<string> statusList = new() { "Hoạt động", "Hỏng" };
+
+        [ObservableProperty]
+        private string? selectedStatus;
+
+        [ObservableProperty]
+        private bool isAddingNewEquipment = false;
+
+        [ObservableProperty]
+        private ResponseEquipmentDTO newEquipment;
+
+        [ObservableProperty]
+        private bool isDetailsVisible = false;
+
         public EquipmentViewModel(IEquipmentService equipmentService)
         {
             _equipmentService = equipmentService;
+            newEquipment = CreateNewEquipmentDTO();
             _ = LoadEquipmentsAsync();
+        }
+
+        private ResponseEquipmentDTO CreateNewEquipmentDTO()
+        {
+            return new ResponseEquipmentDTO
+            {
+                EquipmentName = "",
+                Status = "Hoạt động",
+                Description = "",
+                AreaName = ""
+            };
         }
 
         private async Task LoadEquipmentsAsync()
@@ -45,7 +72,6 @@ namespace Forms.ViewModels.Accountant
             var equipmentList = await _equipmentService.GetAll();
             FilteredEquipments = Equipments = new ObservableCollection<ResponseEquipmentDTO>(equipmentList);
 
-            // Load unique areas for the filter
             Areas = new ObservableCollection<string>(
                 equipmentList.Select(e => e.AreaName).Distinct()
             );
@@ -56,28 +82,31 @@ namespace Forms.ViewModels.Accountant
         {
             SearchText = string.Empty;
             SelectedArea = null;
+            SelectedEquipment = null;
+            IsDetailsVisible = false;
             FilteredEquipments = new ObservableCollection<ResponseEquipmentDTO>(Equipments);
         }
 
         [RelayCommand]
         private async Task Search()
         {
-            if (string.IsNullOrWhiteSpace(SearchText) && string.IsNullOrWhiteSpace(SelectedArea))
-            {
-                FilteredEquipments = new ObservableCollection<ResponseEquipmentDTO>(Equipments);
-            }
-            else
-            {
-                var searchResults = await _equipmentService.Search(SearchText);
+            var searchResults = Equipments;
 
-                // Apply area filter if selected
-                if (!string.IsNullOrWhiteSpace(SelectedArea))
-                {
-                    searchResults = searchResults.Where(e => e.AreaName == SelectedArea).ToList();
-                }
-
-                FilteredEquipments = new ObservableCollection<ResponseEquipmentDTO>(searchResults);
+            // Lọc theo tên
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                searchResults = new ObservableCollection<ResponseEquipmentDTO>(
+                    searchResults.Where(e => e.EquipmentName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
             }
+
+            // Lọc theo khu vực
+            if (!string.IsNullOrWhiteSpace(SelectedArea))
+            {
+                searchResults = new ObservableCollection<ResponseEquipmentDTO>(
+                    searchResults.Where(e => e.AreaName == SelectedArea));
+            }
+
+            FilteredEquipments = searchResults;
         }
 
         partial void OnSelectedAreaChanged(string? value)
@@ -86,45 +115,83 @@ namespace Forms.ViewModels.Accountant
         }
 
         [RelayCommand]
-        private void AddNewEquipment()
+        private void ShowAddNewEquipmentForm()
         {
-            // Implement new equipment addition logic
-            System.Diagnostics.Debug.WriteLine("AddNewEquipment called");
+            IsAddingNewEquipment = true;
+            NewEquipment = CreateNewEquipmentDTO();
+            SelectedEquipment = null;
+            IsDetailsVisible = false;
         }
 
         [RelayCommand]
-        private void ScheduleMaintenance()
+        private async Task SaveNewEquipment()
         {
-            if (SelectedEquipment == null) return;
-            System.Diagnostics.Debug.WriteLine($"ScheduleMaintenance called for equipment: {SelectedEquipment.EquipmentId}");
-        }
-
-        [RelayCommand]
-        private void SaveChanges()
-        {
-            if (SelectedEquipment == null) return;
-            System.Diagnostics.Debug.WriteLine($"SaveChanges called for equipment: {SelectedEquipment.EquipmentId}");
-        }
-
-        [RelayCommand]
-        private void CancelChanges()
-        {
-            // Reset selected equipment to original state
-            if (SelectedEquipment != null)
+            if (string.IsNullOrWhiteSpace(NewEquipment.EquipmentName) ||
+                string.IsNullOrWhiteSpace(NewEquipment.AreaName))
             {
-                var original = Equipments.FirstOrDefault(e => e.EquipmentId == SelectedEquipment.EquipmentId);
-                if (original != null)
-                {
-                    SelectedEquipment = original;
-                }
+                // Handle validation error
+                return;
             }
+
+            await _equipmentService.Add(NewEquipment);
+            await LoadEquipmentsAsync();
+            IsAddingNewEquipment = false;
+            NewEquipment = CreateNewEquipmentDTO();
         }
 
         [RelayCommand]
-        private void ReportIssue()
+        private void CancelAddNewEquipment()
+        {
+            IsAddingNewEquipment = false;
+            NewEquipment = CreateNewEquipmentDTO();
+        }
+
+        [RelayCommand]
+        private async Task SaveChanges()
         {
             if (SelectedEquipment == null) return;
-            System.Diagnostics.Debug.WriteLine($"ReportIssue called for equipment: {SelectedEquipment.EquipmentId}");
+
+            await _equipmentService.Update(SelectedEquipment);
+            await LoadEquipmentsAsync();
+            IsDetailsVisible = false;
         }
+
+        [RelayCommand]
+        private async Task DeleteEquipment()
+        {
+            if (SelectedEquipment == null) return;
+
+            await _equipmentService.SoftDelete(SelectedEquipment.EquipmentId);
+            Equipments.Remove(SelectedEquipment);
+            FilteredEquipments.Remove(SelectedEquipment);
+            SelectedEquipment = null;
+            IsDetailsVisible = false;
+        }
+
+        [RelayCommand]
+        private async Task ReportIssue()
+        {
+            if (SelectedEquipment == null) return;
+
+            SelectedEquipment.Status = "Hỏng";
+            await SaveChanges();
+        }
+
+        partial void OnSelectedEquipmentChanged(ResponseEquipmentDTO? value)
+            {
+            if (value == null)
+            {
+                IsDetailsVisible = false;
+                return;
+            }
+
+            SelectedStatus = value.Status;
+            SelectedEquipment.EquipmentName = value.EquipmentName;
+            SelectedEquipment.AreaName = value.AreaName;
+            SelectedEquipment.LastMaintenanceDate = value.LastMaintenanceDate;
+            IsDetailsVisible = true;
+
+        }
+
     }
 }

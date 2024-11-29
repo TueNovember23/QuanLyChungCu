@@ -75,14 +75,14 @@ namespace Services.Services.AccountantServices
                     i.Month == month &&
                     i.Year == year &&
                     (i.WaterInvoices.Any(w => w.Apartment.ApartmentCode!.Contains(searchText)) ||
-                     i.Status.Contains(searchText)));
+                     i.Status.Contains(searchText))).ToList();
 
             if (status != "Tất cả")
             {
-                query = query.Where(i => i.Status == status);
+                query = query.Where(i => i.Status == status).ToList();
             }
 
-            return await query.Select(invoice => new ResponsePaymentDTO
+            return query.Select(invoice => new ResponsePaymentDTO
             {
                 InvoiceId = invoice.InvoiceId,
                 InvoiceCode = $"INV{invoice.InvoiceId:D6}",
@@ -94,7 +94,7 @@ namespace Services.Services.AccountantServices
                 ? invoice.CreatedDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(15)
                 : DateTime.MinValue,
                 Status = invoice.Status
-            }).ToListAsync();
+            }).ToList();
         }
 
         // Implement other interface methods...

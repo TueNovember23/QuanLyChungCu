@@ -25,9 +25,9 @@
                     <materialDesign:PackIcon Kind="WindowMinimize" />
                 </Button>
 
-                <!--<Button Style="{StaticResource MaterialDesignFloatingActionButton}" Command="{Binding MaximizeRestoreCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Height="35" Width="35">
+                <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Command="{Binding MaximizeRestoreCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Height="35" Width="35">
                     <materialDesign:PackIcon Kind="WindowMaximize" />
-                </Button>-->
+                </Button>
 
                 <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Height="35" Width="35">
                     <materialDesign:PackIcon Kind="WindowClose" />

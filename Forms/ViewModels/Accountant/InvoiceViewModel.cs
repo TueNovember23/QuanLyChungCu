@@ -17,13 +17,16 @@ namespace Forms.ViewModels.Accountant
         private readonly IInvoiceService _invoiceService;
 
         [ObservableProperty]
-        private ObservableCollection<ResponseInvoiceDTO> invoices = [];
+        private ObservableCollection<ResponseInvoiceDTO> totalInvoices = [];
 
         [ObservableProperty]
-        private ObservableCollection<ResponseInvoiceDTO> filteredInvoices = [];
+        private ObservableCollection<ResponseWaterInvoiceDTO> waterInvoices = [];
 
         [ObservableProperty]
-        private string searchText = "";
+        private ObservableCollection<ResponseManagementFeeInvoiceDTO> managementInvoices = [];
+
+        [ObservableProperty]
+        private ObservableCollection<ResponseVehicleInvoiceDTO> vehicleInvoices = [];
 
         [ObservableProperty]
         private int selectedMonth;
@@ -37,8 +40,8 @@ namespace Forms.ViewModels.Accountant
         public InvoiceViewModel(IInvoiceService invoiceService)
         {
             _invoiceService = invoiceService;
-            LoadInvoicesAsync();
             InitializeFilters();
+            LoadInvoicesAsync();
         }
 
         private void InitializeFilters()
@@ -52,33 +55,15 @@ namespace Forms.ViewModels.Accountant
             IsLoading = true;
             try
             {
-                var invoiceList = await _invoiceService.GetAll();
-                FilteredInvoices = Invoices = new ObservableCollection<ResponseInvoiceDTO>(invoiceList);
+                var invoices = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
+                TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices.TotalInvoices);
+                WaterInvoices = new ObservableCollection<ResponseWaterInvoiceDTO>(invoices.WaterInvoices);
+                ManagementInvoices = new ObservableCollection<ResponseManagementFeeInvoiceDTO>(invoices.ManagementInvoices);
+                VehicleInvoices = new ObservableCollection<ResponseVehicleInvoiceDTO>(invoices.VehicleInvoices);
             }
             finally
             {
                 IsLoading = false;
-            }
-        }
-
-        [RelayCommand]
-        private void Refresh()
-        {
-            SearchText = string.Empty;
-            FilteredInvoices = new ObservableCollection<ResponseInvoiceDTO>(Invoices);
-        }
-
-        [RelayCommand]
-        private async Task Search()
-        {
-            if (string.IsNullOrWhiteSpace(SearchText))
-            {
-                FilteredInvoices = new ObservableCollection<ResponseInvoiceDTO>(Invoices);
-            }
-            else
-            {
-                var result = await _invoiceService.Search(SearchText);
-                FilteredInvoices = new ObservableCollection<ResponseInvoiceDTO>(result);
             }
         }
 
@@ -90,20 +75,6 @@ namespace Forms.ViewModels.Accountant
             {
                 await _invoiceService.GenerateInvoices(SelectedMonth, SelectedYear);
                 await LoadInvoicesAsync();
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        [RelayCommand]
-        private async Task SendInvoices()
-        {
-            IsLoading = true;
-            try
-            {
-                await _invoiceService.SendInvoices(SelectedMonth, SelectedYear);
             }
             finally
             {

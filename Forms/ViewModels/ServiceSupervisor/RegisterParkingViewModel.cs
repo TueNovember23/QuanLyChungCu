@@ -1,23 +1,28 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core;
+using QRCoder;
 using Services.DTOs.ApartmentDTO;
 using Services.DTOs.VehicleDTO;
 using Services.Interfaces.ServiceSupervisorServices;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace Forms.ViewModels.ServiceSupervisor
 {
     public partial class RegisterParkingViewModel : ObservableObject
     {
-        private readonly IVehicleService _vehicleService;
-
+        private readonly IRegisterVehicleService _registerVehicleService;
 
         [ObservableProperty]
         private ObservableCollection<ApartmentDTO> _apartments = new();
@@ -49,23 +54,17 @@ namespace Forms.ViewModels.ServiceSupervisor
         [ObservableProperty]
         private bool _isPaymentCompleted = false;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         private bool _canPrintCard = false;
 
         [ObservableProperty]
-        private float _paymentAmount;
+        private ObservableCollection<string> _statuses = new() { "Đang gửi", "Chưa gửi" };
 
         [ObservableProperty]
-        private ObservableCollection<string> _paymentMethods = new() { "Tiền mặt", "Ví điện tử" };
+        private string _selectedStatus = string.Empty;
 
         [ObservableProperty]
-        private string _selectedPaymentMethod = string.Empty;
-
-        [ObservableProperty]
-        private ObservableCollection<string> _paymentStatuses = new() { "Đã thanh toán", "Chưa thanh toán" };
-
-        [ObservableProperty]
-        private string _selectedPaymentStatus = string.Empty;
+        private string _selectedApartmentCode = string.Empty;
 
         public ICommand SearchCommand { get; }
         public ICommand RegisterCommand { get; }
@@ -102,7 +101,7 @@ namespace Forms.ViewModels.ServiceSupervisor
         partial void OnSelectedVehicleTypeChanged(string value)
         {
             IsLicensePlateRequired = value != "Xe đạp";
-            
+
             if (!IsLicensePlateRequired)
             {
                 VehicleNumber = string.Empty;
@@ -137,15 +136,13 @@ namespace Forms.ViewModels.ServiceSupervisor
             number = number.Replace(" ", "").Replace("-", "").ToUpper();
 
             string pattern = @"^\d{2}[A-Z]{1,2}\d{4,5}$";
-            
+
             var isValid = Regex.IsMatch(number, pattern);
             Debug.WriteLine($"Xác nhận biển số xe: {number} -> {isValid}");
             return isValid;
         }
 
-        [ObservableProperty]
-        private string _selectedApartmentCode = string.Empty;
-
+       
 
         partial void OnSelectedApartmentChanged(ApartmentDTO? value)
         {
@@ -156,32 +153,31 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
         }
 
-
-        public RegisterParkingViewModel(IVehicleService vehicleService)
+        public RegisterParkingViewModel(IRegisterVehicleService registerVehicleService)
         {
-            _vehicleService = vehicleService;
+            _registerVehicleService = registerVehicleService;
             SearchCommand = new RelayCommand(SearchApartments);
-            RegisterCommand = new RelayCommand(async () => await RegisterVehicleAsync()); // Sửa ở đây
+            RegisterCommand = new RelayCommand(async () => await RegisterVehicleAsync());
 
             LoadApartmentsAsync();
         }
 
         private async void SearchApartments()
         {
-            var apartmentList = await _vehicleService.SearchApartmentsAsync(SearchText);
+            var apartmentList = await _registerVehicleService.SearchApartmentsAsync(SearchText);
             Apartments = new ObservableCollection<ApartmentDTO>(apartmentList);
         }
 
         private async void LoadApartmentsAsync()
         {
-            var apartmentList = await _vehicleService.GetAllApartmentsAsync();
+            var apartmentList = await _registerVehicleService.GetAllApartmentsAsync();
             Apartments = new ObservableCollection<ApartmentDTO>(apartmentList);
         }
 
 
         private async Task RegisterVehicleAsync()
         {
-            if (IsProcessing || !ValidateForm()) return; 
+            if (IsProcessing || !ValidateForm()) return;
 
             try
             {
@@ -190,30 +186,26 @@ namespace Forms.ViewModels.ServiceSupervisor
                 var normalizedNumber = !IsLicensePlateRequired ? string.Empty :
                                         VehicleNumber.Trim().Replace(" ", "").Replace("-", "").ToUpper();
 
-                var existingVehicle = await _vehicleService.GetVehicleByNumberAsync(normalizedNumber);
+                var existingVehicle = await _registerVehicleService.GetVehicleByNumberAsync(normalizedNumber);
                 if (existingVehicle != null)
                 {
                     MessageBox.Show($"Biển số xe {VehicleNumber} đã được đăng ký!");
                     return;
                 }
 
-                var vehicle = new VehicleDTO
+                 var vehicle = new VehicleDTO
                 {
                     VehicleNumber = normalizedNumber,
                     VehicleType = SelectedVehicleType,
-                    VehicleOwner = SelectedApartment?.OwnerName ?? string.Empty,
-                    ApartmentId = SelectedApartment?.ApartmentId ?? 0
-                    
+                    VehicleOwner = VehicleOwner,
+                    ApartmentId = SelectedApartment?.ApartmentId ?? 0,
+                    RegisterDate = DateTime.Now,
+                    Status = "Đang gửi"
                 };
 
-                await _vehicleService.RegisterVehicleAsync(vehicle);
-
-                PaymentAmount = _vehicleService.CalculatePaymentAmount(SelectedVehicleType);
-                IsPaymentCompleted = false;
-                CanPrintCard = false;
+                var result = await _registerVehicleService.RegisterVehicleAsync(vehicle);
 
                 MessageBox.Show("Đăng ký xe thành công!");
-                ClearForm();
             }
             catch (BusinessException bex)
             {
@@ -226,53 +218,7 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
             finally
             {
-                IsProcessing = false; 
-            }
-        }
-
-        //[RelayCommand]
-        private async Task ProcessPaymentAsync()
-        {
-            if (IsProcessing || string.IsNullOrEmpty(SelectedPaymentMethod))
-            {
-                MessageBox.Show("Vui lòng chọn phương thức thanh toán!");
-                return;
-            }
-
-            try
-            {
-                IsProcessing = true;
-                await Task.Delay(10);
-                IsPaymentCompleted = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi thanh toán!");
-                Debug.WriteLine($"Lỗi khi thanh toán: {ex}");
-            }
-            finally
-            {
                 IsProcessing = false;
-            }
-        }
-
-
-        [RelayCommand]
-        private void PrintCard()
-        {
-            if (!IsPaymentCompleted)
-            {
-                MessageBox.Show("Vui lòng thanh toán trước khi in thẻ xe!");
-                return;
-            }
-
-            try
-            {
-                MessageBox.Show("In thẻ xe thành công!");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi in thẻ: {ex.Message}");
             }
         }
 
@@ -280,11 +226,9 @@ namespace Forms.ViewModels.ServiceSupervisor
         {
             VehicleNumber = string.Empty;
             SelectedVehicleType = string.Empty;
-            //VehicleOwner = string.Empty;
+            VehicleOwner = string.Empty; 
+            SelectedApartment = null;
             SelectedApartmentCode = string.Empty;
-            PaymentAmount = 0;
-            IsPaymentCompleted = false;
-            CanPrintCard = false;
         }
 
     }

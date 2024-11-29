@@ -4,12 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:oxy="http://oxyplot.org/wpf"
              xmlns:local="clr-namespace:Forms.Views.AdministrativeStaff"
              xmlns:header="clr-namespace:Forms.Views"
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1100">
 
-    <Grid HorizontalAlignment="Left" Width="1100">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -20,52 +21,164 @@
 
         <!-- Main Content -->
         <Grid Grid.Row="1" Margin="16">
-            <TabControl Background="{DynamicResource MaterialDesignPaper}">
-                <!-- Tab cho Khu vực -->
-                <TabItem Header="Khu vực" Background="{DynamicResource MaterialDesignCardBackground}">
-                    <StackPanel Margin="16">
-                        <TextBox materialDesign:HintAssist.Hint="Tìm kiếm khu vực" Margin="0,0,0,16" Text="{Binding SearchAreaText}" Background="{DynamicResource MaterialDesignPaper}"/>
-                        <ListView x:Name="AreaListView" ItemsSource="{Binding FilteredAreas}" SelectedItem="{Binding SelectedArea}" SelectionMode="Single">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Control Bar -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16" HorizontalAlignment="Right">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                        Margin="8,0"
+                        Command="{Binding RefreshDataCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Refresh" Margin="0,0,8,0"/>
+                        <TextBlock Text="Làm mới"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+
+            <TabControl Grid.Row="1" Background="{DynamicResource MaterialDesignPaper}">
+                <!-- Tab Khu vực -->
+                <TabItem Header="Khu vực">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" 
+                                materialDesign:HintAssist.Hint="Tìm kiếm khu vực"
+                                Text="{Binding SearchAreaText, UpdateSourceTrigger=PropertyChanged}"
+                                Margin="0,0,16,0"/>
+                        </Grid>
+
+                        <ListView Grid.Row="1" 
+                            Margin="16,0"
+                            ItemsSource="{Binding Areas}"
+                            SelectedItem="{Binding SelectedArea}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Tên khu vực" DisplayMemberBinding="{Binding AreaName}" Width="200"/>
+                                    <GridViewColumn Header="Tên khu vực" DisplayMemberBinding="{Binding AreaName}" Width="220"/>
                                     <GridViewColumn Header="Vị trí" DisplayMemberBinding="{Binding Location}" Width="300"/>
+                                    <GridViewColumn Header="Số Block" DisplayMemberBinding="{Binding BlockCount}" Width="120"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
-                    </StackPanel>
+                    </Grid>
                 </TabItem>
 
-                <!-- Tab cho Block -->
-                <TabItem Header="Block" Background="{DynamicResource MaterialDesignCardBackground}">
-                    <StackPanel Margin="16">
-                        <ComboBox materialDesign:HintAssist.Hint="Chọn khu vực" Margin="0,0,0,16" ItemsSource="{Binding Areas}" DisplayMemberPath="AreaName" SelectedItem="{Binding SelectedArea}" Background="{DynamicResource MaterialDesignPaper}"/>
-                        <ListView x:Name="BlockListView" ItemsSource="{Binding FilteredBlocks}" SelectedItem="{Binding SelectedBlock}" SelectionMode="Single">
+                <!-- Tab Block -->
+                <TabItem Header="Block">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Margin="16">
+                            <ComboBox materialDesign:HintAssist.Hint="Chọn khu vực" 
+                                    Margin="0,0,0,16"
+                                    ItemsSource="{Binding Areas}"
+                                    DisplayMemberPath="AreaName"
+                                    SelectedItem="{Binding SelectedArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0"
+                                        materialDesign:HintAssist.Hint="Tìm kiếm block"
+                                        Text="{Binding SearchBlockText, UpdateSourceTrigger=PropertyChanged}"
+                                        Margin="0,0,16,0"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- ListView -->
+                        <ListView Grid.Row="1" 
+                                Margin="16,0"
+                                ItemsSource="{Binding Blocks}"
+                                SelectedItem="{Binding SelectedBlock}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Mã block" DisplayMemberBinding="{Binding BlockCode}" Width="100"/>
-                                    <GridViewColumn Header="Số tầng" DisplayMemberBinding="{Binding NumberOfFloor}" Width="100"/>
+                                    <GridViewColumn Header="Mã Block" 
+                                                DisplayMemberBinding="{Binding BlockCode}" 
+                                                Width="180"/>
+                                    <GridViewColumn Header="Số tầng" 
+                                                DisplayMemberBinding="{Binding NumberOfFloor}" 
+                                                Width="180"/>
+                                    <GridViewColumn Header="Khu vực" 
+                                                DisplayMemberBinding="{Binding AreaId}" 
+                                                Width="220"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
-                    </StackPanel>
+                    </Grid>
                 </TabItem>
 
-                <!-- Tab cho Tầng -->
-                <TabItem Header="Tầng" Background="{DynamicResource MaterialDesignCardBackground}">
-                    <StackPanel Margin="16">
-                        <ComboBox materialDesign:HintAssist.Hint="Chọn block" Margin="0,0,0,16" ItemsSource="{Binding Blocks}" DisplayMemberPath="BlockCode" SelectedItem="{Binding SelectedBlock}" Background="{DynamicResource MaterialDesignPaper}"/>
-                        <ListView x:Name="FloorListView" ItemsSource="{Binding FilteredFloors}" SelectedItem="{Binding SelectedFloor}" SelectionMode="Single">
+                <!-- Tab Tầng -->
+                <TabItem Header="Tầng">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Margin="16">
+                            <ComboBox materialDesign:HintAssist.Hint="Chọn Block" 
+                                Margin="0,0,0,16"
+                                ItemsSource="{Binding Blocks}"
+                                DisplayMemberPath="BlockCode"
+                                SelectedItem="{Binding SelectedBlock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0"
+                                    materialDesign:HintAssist.Hint="Tìm kiếm tầng"
+                                    Text="{Binding SearchFloorText, UpdateSourceTrigger=PropertyChanged}"
+                                    Margin="0,0,16,0"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <ListView Grid.Row="1" 
+                                Margin="16,0" 
+                                ItemsSource="{Binding Floors}"
+                                SelectedItem="{Binding SelectedFloor}"
+                                Background="{DynamicResource MaterialDesignPaper}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Số tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="100"/>
-                                    <GridViewColumn Header="Số căn hộ" DisplayMemberBinding="{Binding NumberOfApartment}" Width="150"/>
+                                    <GridViewColumn Header="Số tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="180"/>
+                                    <GridViewColumn Header="Số căn hộ" DisplayMemberBinding="{Binding NumberOfApartment}" Width="180"/>
+                                    <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="180"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
-                    </StackPanel>
+                    </Grid>
                 </TabItem>
             </TabControl>
+
+            <materialDesign:Card 
+                Grid.RowSpan="2"
+                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center"
+                UniformCornerRadius="8">
+                <ProgressBar 
+                    Style="{StaticResource MaterialDesignCircularProgressBar}"
+                    IsIndeterminate="True"
+                    Margin="16"/>
+            </materialDesign:Card>
         </Grid>
     </Grid>
 </UserControl>

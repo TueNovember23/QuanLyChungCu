@@ -181,7 +181,6 @@ namespace Services.Services.ServiceSupervisorServices
                 return new List<VehicleResponseDTO>();
             }
         }
-
         public async Task<List<VehicleResponseDTO>> SearchVehiclesAsync(string searchText)
         {
             var vehicleRepository = _unitOfWork.GetRepository<Vehicle>();

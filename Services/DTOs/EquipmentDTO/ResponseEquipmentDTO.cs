@@ -15,6 +15,4 @@ namespace Services.DTOs.EquipmentDTO
         public string Status { get; set; } = null!;
         public DateTime? LastMaintenanceDate { get; set; }
     }
-
- 
 }

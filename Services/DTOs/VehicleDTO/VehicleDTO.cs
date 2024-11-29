@@ -14,5 +14,22 @@ namespace Services.DTOs.VehicleDTO
         public int ApartmentId { get; set; }
         public DateTime RegisterDate { get; set; }
         public string Status { get; set; } = null!;
+
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+
+        public bool IsValid()
+        {
+            if (string.IsNullOrEmpty(VehicleType))
+                return false;
+
+            if (VehicleType != "Xe đạp" && string.IsNullOrEmpty(VehicleNumber))
+                return false;
+
+            if (ApartmentId <= 0)
+                return false;
+
+            return true;
+        }
     }
 }

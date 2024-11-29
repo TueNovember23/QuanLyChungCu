@@ -38,6 +38,7 @@ namespace Repositories.Repositories
             GC.SuppressFinalize(this);
         }
 
+
         public void BeginTransaction()
         {
             _dbContext.Database.BeginTransaction();

@@ -18,5 +18,6 @@ namespace Services.DTOs.InvoiceDTO
         public double ManagementFee { get; set; }
         public double TotalAmount { get; set; }
         public string Status { get; set; } = null!;
+        public DateOnly? CreatedDate { get; set; }
     }
 }

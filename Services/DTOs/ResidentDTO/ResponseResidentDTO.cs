@@ -15,12 +15,16 @@ namespace Services.DTOs.ResidentDTO
 
         public string? Gender { get; set; }
 
-        public DateOnly? DateOfBirth { get; set; }
+        public string? DateOfBirth { get; set; }
 
         public string? RelationShipWithOwner { get; set; }
 
-        public DateOnly? MoveInDate { get; set; }
+        public string? MoveInDate { get; set; }
+
+        public string? MoveOutDate { get; set; }
 
         public string Apartment { get; set; } = "";
+
+        public string IsCurrentlyLiving = "";
     }
 }

@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Height="850" Width="1200" WindowStartupLocation="CenterScreen"
         WindowStyle="None" ResizeMode="NoResize" Background="{x:Null}" AllowsTransparency="True" Loaded="Window_Loaded"
-        WindowState="Maximized">
+        StateChanged="Window_StateChanged">
     <Window.Resources>
         <Storyboard x:Key="ExpandSidebar">
             <DoubleAnimation Storyboard.TargetName="Sidebar" Storyboard.TargetProperty="Width"
@@ -39,7 +39,8 @@
                                     Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="ApartmentViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="HomeVariant"/>
-                                    <TextBlock x:Name="ApartmentText" Text="Danh sách căn hộ" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="ApartmentText" Text="Quản lý căn hộ" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
@@ -49,8 +50,8 @@
                                 Width="190" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center"
                                 Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="RegulationViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="FileDocument"/>
-                                    <TextBlock x:Name="RegulationText" Text="Regulation View" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <materialDesign:PackIcon Kind="RulerSquare"/>
+                                    <TextBlock x:Name="RegulationText" Text="Quản lý nội quy" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
@@ -60,8 +61,8 @@
                                  Width="190" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center"
                                 Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="GeneralInfoViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="Information"/>
-                                    <TextBlock x:Name="GeneralInfoText" Text="General Info View" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <materialDesign:PackIcon Kind="Building"/>
+                                    <TextBlock x:Name="GeneralInfoText" Text="Thông tin tổng quan" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
@@ -69,10 +70,10 @@
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" 
-                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="DepartmentViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="CalendarBlankOutline"/>
-                                    <TextBlock x:Name="CalendarText" Text="Calendar" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <materialDesign:PackIcon Kind="People"/>
+                                    <TextBlock x:Name="CalendarText" Text="Quản lý bộ phận" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>

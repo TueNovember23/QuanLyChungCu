@@ -34,10 +34,11 @@ namespace Services.Services.AccountantServices
                     AreaName = e.Area.AreaName,
                     Status = e.Status,
                     LastMaintenanceDate = e.Maintenances
-                    .OrderByDescending(m => m.MaintanaceDate)
-                    .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
-                    .FirstOrDefault()
-                }).ToListAsync();
+                        .OrderByDescending(m => m.MaintanaceDate)
+                        .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
 
             return equipment;
         }
@@ -64,9 +65,9 @@ namespace Services.Services.AccountantServices
                     AreaName = e.Area.AreaName,
                     Status = e.Status,
                     LastMaintenanceDate = e.Maintenances
-                    .OrderByDescending(m => m.MaintanaceDate)  // Sửa thành MaintanaceDate
-                    .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))          // Sửa thành MaintanaceDate 
-                    .FirstOrDefault()
+                        .OrderByDescending(m => m.MaintanaceDate)
+                        .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
+                        .FirstOrDefault()
                 });
 
             return await query.ToListAsync();
@@ -78,6 +79,46 @@ namespace Services.Services.AccountantServices
                 .Include(e => e.Area)
                 .Include(e => e.Maintenances)
                 .FirstOrDefaultAsync(e => e.EquipmentId == id && !e.IsDeleted);
+        }
+
+        public async Task Add(ResponseEquipmentDTO equipmentDto)
+        {
+            var equipment = new Equipment
+            {
+                EquipmentName = equipmentDto.EquipmentName,
+                Discription = equipmentDto.Description,
+                Status = equipmentDto.Status,
+                IsDeleted = false
+            };
+
+            var repository = _unitOfWork.GetRepository<Equipment>();
+            await repository.InsertAsync(equipment);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task Update(ResponseEquipmentDTO equipmentDto)
+        {
+            var equipment = await GetEquipmentById(equipmentDto.EquipmentId);
+            if (equipment == null) return;
+
+            equipment.EquipmentName = equipmentDto.EquipmentName;
+            equipment.Discription = equipmentDto.Description;
+            equipment.Status = equipmentDto.Status;
+
+            var repository = _unitOfWork.GetRepository<Equipment>();
+            repository.Update(equipment);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task SoftDelete(int equipmentId)
+        {
+            var equipment = await GetEquipmentById(equipmentId);
+            if (equipment == null) return;
+
+            equipment.IsDeleted = true;
+            var repository = _unitOfWork.GetRepository<Equipment>();
+            repository.Update(equipment);
+            await _unitOfWork.SaveAsync();
         }
     }
 }

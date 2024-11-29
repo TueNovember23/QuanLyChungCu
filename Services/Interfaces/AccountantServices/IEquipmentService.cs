@@ -13,5 +13,8 @@ namespace Services.Interfaces.AccountantServices
         Task<List<ResponseEquipmentDTO>> GetAll();
         Task<List<ResponseEquipmentDTO>> Search(string searchText);
         Task<Equipment?> GetEquipmentById(int id);
+        Task Add(ResponseEquipmentDTO equipment);
+        Task Update(ResponseEquipmentDTO equipment);
+        Task SoftDelete(int equipmentId);
     }
 }

@@ -9,9 +9,7 @@ namespace Services.Interfaces.AccountantServices
 {
     public interface IInvoiceService
     {
-        Task<List<ResponseInvoiceDTO>> GetAll();
-        Task<List<ResponseInvoiceDTO>> Search(string searchText);
+        Task<InvoiceGroupDTO> GetAllInvoices(int month, int year);
         Task GenerateInvoices(int month, int year);
-        Task SendInvoices(int month, int year);
     }
 }

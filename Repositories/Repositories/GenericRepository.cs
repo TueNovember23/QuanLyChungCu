@@ -72,6 +72,14 @@ namespace Repositories.Repositories
             return await _dbSet.Skip(index * pageSize).Take(pageSize).ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> GetBlocAsync(int pageIndex, int pageSize)
+        {
+            return await Entities
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
         public T GetById(object id)
         {
 

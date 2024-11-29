@@ -34,7 +34,7 @@ namespace Forms
             }
             else
             {
-                MessageBox.Show("Đã xảy ra lỗi không xác định. Vui lòng liên hệ bộ phận hỗ trợ.", "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Đã xảy ra lỗi không xác định. Vui lòng liên hệ bộ phận hỗ trợ: {e.Exception.Message}", "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
                 e.Handled = true;
             }
         }

@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1100">
 
-    <Grid HorizontalAlignment="Left" Width="1100">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -21,35 +21,174 @@
         <!-- Main Content -->
         <Grid Grid.Row="1" Margin="16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="167*"/>
-                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Danh sách nội quy -->
-            <materialDesign:Card Grid.Column="0" Margin="16,16,16,16" UniformCornerRadius="20">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Danh sách nội quy" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <ListView x:Name="RegulationListView" ItemsSource="{Binding Regulations}" SelectedItem="{Binding SelectedRegulation}" SelectionMode="Single">
+            <!-- Left Panel - Danh sách nội quy -->
+            <materialDesign:Card Grid.Column="0" Margin="16" UniformCornerRadius="20">
+                <DockPanel Margin="16">
+                    <!-- Search and Filter Bar -->
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Search Box -->
+                            <TextBox Grid.Column="0"
+                            materialDesign:HintAssist.Hint="Tìm kiếm nội quy..."
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Command="{Binding SearchCommand}" Key="Return"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+
+                        </Grid>
+
+                        <!-- Category Filter and Refresh Row -->
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox Grid.Column="0"
+                                    materialDesign:HintAssist.Hint="Phân loại"
+                                    ItemsSource="{Binding Categories}"
+                                    SelectedItem="{Binding SelectedCategory}"/>
+
+                            <!-- Refresh Button -->
+                            <Button Grid.Column="1" Margin="8,0,0,0"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    Command="{Binding LoadRegulationsCommand}"
+                                    ToolTip="Làm mới danh sách">
+                                <materialDesign:PackIcon Kind="Refresh"/>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Regulations List -->
+                    <ListView x:Name="RegulationListView" 
+                     ItemsSource="{Binding Regulations}" 
+                     SelectedItem="{Binding SelectedRegulation}" d:ItemsSource="{d:SampleData ItemCount=5}">
+                        <!-- ListView Columns -->
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Tiêu đề" DisplayMemberBinding="{Binding Title}" Width="200"/>
-                                <GridViewColumn Header="Nội dung" DisplayMemberBinding="{Binding Content}" Width="300"/>
-                                <GridViewColumn Header="Ngày tạo" DisplayMemberBinding="{Binding CreatedDate}" Width="150"/>
+                                <GridViewColumn Header="Phân loại" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+
+                                                <TextBlock Text="{Binding Category}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Tiêu đề" 
+                                                DisplayMemberBinding="{Binding Title}" 
+                                                Width="200"/>
+                                <!--<GridViewColumn Header="Ngày tạo" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding CreatedDate, StringFormat={}{0:dd/MM/yyyy}}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>-->
+                                <GridViewColumn Header="Mức độ" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Priority}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </DockPanel>
             </materialDesign:Card>
 
-            <!-- Form thêm/chỉnh sửa nội quy -->
-            <materialDesign:Card Grid.Column="1" Margin="16,16,16,16" UniformCornerRadius="20">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Thông tin nội quy" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Tiêu đề" Margin="0,0,0,16" Text="{Binding SelectedRegulation.Title}"/>
-                    <TextBox materialDesign:HintAssist.Hint="Nội dung" Margin="0,0,0,16" Text="{Binding SelectedRegulation.Content}" AcceptsReturn="True" Height="100"/>
-                    <Button Content="Lưu" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,0,16" Command="{Binding SaveCommand}"/>
-                    <Button Content="Xóa" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,0,16" Command="{Binding DeleteCommand}" Visibility="{Binding IsDeleteVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                </StackPanel>
+            <!-- Right Panel - Form chi tiết -->
+            <materialDesign:Card Grid.Column="1" Margin="16" UniformCornerRadius="20">
+                <ScrollViewer>
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Thông tin nội quy" 
+                          Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                          Margin="0,0,0,16"/>
+
+                        <!-- Basic Info -->
+                        <TextBox materialDesign:HintAssist.Hint="Tiêu đề" 
+                         Margin="0,0,0,16"
+                         Text="{Binding SelectedRegulation.Title}"/>
+
+                        <!-- Category & Priority -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox Grid.Column="0" Margin="0,0,8,0"
+                                    materialDesign:HintAssist.Hint="Phân loại"
+                                    ItemsSource="{Binding Categories}"
+                                    SelectedItem="{Binding SelectedRegulation.Category}"/>
+
+                            <ComboBox Grid.Column="1" Margin="8,0,0,0"
+                                    materialDesign:HintAssist.Hint="Mức độ ưu tiên"
+                                    ItemsSource="{Binding PriorityLevels}"
+                                    SelectedItem="{Binding SelectedRegulation.Priority}"/>
+                        </Grid>
+
+                        <!-- Rich Text Editor -->
+                        <RichTextBox Height="200" 
+                                    Margin="0,0,0,16"
+                                    materialDesign:HintAssist.Hint="Nội dung"
+                                    AcceptsReturn="True"
+                                    VerticalScrollBarVisibility="Auto">
+                            <FlowDocument>
+                                <Paragraph>
+                                    <Run Text="{Binding SelectedRegulation.Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </Paragraph>
+                            </FlowDocument>
+                        </RichTextBox>
+
+                        <!-- Active Status -->
+                        <CheckBox Content="Đang áp dụng" 
+                         Margin="0,0,0,16"
+                         IsChecked="{Binding SelectedRegulation.IsActive}"/>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Tạo mới"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Command="{Binding CreateNewCommand}"
+                                    Margin="0,0,8,0"/>
+                            <!--<Button Content="Nhập PDF"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Command="{Binding ExportToPdfCommand}"
+                                    Margin="0,0,8,0"/>-->
+                            <Button Content="Lưu"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Command="{Binding SaveCommand}"/>
+                        </StackPanel>
+                        <!-- Loading Indicator -->
+                       
+                    </StackPanel>
+                </ScrollViewer>
+            </materialDesign:Card>
+            <materialDesign:Card 
+                 Grid.ColumnSpan="2"
+                 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                 HorizontalAlignment="Center" 
+                 VerticalAlignment="Center">
+                            <ProgressBar 
+                     Style="{StaticResource MaterialDesignCircularProgressBar}"
+                     IsIndeterminate="True"
+                     Margin="16"/>
             </materialDesign:Card>
         </Grid>
     </Grid>
