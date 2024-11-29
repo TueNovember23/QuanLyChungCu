@@ -15,11 +15,11 @@ public partial class Apartment
 
     public int? NumberOfPeople { get; set; }
 
+    public string? RepresentativeId { get; set; }
+
     public string? Status { get; set; }
 
     public int FloorId { get; set; }
-
-    public string? RepresentativeId { get; set; }
 
     public virtual ICollection<CommunityRoomBooking> CommunityRoomBookings { get; set; } = new List<CommunityRoomBooking>();
 

@@ -17,5 +17,7 @@ public partial class Representative
 
     public string? PhoneNumber { get; set; }
 
+    public int TrgApartmentInsertAutoCode { get; set; }
+
     public virtual ICollection<Apartment> Apartments { get; set; } = new List<Apartment>();
 }
