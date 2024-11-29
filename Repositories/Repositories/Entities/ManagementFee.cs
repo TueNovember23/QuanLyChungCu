@@ -12,4 +12,6 @@ public partial class ManagementFee
     public DateOnly? DeletedDate { get; set; }
 
     public double? Price { get; set; }
+
+    public virtual ICollection<ManagementFeeInvoice> ManagementFeeInvoices { get; set; } = new List<ManagementFeeInvoice>();
 }

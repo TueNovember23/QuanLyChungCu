@@ -120,9 +120,9 @@ Create Table Apartment (
     ApartmentNumber int, -- Số thứ tự của căn hộ tại 1 lầu
 	Area int,
     NumberOfPeople int DEFAULT 0,
+    RepresentativeId char(12),
 	Status nvarchar(20),
 	FloorId int not null,
-    RepresentativeId char(12),
     Constraint FK_Apartment_Floor foreign key (FloorId) references Floor(FloorId),
     Constraint FK_Apartment_Representative foreign key (RepresentativeId) references Representative(RepresentativeId)
 )
@@ -138,8 +138,6 @@ create table Resident (
     ApartmentID int not null,
     constraint FK_Resident_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
 )
-
-
 
 create table VehicleCategory (
     VehicleCategoryId int identity(1, 1) primary key,
@@ -202,7 +200,7 @@ create table ManagementFee (
 )
 
 CREATE TABLE ManagementFeeInvoice (
-    ManagementFeeInvoiceId int IDENTITY(1, 1) NOT NULL,
+    ManagementFeeInvoiceId int IDENTITY(1, 1) PRIMARY KEY,
     Price FLOAT not null,
     TotalAmount FLOAT,
     InvoiceId int not null,
@@ -211,6 +209,15 @@ CREATE TABLE ManagementFeeInvoice (
     constraint FK_ManagementFeeInvoice_Invoice foreign key (InvoiceId) references Invoice(InvoiceId),
     constraint FK_ManagementFeeInvoice_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
     constraint FK_ManagementFeeInvoice_ManagementFeeHistory foreign key (ManagementFeeHistoryId) references ManagementFee(ManagementFeeId)
+)
+
+CREATE TABLE VechicleInvoice (
+    VechicleInvoiceId int IDENTITY(1, 1) PRIMARY KEY,
+    TotalAmount FLOAT,
+    InvoiceId int not null,
+    ApartmentId int not null,
+    constraint FK_VechicleInvoice_Invoice foreign key (InvoiceId) references Invoice(InvoiceId),
+    constraint FK_VechicleInvoice_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
 )
 
 -- Chi tiết hóa đơn xe (bảng n-n giữa hóa đơn xe và xe)

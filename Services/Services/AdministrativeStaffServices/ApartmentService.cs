@@ -21,18 +21,25 @@ namespace Services.Services.AdministrativeStaffServices
 
         public async Task<List<ResponseApartmentDTO>> GetAll()
         {
-            List<ResponseApartmentDTO> apartments = await _unitOfWork.GetRepository<Apartment>().Entities
-                .Select(Apartment => new ResponseApartmentDTO
-                {
-                    ApartmentCode = Apartment.ApartmentCode!,
-                    Area = Apartment.Area,
-                    NumberOfPeople = Apartment.NumberOfPeople,
-                    Block = Apartment.Floor.Block.BlockCode,
-                    Floor = Apartment.Floor.FloorNumber,
-                    Status = Apartment.Status
-                }).ToListAsync();
+            try
+            {
+                List<ResponseApartmentDTO> apartments = await _unitOfWork.GetRepository<Apartment>().Entities
+                    .Select(Apartment => new ResponseApartmentDTO
+                    {
+                        ApartmentCode = Apartment.ApartmentCode!,
+                        Area = Apartment.Area,
+                        NumberOfPeople = Apartment.NumberOfPeople,
+                        Block = Apartment.Floor.Block.BlockCode,
+                        Floor = Apartment.Floor.FloorNumber,
+                        Status = Apartment.Status
+                    }).ToListAsync();
 
-            return apartments;
+                return apartments;
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
         }
 
         public async Task<List<ResponseApartmentDTO>> Search(string searchText)
@@ -44,7 +51,7 @@ namespace Services.Services.AdministrativeStaffServices
 
             var query = _unitOfWork.GetRepository<Apartment>().Entities
                 .Include(apartment => apartment.Floor.Block)
-                .Include(apartment => apartment.Representatives)
+                .Include(apartment => apartment.Representative)
                 .Where(apartment =>
                     (apartment.ApartmentCode != null && apartment.ApartmentCode.Contains(searchText)) ||
                     (apartment.Floor.Block.BlockCode != null && apartment.Floor.Block.BlockCode.Contains(searchText)) ||
@@ -53,7 +60,7 @@ namespace Services.Services.AdministrativeStaffServices
                         (r.FullName != null && r.FullName.Contains(searchText)) ||
                         (r.ResidentId != null && r.ResidentId.Contains(searchText))) ||
                     (apartment.Status != null && apartment.Status.Contains(searchText)) ||
-                    apartment.Representatives.Any(r => r.FullName != null && r.FullName.Contains(searchText))
+                    (apartment.Representative != null && apartment.Representative.FullName != null && apartment.Representative.FullName.Contains(searchText))
                 );
 
             var response = await query.Select(apartment => new ResponseApartmentDTO
@@ -173,10 +180,10 @@ namespace Services.Services.AdministrativeStaffServices
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<Representative> GetPreresentativeByApartmentCode(string apartmentCode)
+        public async Task<Representative?> GetPreresentativeByApartmentCode(string apartmentCode)
         {
-            Representative representative = await _unitOfWork.GetRepository<Representative>().Entities
-                .Where(_ => _.Apartment.ApartmentCode == apartmentCode).FirstOrDefaultAsync() ?? throw new BusinessException($"Người đại diện của căn hộ {apartmentCode} không tòn tại");
+            Representative? representative = (await _unitOfWork.GetRepository<Apartment>().Entities
+                .FirstOrDefaultAsync(_ => _.ApartmentCode == apartmentCode))?.Representative;
             return representative;
         }
 

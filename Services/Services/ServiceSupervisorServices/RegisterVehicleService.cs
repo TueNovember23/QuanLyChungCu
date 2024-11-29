@@ -135,8 +135,7 @@ namespace Services.Services.ServiceSupervisorServices
                 ApartmentCode = apartment.ApartmentCode,
                 Status = apartment.Status,
                 FloorNumber = apartment.Floor?.FloorNumber ?? 0,
-                OwnerName = apartment.Representatives
-                            .FirstOrDefault()?.FullName ?? "Chưa có chủ hộ"
+                OwnerName = apartment.Representative?.FullName ?? "Chưa có chủ hộ"
             };
         }
 

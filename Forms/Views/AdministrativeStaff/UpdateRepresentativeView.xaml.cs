@@ -12,7 +12,7 @@ namespace Forms.Views.AdministrativeStaff
     public partial class UpdateRepresentativeView : Window
     {
         private readonly IApartmentService _service;
-        private string _representativeId = "" ;
+        private string? _representativeId;
         public UpdateRepresentativeView(IApartmentService apartmentService, string apartmentCode)
         {
             InitializeComponent();
@@ -22,11 +22,11 @@ namespace Forms.Views.AdministrativeStaff
 
         public async Task InitializeAsync(string apartmentCode)
         {
-            Representative p = await _service.GetPreresentativeByApartmentCode(apartmentCode)
-                         ?? throw new BusinessException($"Căn hộ {apartmentCode} không tồn tại");
-            FullNameInput.Text = p.FullName;
-
-            _representativeId = p.RepresentativeId;
+            Representative? p = await _service.GetPreresentativeByApartmentCode(apartmentCode);
+            FullNameInput.Text = p is not null ? p.FullName : "";
+            GenderInput.SelectedIndex = (p is not null && p.Gender?.Trim() == "Nam") ? 0 : 1;
+            DateOfBirthInput.SelectedDate = p is not null ? p.DateOfBirth?.ToDateTime(new TimeOnly()):DateTime.Now;
+            _representativeId = p?.RepresentativeId;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

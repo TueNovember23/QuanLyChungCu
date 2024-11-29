@@ -110,8 +110,7 @@ namespace Services.Services.ServiceSupervisorServices
                     ApartmentCode = a.ApartmentCode ?? string.Empty,
                     Status = a.Status ?? string.Empty,
                     FloorNumber = a.Floor?.FloorNumber ?? 0,
-                    OwnerName = a.Representatives
-                                .FirstOrDefault(r => r.ApartmentId == a.ApartmentId)?.FullName ?? "Chưa có chủ hộ"
+                    OwnerName = a.Representative?.FullName ?? "Chưa có chủ hộ"
                 }).ToList();
         }
         

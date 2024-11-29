@@ -15,15 +15,17 @@ public partial class Apartment
 
     public int? NumberOfPeople { get; set; }
 
+    public string? RepresentativeId { get; set; }
+
     public string? Status { get; set; }
 
     public int FloorId { get; set; }
 
-    public string? RepresentativeId { get; set; }
-
     public virtual ICollection<CommunityRoomBooking> CommunityRoomBookings { get; set; } = new List<CommunityRoomBooking>();
 
     public virtual Floor Floor { get; set; } = null!;
+
+    public virtual ICollection<ManagementFeeInvoice> ManagementFeeInvoices { get; set; } = new List<ManagementFeeInvoice>();
 
     public virtual Representative? Representative { get; set; }
 

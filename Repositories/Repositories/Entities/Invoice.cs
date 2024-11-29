@@ -21,8 +21,9 @@ public partial class Invoice
 
     public virtual Account CreatedByNavigation { get; set; } = null!;
 
+    public virtual ICollection<ManagementFeeInvoice> ManagementFeeInvoices { get; set; } = new List<ManagementFeeInvoice>();
+
     public virtual ICollection<VechicleInvoice> VechicleInvoices { get; set; } = new List<VechicleInvoice>();
 
     public virtual ICollection<WaterInvoice> WaterInvoices { get; set; } = new List<WaterInvoice>();
-
 }
