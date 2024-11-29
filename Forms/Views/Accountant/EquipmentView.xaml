@@ -78,7 +78,7 @@
 
                         <DataGrid DockPanel.Dock="Top"
                                   Margin="15"
-                                  ItemsSource="{Binding Equipments}"
+                                  ItemsSource="{Binding FilteredEquipments}"
                                   SelectedItem="{Binding SelectedEquipment}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="False"
@@ -116,15 +116,7 @@
                                 <TextBlock Text="Thêm thiết bị mới"/>
                             </StackPanel>
                         </Button>
-
-                        <Button Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Command="{Binding ScheduleMaintenanceCommand}"
-                                    Margin="0,0,0,10">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Calendar" Margin="0,0,8,0"/>
-                                <TextBlock Text="Lập lịch bảo trì"/>
-                            </StackPanel>
-                        </Button>
+                     
                     </StackPanel>
                 </materialDesign:Card>
 
@@ -143,7 +135,7 @@
                         <ComboBox materialDesign:HintAssist.Hint="Khu vực"
                                       Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                       ItemsSource="{Binding Areas}"
-                                      SelectedItem="{Binding SelectedEquipment.Area}"
+                                      SelectedItem="{Binding SelectedEquipment.AreaName}"
                                       Margin="0,0,0,10"/>
 
                         <TextBox materialDesign:HintAssist.Hint="Ghi chú"

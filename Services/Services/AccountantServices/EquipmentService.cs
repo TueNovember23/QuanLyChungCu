@@ -103,6 +103,7 @@ namespace Services.Services.AccountantServices
 
             equipment.EquipmentName = equipmentDto.EquipmentName;
             equipment.Discription = equipmentDto.Description;
+            equipment.Area.AreaName = equipmentDto.AreaName;
             equipment.Status = equipmentDto.Status;
 
             var repository = _unitOfWork.GetRepository<Equipment>();

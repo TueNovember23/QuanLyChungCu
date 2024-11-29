@@ -35,7 +35,7 @@ namespace Forms.ViewModels.Accountant
         private string? selectedArea;
 
         [ObservableProperty]
-        private ObservableCollection<string> statusList = new() { "Hoạt động", "Hỏng" };
+        private ObservableCollection<string> statusList = new() { "Hoạt động", "Hỏng", "Bảo trì" };
 
         [ObservableProperty]
         private string? selectedStatus;
@@ -75,6 +75,7 @@ namespace Forms.ViewModels.Accountant
             Areas = new ObservableCollection<string>(
                 equipmentList.Select(e => e.AreaName).Distinct()
             );
+
         }
 
         [RelayCommand]
@@ -184,14 +185,11 @@ namespace Forms.ViewModels.Accountant
                 IsDetailsVisible = false;
                 return;
             }
-
             SelectedStatus = value.Status;
             SelectedEquipment.EquipmentName = value.EquipmentName;
             SelectedEquipment.AreaName = value.AreaName;
             SelectedEquipment.LastMaintenanceDate = value.LastMaintenanceDate;
             IsDetailsVisible = true;
-
         }
-
     }
 }
