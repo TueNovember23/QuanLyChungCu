@@ -61,12 +61,12 @@ namespace Services.Services.ServiceSupervisorServices
 
             var vehicleCount = await _vehicleRepository.GetAllAsync();
             var apartmentVehicles = vehicleCount.Count(v => v.ApartmentId == vehicleDto.ApartmentId);
-            if (apartmentVehicles >= 3)
+            if (apartmentVehicles >= 10)
             {
                 return new VehicleResponseDTO
                 {
                     Success = false,
-                    Message = "Căn hộ đã đăng ký tối đa 3 xe"
+                    Message = "Căn hộ đã đăng ký tối đa 10 xe"
                 };
             }
             var response = new VehicleResponseDTO();

@@ -41,72 +41,95 @@
                 <ColumnDefinition Width="431*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Search Card -->
-            <materialDesign:Card Grid.Column="0" Margin="16,16,11,0" UniformCornerRadius="20" Height="162" VerticalAlignment="Top">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Tìm kiếm căn hộ" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Nhập mã căn hộ" Margin="0,0,0,16" Text="{Binding SearchText}"/>
-                    <Button Content="Tìm kiếm" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,0,16" Command="{Binding SearchCommand}"/>
-                </StackPanel>
-            </materialDesign:Card>
+            <!-- Left Panel -->
+            <Grid Grid.Column="0">
+                <!-- Search Card -->
+                <materialDesign:Card Margin="16,16,11,0" UniformCornerRadius="20" Height="162" VerticalAlignment="Top">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Tìm kiếm căn hộ" 
+                                 FontSize="18" 
+                                 FontWeight="SemiBold" 
+                                 Margin="0,0,0,16"/>
+                        <TextBox materialDesign:HintAssist.Hint="Nhập mã căn hộ" 
+                                Margin="0,0,0,16" 
+                                Text="{Binding SearchText}"/>
+                        <Button Content="Tìm kiếm" 
+                                Style="{StaticResource MaterialDesignRaisedButton}" 
+                                Command="{Binding SearchCommand}"
+                                Height="40"/>
+                    </StackPanel>
+                </materialDesign:Card>
 
-            <!-- Apartment List -->
-            <materialDesign:Card Grid.Column="0" Margin="16,192,11,16" UniformCornerRadius="20">
-                <StackPanel Margin="16,16,16,16">
-                    <TextBlock Text="Danh sách căn hộ" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <ListView x:Name="ApartmentListView" 
-                  ItemsSource="{Binding Apartments}" 
-                  SelectedItem="{Binding SelectedApartment}" 
-                  SelectionMode="Single" 
-                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                  Height="400"
-                  d:ItemsSource="{d:SampleData ItemCount=5}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="170"/>
-                                <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="150"/>
-                                <GridViewColumn Header="Tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="150"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </StackPanel>
-            </materialDesign:Card>
+                <!-- Apartment List -->
+                <materialDesign:Card Margin="16,192,11,16" UniformCornerRadius="20">
+                    <DockPanel Margin="16">
+                        <TextBlock Text="Danh sách căn hộ" 
+                                 FontSize="18" 
+                                 FontWeight="SemiBold" 
+                                 Margin="0,0,0,16"
+                                 DockPanel.Dock="Top"/>
+                        <ListView x:Name="ApartmentListView"
+                                 ItemsSource="{Binding Apartments}"
+                                 SelectedItem="{Binding SelectedApartment}"
+                                 SelectionMode="Single"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="170"/>
+                                    <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="150"/>
+                                    <GridViewColumn Header="Tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="150"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
+                </materialDesign:Card>
+            </Grid>
 
-            <!-- Thông tin xe và chủ xe -->
-            <materialDesign:Card Grid.Column="1" Margin="11,0,12,0" UniformCornerRadius="20" Height="750" VerticalAlignment="Center">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Thông tin xe và chủ xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
+            <!-- Right Panel -->
+            <materialDesign:Card Grid.Column="1" 
+                                Margin="11,16,16,16" 
+                                UniformCornerRadius="20">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Thông tin xe và chủ xe" 
+                                 FontSize="18" 
+                                 FontWeight="SemiBold" 
+                                 Margin="0,0,0,20"/>
 
-                    <!-- Thông tin căn hộ -->
+                        <!-- Thông tin căn hộ -->
+                        <TextBox materialDesign:HintAssist.Hint="Mã căn hộ"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Margin="0,0,0,25"
+                                Text="{Binding SelectedApartmentCode}"
+                                IsReadOnly="True"/>
 
-                    <TextBox materialDesign:HintAssist.Hint="Mã căn hộ" 
-                 Margin="0,0,0,25" 
-                 Text="{Binding SelectedApartmentCode}"
-                 IsReadOnly="True"/>
+                        <!-- Thông tin xe -->
+                        <ComboBox materialDesign:HintAssist.Hint="Loại xe *"
+                                 Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                 Margin="0,0,0,25"
+                                 ItemsSource="{Binding VehicleTypes}"
+                                 SelectedItem="{Binding SelectedVehicleType}"/>
 
-                    <!-- Thông tin xe -->
-                    <ComboBox materialDesign:HintAssist.Hint="Loại xe *" 
-                Margin="0,0,0,25" 
-                ItemsSource="{Binding VehicleTypes}" 
-                SelectedItem="{Binding SelectedVehicleType}"/>
-                    <TextBox materialDesign:HintAssist.Hint="Biển số xe *" 
-                 Margin="0,0,0,25" 
-                 Text="{Binding VehicleNumber}"
-                 IsEnabled="{Binding IsLicensePlateRequired}"/>
+                        <TextBox materialDesign:HintAssist.Hint="Biển số xe *"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Margin="0,0,0,25"
+                                Text="{Binding VehicleNumber}"
+                                IsEnabled="{Binding IsLicensePlateRequired}"/>
 
+                        <!-- Thông tin chủ xe -->
+                        <TextBox materialDesign:HintAssist.Hint="Tên chủ xe *"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Margin="0,0,0,25"
+                                Text="{Binding VehicleOwner}"/>
 
-                    <!-- Thông tin chủ xe -->
-
-                    <TextBox materialDesign:HintAssist.Hint="Tên chủ xe *" 
-                 Margin="0,0,0,25" 
-                 Text="{Binding VehicleOwner}"/>
-
-                    <!-- Nút đăng ký -->
-                    <Button Content="Đăng ký thông tin xe" 
-                Style="{StaticResource MaterialDesignRaisedButton}" 
-                Command="{Binding RegisterCommand}"
-                Margin="0,25,0,0" Height="46"/>
-                </StackPanel>
+                        <!-- Nút đăng ký -->
+                        <Button Content="Đăng ký thông tin xe"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Command="{Binding RegisterCommand}"
+                                Height="46"
+                                Margin="0,25,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
             </materialDesign:Card>
         </Grid>
     </Grid>
