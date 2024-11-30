@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
-        Title="Cập nhật thông tin người đại diện" Height="500" Width="400"
+        Title="Cập nhật thông tin người đại diện" Height="570" Width="400"
         WindowStartupLocation="CenterScreen">
     <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
         <Grid Margin="20">
@@ -19,6 +19,11 @@
                 <Button x:Name="CloseButton" Content="X" Style="{StaticResource MaterialDesignFloatingActionButton}" Width="30" Height="30"
                     HorizontalAlignment="Right" Margin="0,10,10,0" Click="CloseButton_Click"/>
                 <TextBlock Text="Cập nhật thông tin người đại diện căn hộ" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" />
+
+                <ComboBox x:Name="RepresentativeIdInput" materialDesign:HintAssist.Hint="Chọn mã người đại diện"
+                          Style="{StaticResource MaterialDesignOutlinedComboBox}" Margin="0,10"/>
+                <TextBox x:Name="ReId" materialDesign:HintAssist.Hint="CCCD"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10"/>
 
                 <TextBox x:Name="FullNameInput" materialDesign:HintAssist.Hint="Họ và tên" 
                          Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10"/>

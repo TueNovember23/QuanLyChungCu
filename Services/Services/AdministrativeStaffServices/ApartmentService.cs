@@ -7,6 +7,7 @@ using AutoMapper;
 using Core;
 using Services.DTOs.ResidentDTO;
 using Azure.Core;
+using Services.DTOs.Representative;
 
 namespace Services.Services.AdministrativeStaffServices
 {
@@ -155,7 +156,12 @@ namespace Services.Services.AdministrativeStaffServices
         {
             Resident resident = await _unitOfWork.GetRepository<Resident>().GetByIdAsync(residentId)
                 ?? throw new BusinessException($"Không tìm thấy cư dân có mã số căn cước {residentId}");
+            if(resident.MoveOutDate != null)
+            {
+                throw new BusinessException($"Cư dân {resident.FullName} hiện không ở trong căn hộ {resident.Apartment.ApartmentCode}");
+            }
             resident.MoveOutDate = DateOnly.FromDateTime(DateTime.Now);
+            resident.Apartment.NumberOfPeople -= 1;
             await _unitOfWork.SaveAsync();
         }
 
@@ -163,16 +169,56 @@ namespace Services.Services.AdministrativeStaffServices
         {
             Resident resident = await _unitOfWork.GetRepository<Resident>().GetByIdAsync(residentId)
                ?? throw new BusinessException($"Không tìm thấy cư dân có mã số căn cước {residentId}");
+            if (resident.MoveOutDate == null)
+            {
+                throw new BusinessException($"Cư dân {resident.FullName} hiện đã ở trong căn hộ {resident.Apartment.ApartmentCode}");
+            }
             resident.MoveOutDate = null;
             resident.MoveInDate = DateOnly.FromDateTime(DateTime.Now);
+            resident.Apartment.NumberOfPeople += 1;
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task<List<Representative>> GetAllRepresentative()
+        {
+            return await _unitOfWork.GetRepository<Representative>().Entities.ToListAsync();
+        } 
 
         public async Task<Representative?> GetPreresentativeByApartmentCode(string apartmentCode)
         {
             Representative? representative = (await _unitOfWork.GetRepository<Apartment>().Entities
                 .FirstOrDefaultAsync(_ => _.ApartmentCode == apartmentCode))?.Representative;
             return representative;
+        }
+
+        public async Task<Representative?> GetRepresentativeById(string? id)
+        {
+            Representative? representative = (await _unitOfWork.GetRepository<Representative>().Entities
+                .FirstOrDefaultAsync(_ => _.RepresentativeId == id));
+            return representative;
+        }
+
+        public async Task UpdateApartmentRepresentative(string apartmentCode, string reprensentativeId)
+        {
+            Apartment apartment = await _unitOfWork.GetRepository<Apartment>().Entities.FirstOrDefaultAsync(a => a.ApartmentCode == apartmentCode)
+                ?? throw new BusinessException($"Không tìm thấy căn hộ {apartmentCode}");
+            Representative representative = await _unitOfWork.GetRepository<Representative>().Entities.FirstOrDefaultAsync(r => r.RepresentativeId == reprensentativeId)
+                ?? throw new BusinessException($"Không tìm thấy người đại diện có mã số căn cước {reprensentativeId}");
+            apartment.RepresentativeId = reprensentativeId;
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task UpdateRepresentative(string id, UpdateRepresentativeDTO dto)
+        {
+            Representative representative = await _unitOfWork.GetRepository<Representative>().GetByIdAsync(id)
+                ?? throw new BusinessException($"Không tìm thấy người đại diện có mã số căn cước {id}");
+            dto.Validate();
+            representative.FullName = dto.FullName;
+            representative.DateOfBirth = dto.DateOfBirth;
+            representative.Gender = dto.Gender;
+            representative.Email = dto.Email;
+            representative.PhoneNumber = dto.PhoneNumber;
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task<List<ResponseApartmentDTO>> GetAllApartmentForViolation()

@@ -430,7 +430,6 @@ UPDATE Apartment
 SET NumberOfPeople = 3
 WHERE ApartmentId = 1
 
-UPDATE Resident SET MoveOutDate = NULL WHERE
 INSERT INTO Representative (RepresentativeId, FullName, Gender, DateOfBirth, Email, PhoneNumber)
 VALUES
 ('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', 'nguyenvana@mail.com', '0123456789'),

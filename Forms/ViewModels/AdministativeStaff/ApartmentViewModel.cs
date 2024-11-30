@@ -57,10 +57,11 @@ namespace Forms.ViewModels.AdministrativeStaff
 
 
         [RelayCommand]
-        private void ViewResidents(string apartmentCode)
+        private async Task ViewResidents(string apartmentCode)
         {
             var residentsView = new ResidentsOfApartmentView(_apartmentService, apartmentCode);
             residentsView.ShowDialog();
+            await LoadApartmentsAsync();
         }
 
 
@@ -71,11 +72,11 @@ namespace Forms.ViewModels.AdministrativeStaff
         }
 
         [RelayCommand]
-        private void ViewRepresentative(string apartmentCode)
+        private async Task ViewRepresentative(string apartmentCode)
         {
             var f = new UpdateRepresentativeView(_apartmentService, apartmentCode);
             f.ShowDialog();
+            await LoadApartmentsAsync();
         }
-
     }
 }
