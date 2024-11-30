@@ -23,6 +23,7 @@ namespace Forms.Views.AdministrativeStaff
             _service = apartmentService;
             _ = InitializeAsync(apartmentCode);
             RepresentativeIdInput.SelectionChanged += RepresentativeIdInput_SelectionChanged;
+            ApartmentInfo.Text = $"Thông tin người đại diện căn hộ {apartmentCode}";
         }
 
         public async Task InitializeAsync(string apartmentCode)

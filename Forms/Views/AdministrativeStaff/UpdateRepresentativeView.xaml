@@ -18,7 +18,7 @@
             <StackPanel Grid.Row="0" Margin="0,0,0,20">
                 <Button x:Name="CloseButton" Content="X" Style="{StaticResource MaterialDesignFloatingActionButton}" Width="30" Height="30"
                     HorizontalAlignment="Right" Margin="0,10,10,0" Click="CloseButton_Click"/>
-                <TextBlock Text="Cập nhật thông tin người đại diện căn hộ" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" />
+                <TextBlock x:Name="ApartmentInfo" Text="Thông tin người đại diện căn hộ" FontSize="18" FontWeight="Bold" Margin="0,0,0,10" />
 
                 <ComboBox x:Name="RepresentativeIdInput" materialDesign:HintAssist.Hint="Chọn mã người đại diện"
                           Style="{StaticResource MaterialDesignOutlinedComboBox}" Margin="0,10"/>
@@ -48,8 +48,6 @@
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Content="Cập nhật" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
                         Background="Green" Foreground="White" Click="UpdateRepresentative_Click"/>
-                <Button Content="Xóa" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
-                        Background="Red" Foreground="White" Click="UpdateRepresentative_Click"/>
             </StackPanel>
         </Grid>
     </Border>

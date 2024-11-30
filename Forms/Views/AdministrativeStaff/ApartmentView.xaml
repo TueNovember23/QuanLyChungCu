@@ -72,15 +72,6 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
-                <!-- Cột nút "Chỉnh sửa thông tin căn hộ" -->
-                <DataGridTemplateColumn Header="Sửa thông tin" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Chỉnh sửa" Width="auto" Height="30" Command="{Binding DataContext.EditApartmentCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding ApartmentCode}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

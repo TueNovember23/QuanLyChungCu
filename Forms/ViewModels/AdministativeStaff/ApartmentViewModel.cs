@@ -64,13 +64,6 @@ namespace Forms.ViewModels.AdministrativeStaff
             await LoadApartmentsAsync();
         }
 
-
-        [RelayCommand]
-        private void EditApartment(int apartmentId)
-        {
-            System.Diagnostics.Debug.WriteLine($"EditApartment called for ApartmentId: {apartmentId}");
-        }
-
         [RelayCommand]
         private async Task ViewRepresentative(string apartmentCode)
         {

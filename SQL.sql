@@ -442,7 +442,6 @@ UPDATE Apartment
 SET RepresentativeId = '105456789012' WHERE ApartmentId = 2
 UPDATE Apartment
 SET RepresentativeId = '123445678912' WHERE ApartmentId = 3
-
 -- GO
 -- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROFLLBACK IMMEDIATE
 -- GO

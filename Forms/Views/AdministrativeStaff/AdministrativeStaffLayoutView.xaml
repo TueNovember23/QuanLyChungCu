@@ -39,7 +39,7 @@
                                     Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="ApartmentViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="HomeVariant"/>
-                                    <TextBlock x:Name="ApartmentText" Text="Quản lý căn hộ" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="ApartmentText" Text="Quản lý nhân khẩu" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
 
                                 </StackPanel>
                             </Button>
