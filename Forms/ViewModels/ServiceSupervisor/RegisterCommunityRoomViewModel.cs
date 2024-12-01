@@ -25,15 +25,6 @@ namespace Forms.ViewModels.ServiceSupervisor
         private ResponseCommunityRoomDTO? selectedRoom;
 
         [ObservableProperty]
-        private DateOnly bookingDate = DateOnly.FromDateTime(DateTime.Today);
-
-        [ObservableProperty]
-        private TimeOnly startTime;
-
-        [ObservableProperty]
-        private TimeOnly endTime;
-
-        [ObservableProperty]
         private int numberOfPeople;
 
         [ObservableProperty]
@@ -41,6 +32,20 @@ namespace Forms.ViewModels.ServiceSupervisor
 
         [ObservableProperty]
         private bool showErrorMessage;
+
+        [ObservableProperty]
+        private DateTime? selectedDate = DateTime.Today;
+
+        [ObservableProperty] 
+        private DateTime? selectedStartTime;
+
+        [ObservableProperty]
+        private DateTime? selectedEndTime;
+
+        // Đổi tên các property này để phù hợp với cách sử dụng trong code
+        private DateOnly BookingDate => DateOnly.FromDateTime(SelectedDate ?? DateTime.Today);
+        private TimeOnly StartTime => TimeOnly.FromDateTime(SelectedStartTime ?? DateTime.Now); 
+        private TimeOnly EndTime => TimeOnly.FromDateTime(SelectedEndTime ?? DateTime.Now);
 
         public RegisterCommunityRoomViewModel(ICommunityRoomService communityRoomService)
         {
@@ -66,69 +71,108 @@ namespace Forms.ViewModels.ServiceSupervisor
         [RelayCommand]
         private async Task Register()
         {
-            if (SelectedRoom == null)
+            try 
             {
-                ErrorMessage = "Vui lòng chọn phòng";
-                ShowErrorMessage = true;
-                return;
-            }
+                if (SelectedRoom == null)
+                {
+                    ErrorMessage = "Vui lòng chọn phòng";
+                    ShowErrorMessage = true;
+                    return;
+                }
 
-            if (NumberOfPeople <= 0)
-            {
-                ErrorMessage = "Số người tham gia phải lớn hơn 0";
-                ShowErrorMessage = true;
-                return;
-            }
+                if (NumberOfPeople <= 0)
+                {
+                    ErrorMessage = "Số người tham gia phải lớn hơn 0";
+                    ShowErrorMessage = true;
+                    return;
+                }
 
-            if (NumberOfPeople > SelectedRoom.RoomSize)
-            {
-                ErrorMessage = $"Số người tham gia vượt quá sức chứa của phòng ({SelectedRoom.RoomSize} người)";
-                ShowErrorMessage = true;
-                return;
-            }
+                if (NumberOfPeople > SelectedRoom.RoomSize)
+                {
+                    ErrorMessage = $"Số người tham gia vượt quá sức chứa của phòng ({SelectedRoom.RoomSize} người)";
+                    ShowErrorMessage = true;
+                    return;
+                }
 
-            if (StartTime > EndTime)
-            {
-                ErrorMessage = "Thời gian kết thúc phải sau thời gian bắt đầu";
-                ShowErrorMessage = true;
-                return;
-            }
+                var now = TimeOnly.FromDateTime(DateTime.Now);
+                var today = DateOnly.FromDateTime(DateTime.Today);
 
-            var success = await _communityRoomService.CreateBooking(
-                SelectedRoom.CommunityRoomId,
-                0, // Need to get current ApartmentId
-                BookingDate,
-                StartTime,
-                EndTime,
-                NumberOfPeople
-            );
+                if (BookingDate < today)
+                {
+                    ErrorMessage = "Không thể đặt phòng cho ngày trong quá khứ";
+                    ShowErrorMessage = true;
+                    return;
+                }
 
-            if (success)
-            {
-                await LoadDataAsync();
-                ShowErrorMessage = false;
-                ErrorMessage = string.Empty;
-            }
-            else
-            {
-                ErrorMessage = "Phòng đã được đặt trong khoảng thời gian này";
-                ShowErrorMessage = true;
-            }
+                if (SelectedStartTime == null || SelectedEndTime == null)
+                {
+                    ErrorMessage = "Vui lòng chọn thời gian đặt phòng";
+                    ShowErrorMessage = true;
+                    return; 
+                }
 
-        }
-            [RelayCommand]
-            private async Task DeleteBooking(int bookingId)
-            {
-                var success = await _communityRoomService.DeleteBooking(bookingId);
+                if (StartTime >= EndTime)
+                {
+                    ErrorMessage = "Thời gian kết thúc phải sau thời gian bắt đầu";
+                    ShowErrorMessage = true;
+                    return;
+                }
+
+                if (BookingDate == today && StartTime < now)
+                {
+                    ErrorMessage = "Không thể đặt phòng cho thời gian đã qua";
+                    ShowErrorMessage = true;
+                    return;
+                }
+
+                var currentApartmentId = 1;
+
+                var success = await _communityRoomService.CreateBooking(
+                    SelectedRoom.CommunityRoomId,
+                    currentApartmentId,
+                    BookingDate,  // Sử dụng tên property đã đổi
+                    StartTime,    // Sử dụng tên property đã đổi
+                    EndTime,      // Sử dụng tên property đã đổi
+                    NumberOfPeople
+                );
+
                 if (success)
                 {
                     await LoadDataAsync();
-                    // Show success message
+                    ShowErrorMessage = false;
+                    ErrorMessage = string.Empty;
+                    // Reset form
+                    SelectedRoom = null;
+                    SelectedStartTime = null; // Sửa lại cách reset
+                    SelectedEndTime = null;   // Sửa lại cách reset
+                    NumberOfPeople = 0;
                 }
                 else
                 {
-                    // Show error message
+                    ErrorMessage = "Phòng đã được đặt trong khoảng thời gian này";
+                    ShowErrorMessage = true;
                 }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Có lỗi xảy ra: {ex.Message}";
+                ShowErrorMessage = true;
+            }
+        }
+
+        [RelayCommand]
+        private async Task DeleteBooking(int bookingId)
+        {
+            var success = await _communityRoomService.DeleteBooking(bookingId);
+            if (success)
+            {
+                await LoadDataAsync();
+                // Show success message
+            }
+            else
+            {
+                // Show error message
             }
         }
     }
+}
