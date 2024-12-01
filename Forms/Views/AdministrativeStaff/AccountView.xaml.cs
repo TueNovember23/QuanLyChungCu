@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Services.Services.AdministrativeStaffServices;
+﻿using Forms.ViewModels.AdministativeStaff;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
 
 namespace Forms.Views.AdministrativeStaff
@@ -12,7 +12,7 @@ namespace Forms.Views.AdministrativeStaff
         public AccountView()
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider?.GetService<AccountService>()!;
+            DataContext = App.ServiceProvider?.GetService<AccountViewModel>()!;
         }
     }
 }

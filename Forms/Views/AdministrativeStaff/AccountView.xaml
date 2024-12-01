@@ -7,17 +7,84 @@
              xmlns:header="clr-namespace:Forms.Views" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+             d:DesignHeight="850" d:DesignWidth="1100">
+
+    <Grid HorizontalAlignment="Left" Width="1100">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Search and Add -->
             <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
+            <!-- DataGrid -->
         </Grid.RowDefinitions>
 
         <!-- Header -->
         <header:Header Grid.Row="0"/>
 
-        
+        <!-- Search and Add Button -->
+        <materialDesign:Card Grid.Row="1" Margin="16,16,16,10" UniformCornerRadius="8">
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <TextBox Width="300" Height="40" Padding="10 10"
+                     VerticalAlignment="Center"
+                     materialDesign:HintAssist.Hint="Tìm kiếm theo tên hoặc email"
+                     materialDesign:TextFieldAssist.DecorationVisibility="Visible"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                <Button Content="Tìm kiếm"
+                    Width="120" Height="40" Margin="10 0"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Command="{Binding SearchCommand}" />
+                <Button Content="Làm mới"
+                    Width="120" Height="40" Margin="10,0,0,0"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Command="{Binding RefreshCommand}" />
+                <Button Content="Thêm tài khoản"
+                    Width="150" Height="40" Margin="10,0,0,0"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Command="{Binding AddAccountCommand}" />
+            </StackPanel>
+        </materialDesign:Card>
+
+        <!-- DataGrid -->
+        <materialDesign:Card Grid.Row="2" Margin="16,10,16,16" UniformCornerRadius="8">
+            <DataGrid Grid.Row="2" ItemsSource="{Binding FilteredAccounts}" AutoGenerateColumns="False" Margin="10"
+                      IsReadOnly="True">
+                <DataGrid.Columns>
+                    <!-- Cột Tên tài khoản -->
+                    <DataGridTextColumn Header="Tên tài khoản" Binding="{Binding Username}" Width="auto"/>
+                    <!-- Cột Email -->
+                    <DataGridTextColumn Header="Họ tên" Binding="{Binding FullName}" Width="auto"/>
+                    <!-- Cột Vai trò -->
+                    <DataGridTextColumn Header="Vai trò" Binding="{Binding Role}" Width="auto"/>
+
+                    <!-- Cột nút Sửa -->
+                    <DataGridTemplateColumn Header="Sửa" Width="auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Sửa" Width="auto" Height="30"
+                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                        Command="{Binding DataContext.EditAccountCommand, 
+                                                    RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        CommandParameter="{Binding Username}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Cột nút Xóa -->
+                    <DataGridTemplateColumn Header="Xóa" Width="auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Xóa" Width="auto" Height="30"
+                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                        Command="{Binding DataContext.DeleteAccountCommand, 
+                                                    RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        CommandParameter="{Binding Username}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </materialDesign:Card>
     </Grid>
 </UserControl>

@@ -58,6 +58,7 @@ namespace Forms
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IViolationService, ViolationService>();
             services.AddScoped<IRegulationService, RegulationService>();
+            services.AddScoped<IAccountService, AccountService>();
         }
 
         public static void AddRepositories(IServiceCollection services)

@@ -90,7 +90,7 @@ namespace Forms.Views.AdministrativeStaff
             RegulationText.Visibility = Visibility.Visible;
             GeneralInfoText.Visibility = Visibility.Visible;
             CalendarText.Visibility = Visibility.Visible;
-            EqualizerText.Visibility = Visibility.Visible;
+            ManageAccountText.Visibility = Visibility.Visible;
             ChatText.Visibility = Visibility.Visible;
             ExitText.Visibility = Visibility.Visible;
         }
@@ -101,11 +101,15 @@ namespace Forms.Views.AdministrativeStaff
             RegulationText.Visibility = Visibility.Collapsed;
             GeneralInfoText.Visibility = Visibility.Collapsed;
             CalendarText.Visibility = Visibility.Collapsed;
-            EqualizerText.Visibility = Visibility.Collapsed;
+            ManageAccountText.Visibility = Visibility.Collapsed;
             ChatText.Visibility = Visibility.Collapsed;
             ExitText.Visibility = Visibility.Collapsed;
         }
 
 
+        private void AccountView_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new AccountView());
+        }
     }
 }
