@@ -43,6 +43,7 @@ namespace Forms
             services.AddScoped<ViolationViewModel>();
             services.AddScoped<DepartmentViewModel>();
             services.AddScoped<ViolationViewModel>();
+            services.AddScoped<AccountViewModel>();
         }
 
         public static void AddServices(IServiceCollection services)
