@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Forms.Views.AdministrativeStaff;
 using Services.DTOs.AccountDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using System.Collections.ObjectModel;
@@ -58,7 +59,9 @@ namespace Forms.ViewModels.AdministativeStaff
         [RelayCommand]
         public async Task AddAccount()
         {
-            
+            RegisterAccountView f = new RegisterAccountView(_service);
+            f.ShowDialog();
+            await LoadAccountsAsync();
         }
 
         [RelayCommand]
@@ -70,6 +73,14 @@ namespace Forms.ViewModels.AdministativeStaff
                 await _service.Delete(username);
                 await LoadAccountsAsync();
             }
+        }
+
+        [RelayCommand]
+        public async Task EditAccount(string username)
+        {
+            UpdateAccountView f = new UpdateAccountView(_service, username);
+            f.ShowDialog();
+            await LoadAccountsAsync();
         }
     }
 }

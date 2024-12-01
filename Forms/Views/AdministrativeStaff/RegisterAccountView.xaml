@@ -1,0 +1,51 @@
+﻿<Window x:Class="Forms.Views.AdministrativeStaff.RegisterAccountView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Forms.Views.AdministrativeStaff"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Title="Đăng ký tài khoản" Height="520" Width="350" WindowStartupLocation="CenterOwner">
+    <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Form Inputs -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                <Button x:Name="CloseButton" Content="X" Style="{StaticResource MaterialDesignFloatingActionButton}" Width="30" Height="30"
+                        HorizontalAlignment="Right" Margin="0,10,10,0" Click="CloseButton_Click"/>
+                <TextBlock Text="Đăng ký tài khoản" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" />
+
+                <!-- Tên đăng nhập -->
+                <TextBox x:Name="UsernameInput" materialDesign:HintAssist.Hint="Tên đăng nhập"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10"/>
+
+                <!-- Họ và tên -->
+                <TextBox x:Name="FullNameInput" materialDesign:HintAssist.Hint="Họ và tên" 
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10"/>
+
+                <PasswordBox x:Name="PasswordInput" materialDesign:HintAssist.Hint="Mật khẩu"
+                             Margin="0,10"
+                             Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
+
+                <PasswordBox x:Name="ComfirmPasswordInput" materialDesign:HintAssist.Hint="Xác nhận mật khẩu"
+                             Margin="0,10"
+                             Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
+
+                <ComboBox x:Name="RoleInput" materialDesign:HintAssist.Hint="Vai trò"
+                          Margin="0,10" Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
+            </StackPanel>
+
+            <!-- Nút hành động -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Đăng ký" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
+                        Background="Blue" Foreground="White" Click="RegisterAccount_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

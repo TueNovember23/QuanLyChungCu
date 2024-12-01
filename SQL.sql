@@ -445,6 +445,7 @@ SET RepresentativeId = '123445678912' WHERE ApartmentId = 3
 
 INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('test', '1', N'test', 1);
 UPDATE Account SET IsDeleted = 0 WHERE Username = 'test';
+SELECT * FROM Account;
 -- GO
 -- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROFLLBACK IMMEDIATE
 -- GO
