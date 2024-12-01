@@ -15,6 +15,12 @@ namespace Forms.Views.AdministrativeStaff
         private bool isMaximized = false;
         private const double SIDEBAR_COLLAPSED_WIDTH = 60;
         private const double SIDEBAR_EXPANDED_WIDTH = 200;
+        private string _username = "";
+        public string Username
+        {
+            get { return _username; }
+            set { _username = value; }
+        }
 
         public AdministrativeStaffLayoutView()
         {
@@ -91,7 +97,7 @@ namespace Forms.Views.AdministrativeStaff
             GeneralInfoText.Visibility = Visibility.Visible;
             CalendarText.Visibility = Visibility.Visible;
             ManageAccountText.Visibility = Visibility.Visible;
-            ChatText.Visibility = Visibility.Visible;
+            MaintenanceText.Visibility = Visibility.Visible;
             ExitText.Visibility = Visibility.Visible;
         }
 
@@ -102,7 +108,7 @@ namespace Forms.Views.AdministrativeStaff
             GeneralInfoText.Visibility = Visibility.Collapsed;
             CalendarText.Visibility = Visibility.Collapsed;
             ManageAccountText.Visibility = Visibility.Collapsed;
-            ChatText.Visibility = Visibility.Collapsed;
+            MaintenanceText.Visibility = Visibility.Collapsed;
             ExitText.Visibility = Visibility.Collapsed;
         }
 
@@ -110,6 +116,12 @@ namespace Forms.Views.AdministrativeStaff
         private void AccountView_Click(object sender, RoutedEventArgs e)
         {
             LoadUserControl(new AccountView());
+        }
+
+        private void MaintanceView_Click(object sender, RoutedEventArgs e)
+        {
+            MaintenanceView mv = new(Username);
+            LoadUserControl(mv);
         }
     }
 }

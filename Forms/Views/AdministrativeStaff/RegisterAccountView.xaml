@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
-        Title="Đăng ký tài khoản" Height="520" Width="350" WindowStartupLocation="CenterOwner">
+        Title="Đăng ký tài khoản" Height="520" Width="350" WindowStartupLocation="CenterScreen">
     <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
         <Grid Margin="20">
             <Grid.RowDefinitions>

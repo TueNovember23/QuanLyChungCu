@@ -443,9 +443,33 @@ SET RepresentativeId = '105456789012' WHERE ApartmentId = 2
 UPDATE Apartment
 SET RepresentativeId = '123445678912' WHERE ApartmentId = 3
 
-INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('test', '1', N'test', 1);
-UPDATE Account SET IsDeleted = 0 WHERE Username = 'test';
-SELECT * FROM Account;
+INSERT INTO Department (DepartmentName, NumberOfStaff, Description) 
+VALUES
+(N'Kế toán', 5, N'Phòng kế toán'),
+(N'Kỹ thuật', 10, N'Phòng kỹ thuật'),
+(N'An ninh', 15, N'Phòng an ninh'),
+(N'Vệ sinh', 20, N'Phòng vệ sinh'),
+(N'Hành chính', 25, N'Phòng hành chính')
+
+INSERT INTO Maintenance (MaintenanceId, MaintenanceName, MaintanaceDate, Description, CreatedBy, DepartmentId)
+VALUES
+    (1, N'Bảo trì thang máy', '2024-1-1', N'Bảo trì thang máy', 1, 2),
+    (2, N'Bảo trì hệ thống điện', '2024-1-1', N'Bảo trì hệ thống điện hàng tháng', 1, 2),
+    (3, N'Bảo trì hệ thống nước', '2024-1-1', N'Bảo trì hệ thống nước hàng tháng', 1, 2),
+    (4, N'Bảo trì hệ thống thông gió', '2024-1-1', N'Bảo trì hệ thống thông gió hàng tháng', 1, 2),
+    (5, N'Bảo trì hệ thống an ninh', '2024-1-1', N'Bảo trì hệ thống an ninh hàng tháng', 1, 2),
+    (6, N'Vệ sinh khu vực chung', '2024-1-1', N'Vệ sinh khu vực chung hàng tháng', 1, 4);
+
+INSERT INTO Equipment (EquipmentId, EquipmentName, Discription, AreaId, Status)
+VALUES
+(1, N'Máy bơm nước', N'Dùng để bơm nước cho toàn bộ tòa nhà', 1, N'Hoạt động'),
+(2, N'Máy phát điện', N'Cung cấp điện dự phòng cho tòa nhà', 2, N'Hoạt động'),
+(3, N'Hệ thống chiếu sáng', N'Đèn chiếu sáng hành lang', 3, N'Hỏng'),
+(4, N'Hệ thống camera', N'Camera an ninh', 2, N'Hoạt động'),
+(5, N'Thiết bị chữa cháy', N'Bình chữa cháy', 4, N'Hoạt động'),
+(6, N'Hệ thống thoát nước', N'Ống thoát nước', 4, N'Hỏng'),
+(7, N'Thang máy', N'Thang máy block E', 1, N'Hoạt động');
+
 -- GO
 -- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROFLLBACK IMMEDIATE
 -- GO
