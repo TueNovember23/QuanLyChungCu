@@ -9,11 +9,11 @@ public partial class Vehicle
 
     public string? VehicleOwner { get; set; }
 
+    public string? Status { get; set; }
+
     public int ApartmentId { get; set; }
 
     public int VehicleCategoryId { get; set; }
-
-    public string? Status { get; set; } = null!;
 
     public virtual Apartment Apartment { get; set; } = null!;
 

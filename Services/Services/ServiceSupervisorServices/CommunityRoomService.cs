@@ -76,12 +76,50 @@ namespace Services.Services.ServiceSupervisorServices
                     RoomName = booking.CommunityRoom.RoomName
                 }).ToListAsync();
         }
+        public async Task<bool> IsRoomAvailable(int communityRoomId, DateOnly bookingDate,
+        TimeOnly startTime, TimeOnly endTime)
+        {
+            var existingBookings = await _unitOfWork.GetRepository<CommunityRoomBooking>()
+                .Entities
+                .Where(b => b.CommunityRoomId == communityRoomId
+                    && b.BookingDate == bookingDate)
+                .ToListAsync();
+
+            // Check if there are any overlapping bookings
+            foreach (var booking in existingBookings)
+            {
+                if (booking.StartTime < endTime && booking.EndTime > startTime)
+                {
+                    return false; // Room is not available - time slot overlap
+                }
+            }
+
+            // Get room capacity
+            var room = await _unitOfWork.GetRepository<CommunityRoom>()
+                .Entities
+                .FirstOrDefaultAsync(r => r.CommunityRoomId == communityRoomId);
+
+            if (room == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         public async Task<bool> CreateBooking(int communityRoomId, int apartmentId, DateOnly bookingDate,
             TimeOnly startTime, TimeOnly endTime, int numberOfPeople)
         {
             try
             {
+                // First check if the room is available
+                bool isAvailable = await IsRoomAvailable(communityRoomId, bookingDate, startTime, endTime);
+
+                if (!isAvailable)
+                {
+                    return false; // Room is not available
+                }
+
                 var booking = new CommunityRoomBooking
                 {
                     CommunityRoomId = communityRoomId,

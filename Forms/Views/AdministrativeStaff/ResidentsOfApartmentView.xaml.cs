@@ -4,6 +4,7 @@ using Services.DTOs.ApartmentDTO;
 using Services.DTOs.ResidentDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Forms.Views.AdministrativeStaff
 {
@@ -11,7 +12,7 @@ namespace Forms.Views.AdministrativeStaff
     {
         private readonly IApartmentService _apartmentService;
         private Apartment? _apartment;
-        private List<ResponseResidentDTO> _residents;
+        private List<ResponseResidentDTO> _residents = [];
 
         public ResidentsOfApartmentView(IApartmentService service, string apartmentCode)
         {
@@ -28,31 +29,87 @@ namespace Forms.Views.AdministrativeStaff
                          ?? throw new BusinessException($"Căn hộ {apartmentCode} không tồn tại");
 
             ApartmentCodeTxt.Text = $"Căn hộ {apartmentCode}";
-
+            ApartmentCodeInput.Text = apartmentCode;
             _residents = await _apartmentService.GetResidentsOfApartment(apartmentCode);
             ResidentsDataGrid.ItemsSource = _residents;
         }
 
         private void EditResident_Click(object sender, RoutedEventArgs e)
         {
-            // Lấy ResidentId từ CommandParameter
-            var residentId = ((FrameworkElement)sender).Tag as string;
-            if (!string.IsNullOrEmpty(residentId))
+            try
             {
-                // Thực hiện chỉnh sửa cư dân
-                MessageBox.Show($"Chỉnh sửa cư dân có ID: {residentId}", "Thông báo", MessageBoxButton.OK);
-                // TODO: Mở form chỉnh sửa cư dân hoặc thêm logic chỉnh sửa tại đây
+                var residentId = ((Button)sender).CommandParameter as string;
+
+                if (string.IsNullOrEmpty(residentId))
+                {
+                    throw new BusinessException("Không thể lấy thông tin cư dân. Vui lòng thử lại.");
+                }
+
+                var updateResidentWindow = new UpdateResidentView(_apartmentService, residentId)
+                {
+                    Owner = this // Đặt cửa sổ cha
+                };
+                updateResidentWindow.ShowDialog();
+                RefreshResidents();
+            }
+            catch
+            {
+                throw;
             }
         }
+
+        private async void RefreshResidents()
+        {
+            _residents = await _apartmentService.GetResidentsOfApartment(ApartmentCodeInput.Text.Trim());
+            ResidentsDataGrid.ItemsSource = _residents;
+        }
+
 
         private void CloseWindow_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
-        private void RegisterResident_Click(object sender, RoutedEventArgs e)
+        private async void RegisterResident_Click(object sender, RoutedEventArgs e)
         {
+            var createResidentDto = new CreateResidentDTO
+            {
+                ResidentId = ResidentIdInput.Text.Trim(),
+                FullName = FullNameInput.Text.Trim(),
+                Gender = (GenderInput.SelectedItem as ComboBoxItem)?.Content.ToString(),
+                DateOfBirth = DateOfBirthInput.SelectedDate.HasValue ? DateOnly.FromDateTime(DateOfBirthInput.SelectedDate.Value) : null,
+                RelationShipWithOwner = RelationShipInput.Text.Trim(),
+                ApartmentCode = ApartmentCodeInput.Text.Trim()
+            };
 
+            if (string.IsNullOrEmpty(createResidentDto.ResidentId) || string.IsNullOrEmpty(createResidentDto.FullName) || string.IsNullOrEmpty(createResidentDto.ApartmentCode))
+            {
+                throw new BusinessException("Vui lòng điền đầy đủ thông tin!");
+            }
+
+            await _apartmentService.RegisterResident(createResidentDto);
+
+            MessageBox.Show("Đăng ký cư dân thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            _residents = await _apartmentService.GetResidentsOfApartment(ApartmentCodeInput.Text.Trim());
+            ResidentsDataGrid.ItemsSource = _residents;
+
+            ClearForm();
+
+        }
+
+        private void ClearForm()
+        {
+            ResidentIdInput.Text = string.Empty;
+            FullNameInput.Text = string.Empty;
+            GenderInput.SelectedIndex = -1;
+            DateOfBirthInput.SelectedDate = null;
+            RelationShipInput.Text = string.Empty;
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

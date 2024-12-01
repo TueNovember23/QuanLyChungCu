@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Core;
+using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
 using Repositories.Repositories.Entities;
 using Services.DTOs.EquipmentDTO;
@@ -30,10 +31,15 @@ namespace Services.Services.AccountantServices
                 {
                     EquipmentId = e.EquipmentId,
                     EquipmentName = e.EquipmentName,
-                    Description = e.Discription,
+                    Discription = e.Discription,
                     AreaName = e.Area.AreaName,
                     Status = e.Status,
                     LastMaintenanceDate = e.Maintenances
+                        .OrderByDescending(m => m.MaintanaceDate)
+                        .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
+                        .FirstOrDefault(),
+                    Notes = e.Discription,  // Assuming Notes maps to Description
+                    LastCheckDate = e.Maintenances  // Or map to another appropriate date field
                         .OrderByDescending(m => m.MaintanaceDate)
                         .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
                         .FirstOrDefault()
@@ -61,10 +67,15 @@ namespace Services.Services.AccountantServices
                 {
                     EquipmentId = e.EquipmentId,
                     EquipmentName = e.EquipmentName,
-                    Description = e.Discription,
+                    Discription = e.Discription,
                     AreaName = e.Area.AreaName,
                     Status = e.Status,
                     LastMaintenanceDate = e.Maintenances
+                .OrderByDescending(m => m.MaintanaceDate)
+                .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
+                .FirstOrDefault(),
+                Notes = e.Discription,  // Assuming Notes maps to Description
+                    LastCheckDate = e.Maintenances  // Or map to another appropriate date field
                         .OrderByDescending(m => m.MaintanaceDate)
                         .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
                         .FirstOrDefault()
@@ -83,17 +94,38 @@ namespace Services.Services.AccountantServices
 
         public async Task Add(ResponseEquipmentDTO equipmentDto)
         {
+            var area = await _unitOfWork.GetRepository<Area>().Entities
+                .FirstOrDefaultAsync(a => a.AreaName == equipmentDto.AreaName);
+
+            if (area == null)
+            {
+                throw new BusinessException("Khu vực không hợp lệ.");
+            }
+
+            var totalEquipmentCount = await _unitOfWork.GetRepository<Equipment>().Entities.CountAsync();
+
+            var newEquipmentId = totalEquipmentCount + 1;
             var equipment = new Equipment
             {
+                EquipmentId = newEquipmentId, 
                 EquipmentName = equipmentDto.EquipmentName,
-                Discription = equipmentDto.Description,
+                Discription = equipmentDto.Discription,
+                AreaId = area.AreaId,
                 Status = equipmentDto.Status,
                 IsDeleted = false
             };
 
-            var repository = _unitOfWork.GetRepository<Equipment>();
-            await repository.InsertAsync(equipment);
+            await _unitOfWork.GetRepository<Equipment>().InsertAsync(equipment);
             await _unitOfWork.SaveAsync();
+        }
+
+
+
+        private int GetAreaIdByName(string areaName)
+        {
+            var area = _unitOfWork.GetRepository<Area>().Entities
+                .FirstOrDefault(a => a.AreaName == areaName);
+            return area?.AreaId ?? 0; 
         }
 
         public async Task Update(ResponseEquipmentDTO equipmentDto)
@@ -102,10 +134,9 @@ namespace Services.Services.AccountantServices
             if (equipment == null) return;
 
             equipment.EquipmentName = equipmentDto.EquipmentName;
-            equipment.Discription = equipmentDto.Description;
+            equipment.Discription = equipmentDto.Discription;
             equipment.Area.AreaName = equipmentDto.AreaName;
             equipment.Status = equipmentDto.Status;
-
             var repository = _unitOfWork.GetRepository<Equipment>();
             repository.Update(equipment);
             await _unitOfWork.SaveAsync();

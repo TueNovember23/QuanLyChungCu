@@ -25,7 +25,7 @@ namespace Forms.Views.AdministrativeStaff
         {
             Sidebar.Width = SIDEBAR_COLLAPSED_WIDTH;
             HideSidebarTexts();
-            LoadUserControl(new GeneralInfoView());
+            LoadUserControl(new ApartmentView());
         }
 
         private void ApartmentViewButton_Click(object sender, RoutedEventArgs e)

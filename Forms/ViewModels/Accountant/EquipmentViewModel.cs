@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Forms.Views.Accountant;
 using Repositories.Repositories.Entities;
 using Services.DTOs.EquipmentDTO;
 using Services.Interfaces.AccountantServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +33,7 @@ namespace Forms.ViewModels.Accountant
         [ObservableProperty]
         private ObservableCollection<string> areas = [];
 
-        [ObservableProperty]
+       [ObservableProperty]
         private string? selectedArea;
 
         [ObservableProperty]
@@ -62,8 +64,11 @@ namespace Forms.ViewModels.Accountant
             {
                 EquipmentName = "",
                 Status = "Hoạt động",
-                Description = "",
-                AreaName = ""
+                Discription = "",
+                AreaName = Areas.FirstOrDefault() ?? "",
+                LastMaintenanceDate = null,
+                Notes = "",
+                LastCheckDate = null
             };
         }
 
@@ -79,12 +84,15 @@ namespace Forms.ViewModels.Accountant
         }
 
         [RelayCommand]
-        private void Refresh()
+        private async Task Refresh()
         {
+            await LoadEquipmentsAsync(); 
+
             SearchText = string.Empty;
             SelectedArea = null;
             SelectedEquipment = null;
             IsDetailsVisible = false;
+
             FilteredEquipments = new ObservableCollection<ResponseEquipmentDTO>(Equipments);
         }
 
@@ -93,27 +101,37 @@ namespace Forms.ViewModels.Accountant
         {
             var searchResults = Equipments;
 
-            // Lọc theo tên
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 searchResults = new ObservableCollection<ResponseEquipmentDTO>(
-                    searchResults.Where(e => e.EquipmentName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
+                    searchResults.Where(e =>
+                        e.EquipmentName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        (e.Discription != null && e.Discription.Contains(SearchText, StringComparison.OrdinalIgnoreCase))));
             }
 
-            // Lọc theo khu vực
             if (!string.IsNullOrWhiteSpace(SelectedArea))
             {
                 searchResults = new ObservableCollection<ResponseEquipmentDTO>(
                     searchResults.Where(e => e.AreaName == SelectedArea));
             }
 
+            if (!string.IsNullOrWhiteSpace(SelectedStatus))
+            {
+                searchResults = new ObservableCollection<ResponseEquipmentDTO>(
+                    searchResults.Where(e => e.Status == SelectedStatus));
+            }
+
             FilteredEquipments = searchResults;
         }
+
 
         partial void OnSelectedAreaChanged(string? value)
         {
             _ = Search();
         }
+
+    
+
 
         [RelayCommand]
         private void ShowAddNewEquipmentForm()
@@ -128,16 +146,23 @@ namespace Forms.ViewModels.Accountant
         private async Task SaveNewEquipment()
         {
             if (string.IsNullOrWhiteSpace(NewEquipment.EquipmentName) ||
-                string.IsNullOrWhiteSpace(NewEquipment.AreaName))
+                string.IsNullOrWhiteSpace(NewEquipment.AreaName) ||
+                string.IsNullOrWhiteSpace(NewEquipment.Status))
             {
-                // Handle validation error
                 return;
             }
 
-            await _equipmentService.Add(NewEquipment);
-            await LoadEquipmentsAsync();
-            IsAddingNewEquipment = false;
-            NewEquipment = CreateNewEquipmentDTO();
+            try
+            {
+                await _equipmentService.Add(NewEquipment);
+                await LoadEquipmentsAsync();
+                IsAddingNewEquipment = false;
+                NewEquipment = CreateNewEquipmentDTO();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error saving new equipment: {ex.Message}");
+            }
         }
 
         [RelayCommand]
@@ -189,7 +214,28 @@ namespace Forms.ViewModels.Accountant
             SelectedEquipment.EquipmentName = value.EquipmentName;
             SelectedEquipment.AreaName = value.AreaName;
             SelectedEquipment.LastMaintenanceDate = value.LastMaintenanceDate;
+            SelectedEquipment.Notes = value.Notes;  
+            SelectedEquipment.LastCheckDate = value.LastCheckDate;  
             IsDetailsVisible = true;
         }
+
+        [RelayCommand]
+        private void ViewAddEquipment(string equipmentCode)
+        {
+            var addEquipmentViewModel = new AddEquipmentViewModel(_equipmentService, equipmentCode);
+
+            addEquipmentViewModel.EquipmentAdded += async () =>
+            {
+                await LoadEquipmentsAsync(); 
+            };
+
+            var addEquipmentView = new AddEquipmentView(_equipmentService, equipmentCode)
+            {
+                DataContext = addEquipmentViewModel
+            };
+            addEquipmentView.ShowDialog();
+        }
+
+
     }
 }

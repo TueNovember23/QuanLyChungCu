@@ -34,7 +34,7 @@ namespace Services.Services.AccountantServices
         {
             var query = _unitOfWork.GetRepository<Invoice>().Entities
                 .Include(i => i.WaterInvoices).ThenInclude(wi => wi.Apartment)
-                //.Include(i => i.ManagementFeeInvoice)
+                .Include(i => i.ManagementFeeInvoices)
                 .Include(i => i.VechicleInvoices)
 
                 .Where(i => i.Month == month && i.Year == year).ToList();
@@ -51,7 +51,7 @@ namespace Services.Services.AccountantServices
                 InvoiceCode = $"INV{invoice.InvoiceId:D6}",
                 ApartmentCode = invoice.WaterInvoices.FirstOrDefault()!.Apartment.ApartmentCode!,
                 TotalAmount = (decimal)(invoice.TotalAmount ?? 0),
-                PaidAmount = 0, // Calculate from payment history
+                PaidAmount = 0,
                 RemainingAmount = (decimal)(invoice.TotalAmount ?? 0),
                 DueDate = invoice.CreatedDate.HasValue
                 ? invoice.CreatedDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(15)
@@ -69,7 +69,7 @@ namespace Services.Services.AccountantServices
         {
             var query = _unitOfWork.GetRepository<Invoice>().Entities
                 .Include(i => i.WaterInvoices).ThenInclude(wi => wi.Apartment)
-                //.Include(i => i.ManagementFeeInvoices)
+                .Include(i => i.ManagementFeeInvoices)
                 .Include(i => i.VechicleInvoices)
                 .Where(i =>
                     i.Month == month &&
@@ -88,7 +88,7 @@ namespace Services.Services.AccountantServices
                 InvoiceCode = $"INV{invoice.InvoiceId:D6}",
                 ApartmentCode = invoice.WaterInvoices.FirstOrDefault()!.Apartment.ApartmentCode!,
                 TotalAmount = (decimal)(invoice.TotalAmount ?? 0),
-                PaidAmount = 0, // Calculate from payment history
+                PaidAmount = 0,
                 RemainingAmount = (decimal)(invoice.TotalAmount ?? 0),
                 DueDate = invoice.CreatedDate.HasValue
                 ? invoice.CreatedDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(15)

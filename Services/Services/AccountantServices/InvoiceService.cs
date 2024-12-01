@@ -28,8 +28,8 @@ namespace Services.Services.AccountantServices
                     .ThenInclude(w => w.Apartment)
                 .Include(i => i.VechicleInvoices)
                     .ThenInclude(v => v.Apartment)
-                //.Include(i => i.ManagementFeeInvoices)
-                //    .ThenInclude(m => m.Apartment)
+                .Include(i => i.ManagementFeeInvoices)
+                    .ThenInclude(m => m.Apartment)
                 .Where(i => i.Month == month && i.Year == year)
                 .ToListAsync();
 
@@ -57,15 +57,15 @@ namespace Services.Services.AccountantServices
                     InvoiceId = i.InvoiceId
                 })).ToList(),
 
-                //ManagementInvoices = invoices.SelectMany(i => i.ManagementFeeInvoices.Select(m => new ResponseManagementFeeInvoiceDTO
-                //{
-                //    ManagementFeeInvoiceId = m.ManagementFeeInvoiceId,
-                //    ApartmentCode = m.Apartment.ApartmentCode,
-                //    Price = m.Price,
-                //    TotalAmount = m.TotalAmount ?? 0,
-                //    CreatedDate = i.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
-                //    InvoiceId = i.InvoiceId
-                //})).ToList(),
+                ManagementInvoices = invoices.SelectMany(i => i.ManagementFeeInvoices.Select(m => new ResponseManagementFeeInvoiceDTO
+                {
+                    ManagementFeeInvoiceId = m.ManagementFeeInvoiceId,
+                    ApartmentCode = m.Apartment.ApartmentCode,
+                    Price = m.Price,
+                    TotalAmount = m.TotalAmount ?? 0,
+                    CreatedDate = i.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
+                    InvoiceId = i.InvoiceId
+                })).ToList(),
 
                 VehicleInvoices = invoices.SelectMany(i => i.VechicleInvoices.Select(v => new ResponseVehicleInvoiceDTO
                 {
@@ -109,15 +109,15 @@ namespace Services.Services.AccountantServices
                 var updatedInvoice = await _unitOfWork.GetRepository<Invoice>().Entities
                     .Include(i => i.WaterInvoices)
                     .Include(i => i.VechicleInvoices)
-                    //.Include(i => i.ManagementFeeInvoices)
+                    .Include(i => i.ManagementFeeInvoices)
                     .FirstOrDefaultAsync(i => i.InvoiceId == invoice.InvoiceId);
 
                 if (updatedInvoice != null)
                 {
                     updatedInvoice.TotalAmount = (
                         updatedInvoice.WaterInvoices.Sum(w => w.TotalAmount ?? 0) +
-                        updatedInvoice.VechicleInvoices.Sum(v => v.TotalAmount ?? 0) /*+*/
-                    //updatedInvoice.ManagementFeeInvoices.Sum(m => m.TotalAmount ?? 0)
+                        updatedInvoice.VechicleInvoices.Sum(v => v.TotalAmount ?? 0) +
+                    updatedInvoice.ManagementFeeInvoices.Sum(m => m.TotalAmount ?? 0)
                     );
                     await _unitOfWork.SaveAsync();
                 }

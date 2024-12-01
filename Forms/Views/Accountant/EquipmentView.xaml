@@ -14,24 +14,20 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <header:Header Grid.Row="0"/>
 
-        <!-- Main Content -->
         <Grid Grid.Row="1" Margin="20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Left Panel - Equipment List and Details -->
             <Grid Grid.Column="0" Margin="0,0,10,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Search and Filter -->
                 <materialDesign:Card Grid.Row="0" Margin="0,0,0,20" UniformCornerRadius="15">
                     <Grid Margin="15">
                         <Grid.ColumnDefinitions>
@@ -39,26 +35,34 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+
                         </Grid.ColumnDefinitions>
 
                         <TextBox Grid.Column="0"
                  materialDesign:HintAssist.Hint="Tìm kiếm thiết bị..."
                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
 
                         <ComboBox Grid.Column="1" Margin="10,0,0,0"
+                materialDesign:HintAssist.Hint="Trạng thái"
+                ItemsSource="{Binding StatusList}"
+                SelectedItem="{Binding SelectedStatus}"
+                MinWidth="150"/>
+
+                        <ComboBox Grid.Column="2" Margin="10,0,0,0"
                   materialDesign:HintAssist.Hint="Khu vực"
                   ItemsSource="{Binding Areas}"
                   SelectedItem="{Binding SelectedArea}"
                   MinWidth="150"/>
 
-                        <Button Grid.Column="2" Margin="10,0,0,0"
+                        <Button Grid.Column="3" Margin="10,0,0,0"
                 Style="{StaticResource MaterialDesignFlatButton}"
                 Command="{Binding SearchCommand}">
                             <materialDesign:PackIcon Kind="Search"/>
                         </Button>
 
-                        <Button Grid.Column="3" Margin="10,0,0,0"
+                        <Button Grid.Column="4" Margin="10,0,0,0"
                 Style="{StaticResource MaterialDesignFlatButton}"
                 Command="{Binding RefreshCommand}">
                             <materialDesign:PackIcon Kind="Refresh"/>
@@ -68,7 +72,6 @@
 
 
 
-                <!-- Equipment List -->
                 <materialDesign:Card Grid.Row="1" UniformCornerRadius="15" VerticalAlignment="Stretch">
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top" 
@@ -87,21 +90,17 @@
                                   materialDesign:DataGridAssist.CellPadding="13"
                                   materialDesign:DataGridAssist.CornerRadius="3">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Mã thiết bị" Binding="{Binding EquipmentId}"/>
                                 <DataGridTextColumn Header="Tên thiết bị" Binding="{Binding EquipmentName}"/>
                                 <DataGridTextColumn Header="Khu vực" Binding="{Binding AreaName}"/>
                                 <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}"/>
-                                <DataGridTextColumn Header="Lần kiểm tra cuối" Binding="{Binding LastMaintenanceDate}"/>
+                                <DataGridTextColumn Header="Lưu ý" Binding="{Binding Discription}"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
                 </materialDesign:Card>
             </Grid>
 
-            <!-- Right Panel (giữ nguyên phần này) -->
-            <!-- Right Panel - Actions and Status -->
             <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                <!-- Quick Actions -->
                 <materialDesign:Card UniformCornerRadius="15" Margin="0,0,0,20">
                     <StackPanel Margin="15">
                         <TextBlock Text="Thao tác nhanh"
@@ -109,17 +108,18 @@
                                      Margin="0,0,0,15"/>
 
                         <Button Style="{StaticResource MaterialDesignRaisedButton}"
-                                    Command="{Binding AddNewEquipmentCommand}"
-                                    Margin="0,0,0,10">
+                                    Command="{Binding DataContext.ViewAddEquipmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding EquipmentCode}"
+                                Margin="0,0,0,10">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Plus" Margin="0,0,8,0"/>
                                 <TextBlock Text="Thêm thiết bị mới"/>
                             </StackPanel>
                         </Button>
-                     
-                    </StackPanel>
-                </materialDesign:Card>
 
+                    </StackPanel>
+
+                </materialDesign:Card>
                 <!-- Equipment Details -->
                 <materialDesign:Card UniformCornerRadius="15">
                     <StackPanel Margin="15">
@@ -138,7 +138,7 @@
                                       SelectedItem="{Binding SelectedEquipment.AreaName}"
                                       Margin="0,0,0,10"/>
 
-                        <TextBox materialDesign:HintAssist.Hint="Ghi chú"
+                        <TextBox materialDesign:HintAssist.Hint="Lưu ý"
                                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                      Text="{Binding SelectedEquipment.Notes}"
                                      TextWrapping="Wrap"
@@ -183,7 +183,7 @@
                             </Button>
 
                             <Button Style="{StaticResource MaterialDesignOutlinedButton}"
-                                        Command="{Binding CancelChangesCommand}">
+                                        Command="{Binding DeleteEquipmentCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="Cancel" Margin="0,0,8,0"/>
                                     <TextBlock Text="Hủy"/>

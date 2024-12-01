@@ -112,7 +112,7 @@ namespace Repositories.Repositories
         {
             return await _context.Apartments
                 .Include(a => a.Floor)
-                .Include(a => a.Representatives)
+                .Include(a => a.Representative)
                 .ToListAsync();
         }
 
@@ -120,7 +120,7 @@ namespace Repositories.Repositories
         {
             return await _context.Apartments
                 .Include(a => a.Floor)
-                .Include(a => a.Representatives)
+                .Include(a => a.Representative)
                 .Where(a => a.ApartmentCode.Contains(searchText))
                 .ToListAsync();
         }
@@ -129,7 +129,7 @@ namespace Repositories.Repositories
         {
             return await _context.Apartments
                 .Include(a => a.Floor)
-                .Include(a => a.Representatives)
+                .Include(a => a.Representative)
                 .FirstOrDefaultAsync(a => a.ApartmentId == id);
         }
     }

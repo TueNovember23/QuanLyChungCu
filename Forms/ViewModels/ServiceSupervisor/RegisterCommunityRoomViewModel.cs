@@ -36,6 +36,12 @@ namespace Forms.ViewModels.ServiceSupervisor
         [ObservableProperty]
         private int numberOfPeople;
 
+        [ObservableProperty]
+        private string? errorMessage;
+
+        [ObservableProperty]
+        private bool showErrorMessage;
+
         public RegisterCommunityRoomViewModel(ICommunityRoomService communityRoomService)
         {
             _communityRoomService = communityRoomService;
@@ -60,7 +66,33 @@ namespace Forms.ViewModels.ServiceSupervisor
         [RelayCommand]
         private async Task Register()
         {
-            if (SelectedRoom == null) return;
+            if (SelectedRoom == null)
+            {
+                ErrorMessage = "Vui lòng chọn phòng";
+                ShowErrorMessage = true;
+                return;
+            }
+
+            if (NumberOfPeople <= 0)
+            {
+                ErrorMessage = "Số người tham gia phải lớn hơn 0";
+                ShowErrorMessage = true;
+                return;
+            }
+
+            if (NumberOfPeople > SelectedRoom.RoomSize)
+            {
+                ErrorMessage = $"Số người tham gia vượt quá sức chứa của phòng ({SelectedRoom.RoomSize} người)";
+                ShowErrorMessage = true;
+                return;
+            }
+
+            if (StartTime > EndTime)
+            {
+                ErrorMessage = "Thời gian kết thúc phải sau thời gian bắt đầu";
+                ShowErrorMessage = true;
+                return;
+            }
 
             var success = await _communityRoomService.CreateBooking(
                 SelectedRoom.CommunityRoomId,
@@ -74,27 +106,29 @@ namespace Forms.ViewModels.ServiceSupervisor
             if (success)
             {
                 await LoadDataAsync();
-                // Show success message
+                ShowErrorMessage = false;
+                ErrorMessage = string.Empty;
             }
             else
             {
-                // Show error message
+                ErrorMessage = "Phòng đã được đặt trong khoảng thời gian này";
+                ShowErrorMessage = true;
             }
-        }
 
-        [RelayCommand]
-        private async Task DeleteBooking(int bookingId)
-        {
-            var success = await _communityRoomService.DeleteBooking(bookingId);
-            if (success)
+        }
+            [RelayCommand]
+            private async Task DeleteBooking(int bookingId)
             {
-                await LoadDataAsync();
-                // Show success message
-            }
-            else
-            {
-                // Show error message
+                var success = await _communityRoomService.DeleteBooking(bookingId);
+                if (success)
+                {
+                    await LoadDataAsync();
+                    // Show success message
+                }
+                else
+                {
+                    // Show error message
+                }
             }
         }
     }
-}

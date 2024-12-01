@@ -1,0 +1,51 @@
+﻿<Window x:Class="Forms.Views.AdministrativeStaff.UpdateResidentView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Title="Cập nhật thông tin cư dân" Height="500" Width="400">
+    <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                <Button x:Name="CloseButton" Content="X" Style="{StaticResource MaterialDesignFloatingActionButton}" Width="30" Height="30"
+                        HorizontalAlignment="Right" Margin="0,10,10,0" Click="CloseButton_Click"/>
+                <TextBlock Text="Cập nhật thông tin cư dân" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" />
+
+                <TextBox x:Name="ResidentIdInput" IsReadOnly="True"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10"/>
+                
+                <TextBox x:Name="FullNameInput" materialDesign:HintAssist.Hint="Họ và tên" 
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10"/>
+
+                <ComboBox x:Name="GenderInput" materialDesign:HintAssist.Hint="Giới tính" 
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}" Margin="0,10">
+                    <ComboBoxItem Content="Nam" />
+                    <ComboBoxItem Content="Nữ" />
+                </ComboBox>
+
+                <DatePicker x:Name="DateOfBirthInput" materialDesign:HintAssist.Hint="Ngày sinh" 
+                        Style="{StaticResource MaterialDesignDatePicker}" Margin="0,10" />
+
+                <TextBox x:Name="RelationShipInput" materialDesign:HintAssist.Hint="Quan hệ với chủ hộ" 
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Chuyển đi" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Background="Red" Foreground="White" Click="DeleteResident_Click"/>
+                <Button Content="Chuyển vào" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Background="Blue" Foreground="White" Click="MoveIn_Click"/>
+                <Button Content="Cập nhật" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Background="Green" Foreground="White" Click="UpdateResident_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

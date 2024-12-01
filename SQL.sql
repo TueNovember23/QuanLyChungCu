@@ -105,15 +105,26 @@ create table Floor (
     constraint FK_Floor_Block foreign key (BlockId) references Block(BlockId)
 )
 
+create table Representative (
+    RepresentativeId char(12) primary key,
+    FullName nvarchar(50),
+    Gender nchar(4),
+    DateOfBirth date,
+    Email nvarchar(100),
+    PhoneNumber char(10)
+)
+
 Create Table Apartment (
 	ApartmentId int IDENTITY(1, 1) primary key, -- Id căn hộ (ẩn khỏi người dùng)
     ApartmentCode char(20), --Mã căn hộ
     ApartmentNumber int, -- Số thứ tự của căn hộ tại 1 lầu
 	Area int,
     NumberOfPeople int DEFAULT 0,
+    RepresentativeId char(12),
 	Status nvarchar(20),
 	FloorId int not null,
-    Constraint FK_Apartment_Floor foreign key (FloorId) references Floor(FloorId)
+    Constraint FK_Apartment_Floor foreign key (FloorId) references Floor(FloorId),
+    Constraint FK_Apartment_Representative foreign key (RepresentativeId) references Representative(RepresentativeId)
 )
 
 create table Resident (
@@ -125,18 +136,7 @@ create table Resident (
     MoveInDate date,
     MoveOutDate date,
     ApartmentID int not null,
-    constraint FK_Resident_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
-)
-
-create table Representative (
-    RepresentativeId char(12) primary key,
-    FullName nvarchar(50),
-    Gender nchar(4),
-    DateOfBirth date,
-    Email nvarchar(100),
-    PhoneNumber char(10),
-    ApartmentID int not null,
-    constraint FK_Representative_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
+    constraint FK_Resident_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
 )
 
 create table VehicleCategory (
@@ -200,7 +200,7 @@ create table ManagementFee (
 )
 
 CREATE TABLE ManagementFeeInvoice (
-    ManagementFeeInvoiceId int IDENTITY(1, 1) NOT NULL,
+    ManagementFeeInvoiceId int IDENTITY(1, 1) PRIMARY KEY,
     Price FLOAT not null,
     TotalAmount FLOAT,
     InvoiceId int not null,
@@ -414,18 +414,6 @@ BEGIN
 END;
 GO
 
-create table Resident (
-    ResidentId char(12) primary key,
-    FullName nvarchar(50) NOT NULL,
-    Gender nchar(4),
-    DateOfBirth date,
-    RelationShipWithOwner nvarchar(50),
-    MoveInDate date,
-    MoveOutDate date,
-    ApartmentID int not null,
-    constraint FK_Resident_Apartment foreign key (ApartmentId) references Apartment(ApartmentId)
-)
-
 INSERT INTO Resident (ResidentId, FullName, Gender, DateOfBirth, RelationShipWithOwner, MoveInDate, MoveOutDate, ApartmentId)
 VALUES
 ('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', N'Chủ hộ', '2015-01-01', NULL, 1),
@@ -437,6 +425,7 @@ UPDATE Apartment
 SET NumberOfPeople = 3
 WHERE ApartmentId = 1
 
+--INSERT INTO Representative (RepresentativeId, FullName, 
 -- USE [master]
 -- GO
 -- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE

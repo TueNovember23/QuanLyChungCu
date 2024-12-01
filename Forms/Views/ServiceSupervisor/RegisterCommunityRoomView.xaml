@@ -142,10 +142,16 @@
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             Margin="0 8"/>
 
-                    <Button Content="Đăng ký"
-                            Command="{Binding RegisterCommand}"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            Margin="0 16 0 0"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="Red"
+                       Visibility="{Binding ShowErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       TextWrapping="Wrap"
+                       Margin="0 8"/>
+
+                            <Button Content="Đăng ký"
+                    Command="{Binding RegisterCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Margin="0 16 0 0"/>
                 </StackPanel>
             </materialDesign:Card>
         </Grid>

@@ -18,5 +18,7 @@ namespace Services.Interfaces.ServiceSupervisorServices
         Task<bool> CreateBooking(int communityRoomId, int apartmentId, DateOnly bookingDate,
             TimeOnly startTime, TimeOnly endTime, int numberOfPeople);
         Task<bool> DeleteBooking(int bookingId);
+        Task<bool> IsRoomAvailable(int communityRoomId, DateOnly bookingDate,
+       TimeOnly startTime, TimeOnly endTime);
     }
 }
