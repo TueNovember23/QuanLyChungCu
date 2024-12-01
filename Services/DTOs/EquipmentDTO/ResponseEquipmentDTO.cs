@@ -14,7 +14,7 @@ namespace Services.DTOs.EquipmentDTO
         public string AreaName { get; set; } = null!;
         public string Status { get; set; } = null!;
         public DateTime? LastMaintenanceDate { get; set; }
-        public string? Notes { get; set; }  // Add this
-        public DateTime? LastCheckDate { get; set; }  // Add this
+        public string? Notes { get; set; }
+        public DateTime? LastCheckDate { get; set; }
     }
 }

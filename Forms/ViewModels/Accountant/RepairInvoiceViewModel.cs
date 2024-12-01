@@ -2,15 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using Repositories.Repositories.Entities;
 using Services.Interfaces.AccountantServices;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Services.Services.AccountantServices;
 using Services.DTOs.RepairInvoiceDTO;
+using System.Windows;
 
 namespace Forms.ViewModels.Accountant
 {
@@ -26,6 +20,13 @@ namespace Forms.ViewModels.Accountant
 
         [ObservableProperty]
         private string searchText = "";
+
+        [ObservableProperty]
+        private string newInvoiceContent;
+
+        [ObservableProperty]
+        private double newInvoiceTotalAmount;
+
 
         public RepairInvoiceViewModel(IRepairInvoiceService repairInvoiceService)
         {
@@ -61,18 +62,56 @@ namespace Forms.ViewModels.Accountant
         }
 
         [RelayCommand]
-        private void CreateInvoice()
+        private async Task CreateInvoice()
         {
-            // TODO: Implement create invoice logic
-            System.Diagnostics.Debug.WriteLine("CreateInvoice called");
+            // Dữ liệu từ form
+            var newInvoice = new RepairInvoice
+            {
+                InvoiceDate = DateOnly.FromDateTime(DateTime.Now),
+                InvoiceContent = NewInvoiceContent,
+                TotalAmount = NewInvoiceTotalAmount,
+                Status = "Đang xử lý", // Mặc định
+                //CreatedBy = CurrentUserId
+            };
+
+            try
+            {
+                await _repairInvoiceService.AddRepairInvoiceAsync(newInvoice);
+                MessageBox.Show("Hóa đơn sửa chữa được tạo thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                await LoadRepairInvoicesAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tạo hóa đơn sửa chữa: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
 
         [RelayCommand]
         private async Task ViewInvoiceDetails(int invoiceId)
         {
-            // TODO: Implement view invoice details logic
-            System.Diagnostics.Debug.WriteLine($"ViewInvoiceDetails called for InvoiceId: {invoiceId}");
+            var invoice = await _repairInvoiceService.GetRepairInvoiceByIdAsync(invoiceId);
+            if (invoice != null)
+            {
+                // Hiển thị chi tiết hóa đơn
+                MessageBox.Show(
+                    $"Mã hóa đơn: {invoice.InvoiceId}\n" +
+                    $"Nội dung: {invoice.InvoiceContent}\n" +
+                    $"Tổng tiền: {invoice.TotalAmount:N0} VND\n" +
+                    $"Trạng thái: {invoice.Status}\n" +
+                    $"Ngày lập: {invoice.InvoiceDate:dd/MM/yyyy}",
+                    "Chi tiết hóa đơn",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+            }
+            else
+            {
+                MessageBox.Show("Không tìm thấy hóa đơn!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
 
     }
 }
