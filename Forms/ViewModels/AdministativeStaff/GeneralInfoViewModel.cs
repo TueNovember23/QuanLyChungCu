@@ -11,9 +11,6 @@ using System.Windows.Threading;
 using System.Windows;
 using System.Diagnostics;
 using Services.DTOs.GeneralInfo.FloorDTO;
-using OxyPlot.Series;
-using OxyPlot;
-using OxyPlot.Axes;
 
 
 namespace Forms.ViewModels.AdministativeStaff
@@ -58,16 +55,6 @@ namespace Forms.ViewModels.AdministativeStaff
         private string searchFloorText = string.Empty;
 
 
-        [ObservableProperty]
-        private PlotModel areaPieModel;
-
-        [ObservableProperty]
-        private PlotModel blockBarModel;
-
-        [ObservableProperty]
-        private PlotModel floorBarModel;
-
-
         public GeneralInfoViewModel(IGeneralInfoService generalInfoService)
         {
             _generalInfoService = generalInfoService;
@@ -77,7 +64,6 @@ namespace Forms.ViewModels.AdministativeStaff
 
             Task.Run(LoadAreas);
         }
-
 
         private async Task LoadInitialData()
         {

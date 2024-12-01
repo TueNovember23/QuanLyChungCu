@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core;
-using QRCoder;
 using Services.DTOs.ApartmentDTO;
 using Services.DTOs.VehicleDTO;
 using Services.Interfaces.ServiceSupervisorServices;

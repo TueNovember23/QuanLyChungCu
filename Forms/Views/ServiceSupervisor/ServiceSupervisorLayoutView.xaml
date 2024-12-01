@@ -67,10 +67,10 @@
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" 
-                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="RegisterCommunityRoomViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="EqualiserVertical"/>
-                                    <TextBlock x:Name="EqualizerText" Text="Equalizer" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <materialDesign:PackIcon Kind="RoomService"/>
+                                    <TextBlock x:Name="EqualizerText" Text="Đăng ký phòng sinh hoạt" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>

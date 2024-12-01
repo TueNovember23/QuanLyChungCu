@@ -35,6 +35,12 @@ namespace Forms.Views.ServiceSupervisor
             LoadUserControl(new EquipmentView());
         }
 
+        private void RegisterCommunityRoomViewButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            LoadUserControl(new RegisterCommunityRoomView());
+        }
+
         private void LoadUserControl(UserControl userControl)
         {
             RenderPages.Children.Clear();
