@@ -42,7 +42,6 @@ namespace Forms.ViewModels.ServiceSupervisor
         [ObservableProperty]
         private DateTime? selectedEndTime;
 
-        // Đổi tên các property này để phù hợp với cách sử dụng trong code
         private DateOnly BookingDate => DateOnly.FromDateTime(SelectedDate ?? DateTime.Today);
         private TimeOnly StartTime => TimeOnly.FromDateTime(SelectedStartTime ?? DateTime.Now); 
         private TimeOnly EndTime => TimeOnly.FromDateTime(SelectedEndTime ?? DateTime.Now);
@@ -130,9 +129,9 @@ namespace Forms.ViewModels.ServiceSupervisor
                 var success = await _communityRoomService.CreateBooking(
                     SelectedRoom.CommunityRoomId,
                     currentApartmentId,
-                    BookingDate,  // Sử dụng tên property đã đổi
-                    StartTime,    // Sử dụng tên property đã đổi
-                    EndTime,      // Sử dụng tên property đã đổi
+                    BookingDate,  
+                    StartTime,    
+                    EndTime,      
                     NumberOfPeople
                 );
 
@@ -141,10 +140,10 @@ namespace Forms.ViewModels.ServiceSupervisor
                     await LoadDataAsync();
                     ShowErrorMessage = false;
                     ErrorMessage = string.Empty;
-                    // Reset form
+               
                     SelectedRoom = null;
-                    SelectedStartTime = null; // Sửa lại cách reset
-                    SelectedEndTime = null;   // Sửa lại cách reset
+                    SelectedStartTime = null; 
+                    SelectedEndTime = null;   
                     NumberOfPeople = 0;
                 }
                 else
@@ -167,11 +166,11 @@ namespace Forms.ViewModels.ServiceSupervisor
             if (success)
             {
                 await LoadDataAsync();
-                // Show success message
             }
             else
             {
-                // Show error message
+                ErrorMessage = $"Có lỗi xảy ra";
+                ShowErrorMessage = true;
             }
         }
     }
