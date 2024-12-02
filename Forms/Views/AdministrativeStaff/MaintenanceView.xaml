@@ -6,8 +6,8 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              xmlns:header="clr-namespace:Forms.Views" 
-             d:DesignHeight="850" d:DesignWidth="1250">
-    <Grid HorizontalAlignment="Left" Width="1250">
+             d:DesignHeight="850" d:DesignWidth="1100">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <!-- Header -->
@@ -50,20 +50,20 @@
                       IsReadOnly="True">
                 <DataGrid.Columns>
                     <!-- Mã bảo trì -->
-                    <DataGridTextColumn Header="Mã bảo trì" Binding="{Binding MaintenanceId}" Width="auto"/>
+                    <DataGridTextColumn Header="Mã bảo trì" Binding="{Binding MaintenanceId}" Width="*"/>
                     <!-- Tên bảo trì -->
-                    <DataGridTextColumn Header="Tên bảo trì" Binding="{Binding MaintenanceName}" Width="auto"/>
+                    <DataGridTextColumn Header="Tên bảo trì" Binding="{Binding MaintenanceName}" Width="*"/>
                     <!-- Ngày bảo trì -->
-                    <DataGridTextColumn Header="Ngày bảo trì" Binding="{Binding MaintanaceDate}" Width="auto"/>
+                    <DataGridTextColumn Header="Ngày bảo trì" Binding="{Binding MaintanaceDate}" Width="*"/>
                     <!-- Trạng thái -->
-                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="auto"/>
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="*"/>
                     <!-- Người tạo -->
-                    <DataGridTextColumn Header="Người tạo" Binding="{Binding CreatedBy}" Width="auto"/>
+                    <DataGridTextColumn Header="Người tạo" Binding="{Binding CreatedBy}" Width="*"/>
                     <!-- Bộ phận -->
-                    <DataGridTextColumn Header="Bộ phận thực hiện" Binding="{Binding Department}" Width="auto"/>
+                    <DataGridTextColumn Header="Bộ phận thực hiện" Binding="{Binding Department}" Width="*"/>
 
                     <!-- Cột nút "Xem chi tiết" -->
-                    <DataGridTemplateColumn Header="Chi tiết" Width="auto">
+                    <DataGridTemplateColumn Header="Chi tiết" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="Xem chi tiết" Width="auto" Height="30"
@@ -76,7 +76,7 @@
                     </DataGridTemplateColumn>
 
                     <!-- Cột nút "Hoàn thành" -->
-                    <DataGridTemplateColumn Header="Hoàn thành" Width="auto">
+                    <DataGridTemplateColumn Header="Hoàn thành" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="Hoàn thành" Width="auto" Height="30"
