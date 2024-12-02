@@ -13,12 +13,12 @@ namespace Services.Interfaces.ServiceSupervisorServices
     public interface ICommunityRoomService
     {
         Task<List<ResponseCommunityRoomDTO>> GetAll();
-        Task<List<ResponseCommunityRoomDTO>> Search(string searchText);
+        Task<List<ResponseCommunityRoomBookingDTO>> SearchBookings(string apartmentCode, DateOnly? bookingDate);
         Task<List<ResponseCommunityRoomBookingDTO>> GetBookings();
         Task<bool> CreateBooking(int communityRoomId, int apartmentId, DateOnly bookingDate,
             TimeOnly startTime, TimeOnly endTime, int numberOfPeople);
         Task<bool> DeleteBooking(int bookingId);
-        Task<bool> IsRoomAvailable(int communityRoomId, DateOnly bookingDate,
-       TimeOnly startTime, TimeOnly endTime);
+        Task<List<ApartmentDTO>> GetApartments();
+        Task<bool> IsRoomAvailable(int communityRoomId, DateOnly bookingDate, TimeOnly startTime, TimeOnly endTime, int numberOfPeople);
     }
 }

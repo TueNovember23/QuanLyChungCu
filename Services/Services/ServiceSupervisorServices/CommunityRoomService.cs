@@ -4,12 +4,7 @@ using Repositories.Repositories.Entities;
 using Services.DTOs.ApartmentDTO;
 using Services.DTOs.CommunityRoomBookingDTO;
 using Services.Interfaces.ServiceSupervisorServices;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Services.Services.ServiceSupervisorServices
 {
@@ -21,7 +16,7 @@ namespace Services.Services.ServiceSupervisorServices
         {
             _unitOfWork = unitOfWork;
         }
-
+            
         public async Task<List<ResponseCommunityRoomDTO>> GetAll()
         {
             var rooms = await _unitOfWork.GetRepository<CommunityRoom>().Entities
@@ -37,28 +32,54 @@ namespace Services.Services.ServiceSupervisorServices
             return rooms;
         }
 
-        public async Task<List<ResponseCommunityRoomDTO>> Search(string searchText)
+        public async Task<List<ApartmentDTO>> GetApartments()
         {
-            if (string.IsNullOrEmpty(searchText))
+            return await _unitOfWork.GetRepository<Apartment>()
+                .Entities
+                .Select(apartment => new ApartmentDTO
+                {
+                    ApartmentId = apartment.ApartmentId,
+                    ApartmentCode = apartment.ApartmentCode,
+                    Status = apartment.Status,
+                    FloorNumber = apartment.Floor.FloorNumber,
+                    OwnerName = apartment.Representative.FullName
+                })
+                .ToListAsync();
+        }
+
+
+
+        public async Task<List<ResponseCommunityRoomBookingDTO>> SearchBookings(string apartmentCode, DateOnly? bookingDate)
+        {
+            var query = _unitOfWork.GetRepository<CommunityRoomBooking>().Entities
+              .Include(b => b.Apartment)
+              .Include(b => b.CommunityRoom) as IQueryable<CommunityRoomBooking>;
+
+
+            if (!string.IsNullOrEmpty(apartmentCode))
             {
-                return await GetAll();
+                query = query.Where(b => b.Apartment.ApartmentCode.Contains(apartmentCode));
             }
 
-            var query = _unitOfWork.GetRepository<CommunityRoom>().Entities
-                .Include(r => r.CommunityRoomBookings)
-                .Where(room =>
-                    room.RoomName.Contains(searchText) ||
-                    room.Location!.Contains(searchText));
-
-            return await query.Select(room => new ResponseCommunityRoomDTO
+            if (bookingDate.HasValue)
             {
-                CommunityRoomId = room.CommunityRoomId,
-                RoomName = room.RoomName,
-                RoomSize = room.RoomSize,
-                Location = room.Location,
-                CurrentBookings = room.CommunityRoomBookings.Count
+                query = query.Where(b => b.BookingDate == bookingDate.Value);
+            }
+
+            var bookings = await query.Select(booking => new ResponseCommunityRoomBookingDTO
+            {
+                BookingId = booking.CommunityRoomBookingId,
+                ApartmentCode = booking.Apartment.ApartmentCode!,
+                BookingDate = booking.BookingDate,
+                StartTime = booking.StartTime,
+                EndTime = booking.EndTime,
+                NumberOfPeople = booking.NumberOfPeople,
+                RoomName = booking.CommunityRoom.RoomName
             }).ToListAsync();
+
+            return bookings;
         }
+
 
         public async Task<List<ResponseCommunityRoomBookingDTO>> GetBookings()
         {
@@ -76,48 +97,40 @@ namespace Services.Services.ServiceSupervisorServices
                     RoomName = booking.CommunityRoom.RoomName
                 }).ToListAsync();
         }
-        public async Task<bool> IsRoomAvailable(int communityRoomId, DateOnly bookingDate,
-        TimeOnly startTime, TimeOnly endTime)
+        public async Task<bool> IsRoomAvailable(int communityRoomId, DateOnly bookingDate, TimeOnly startTime, TimeOnly endTime, int numberOfPeople)
         {
             var existingBookings = await _unitOfWork.GetRepository<CommunityRoomBooking>()
                 .Entities
                 .Where(b => b.CommunityRoomId == communityRoomId
-                    && b.BookingDate == bookingDate)
+                    && b.BookingDate == bookingDate
+                    && b.StartTime < endTime && b.EndTime > startTime)
                 .ToListAsync();
 
-            // Check if there are any overlapping bookings
-            foreach (var booking in existingBookings)
-            {
-                if (booking.StartTime < endTime && booking.EndTime > startTime)
-                {
-                    return false; // Room is not available - time slot overlap
-                }
-            }
+            var totalPeopleBooked = existingBookings.Sum(b => b.NumberOfPeople);
 
-            // Get room capacity
             var room = await _unitOfWork.GetRepository<CommunityRoom>()
                 .Entities
                 .FirstOrDefaultAsync(r => r.CommunityRoomId == communityRoomId);
 
             if (room == null)
             {
-                return false;
+                return false; 
             }
 
-            return true;
+            return totalPeopleBooked + numberOfPeople <= room.RoomSize;
         }
+
 
         public async Task<bool> CreateBooking(int communityRoomId, int apartmentId, DateOnly bookingDate,
             TimeOnly startTime, TimeOnly endTime, int numberOfPeople)
         {
             try
             {
-                // First check if the room is available
-                bool isAvailable = await IsRoomAvailable(communityRoomId, bookingDate, startTime, endTime);
+                bool isAvailable = await IsRoomAvailable(communityRoomId, bookingDate, startTime, endTime, numberOfPeople);
 
                 if (!isAvailable)
                 {
-                    return false; // Room is not available
+                    return false; 
                 }
 
                 var booking = new CommunityRoomBooking

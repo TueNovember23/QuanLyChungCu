@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Repositories.Repositories.Entities;
+using Services.DTOs.ApartmentDTO;
 using Services.DTOs.CommunityRoomBookingDTO;
 using Services.Interfaces.ServiceSupervisorServices;
 using System;
@@ -14,6 +16,12 @@ namespace Forms.ViewModels.ServiceSupervisor
     public partial class RegisterCommunityRoomViewModel : ObservableObject
     {
         private readonly ICommunityRoomService _communityRoomService;
+
+        [ObservableProperty]
+        private ObservableCollection<ApartmentDTO> apartments = [];
+
+        [ObservableProperty]
+        private ApartmentDTO? selectedApartment;
 
         [ObservableProperty]
         private ObservableCollection<ResponseCommunityRoomBookingDTO> bookings = [];
@@ -42,9 +50,20 @@ namespace Forms.ViewModels.ServiceSupervisor
         [ObservableProperty]
         private DateTime? selectedEndTime;
 
+        [ObservableProperty]
+        private string? searchApartmentCode;
+
+        [ObservableProperty]
+        private DateTime? searchBookingDate;
+
+
         private DateOnly BookingDate => DateOnly.FromDateTime(SelectedDate ?? DateTime.Today);
         private TimeOnly StartTime => TimeOnly.FromDateTime(SelectedStartTime ?? DateTime.Now); 
         private TimeOnly EndTime => TimeOnly.FromDateTime(SelectedEndTime ?? DateTime.Now);
+        
+        public string AvailableCapacityText =>
+            $"Số người còn lại có thể đăng ký: {SelectedRoom.RoomSize - SelectedRoom.CurrentBookings}";
+
 
         public RegisterCommunityRoomViewModel(ICommunityRoomService communityRoomService)
         {
@@ -52,14 +71,25 @@ namespace Forms.ViewModels.ServiceSupervisor
             _ = LoadDataAsync();
         }
 
+
         private async Task LoadDataAsync()
         {
             var roomList = await _communityRoomService.GetAll();
             Rooms = new ObservableCollection<ResponseCommunityRoomDTO>(roomList);
 
-            var bookingList = await _communityRoomService.GetBookings();
+            var bookingList = await _communityRoomService.SearchBookings(SearchApartmentCode, SearchBookingDate.HasValue ? DateOnly.FromDateTime(SearchBookingDate.Value) : (DateOnly?)null);
             Bookings = new ObservableCollection<ResponseCommunityRoomBookingDTO>(bookingList);
+
+            var apartmentList = await _communityRoomService.GetApartments();
+            Apartments = new ObservableCollection<ApartmentDTO>(apartmentList);
         }
+
+        [RelayCommand]
+        private async Task Search()
+        {
+            await LoadDataAsync();
+        }
+
 
         [RelayCommand]
         private async Task Refresh()
@@ -70,11 +100,18 @@ namespace Forms.ViewModels.ServiceSupervisor
         [RelayCommand]
         private async Task Register()
         {
-            try 
+            try
             {
                 if (SelectedRoom == null)
                 {
                     ErrorMessage = "Vui lòng chọn phòng";
+                    ShowErrorMessage = true;
+                    return;
+                }
+
+                if (SelectedApartment == null)
+                {
+                    ErrorMessage = "Vui lòng chọn mã căn hộ đăng ký";
                     ShowErrorMessage = true;
                     return;
                 }
@@ -107,7 +144,7 @@ namespace Forms.ViewModels.ServiceSupervisor
                 {
                     ErrorMessage = "Vui lòng chọn thời gian đặt phòng";
                     ShowErrorMessage = true;
-                    return; 
+                    return;
                 }
 
                 if (StartTime >= EndTime)
@@ -124,14 +161,30 @@ namespace Forms.ViewModels.ServiceSupervisor
                     return;
                 }
 
-                var currentApartmentId = 1;
+                var isAvailable = await _communityRoomService.IsRoomAvailable(
+                    SelectedRoom.CommunityRoomId,
+                    BookingDate,
+                    StartTime,
+                    EndTime,
+                    NumberOfPeople
+                );
+
+                if (!isAvailable)
+                {
+                    ErrorMessage = "Số người đăng ký vượt quá sức chứa phòng trong khung giờ này.";
+                    ShowErrorMessage = true;
+                    return;
+                }
+
+                var currentApartmentId = SelectedApartment?.ApartmentId ?? 1;
+
 
                 var success = await _communityRoomService.CreateBooking(
                     SelectedRoom.CommunityRoomId,
                     currentApartmentId,
-                    BookingDate,  
-                    StartTime,    
-                    EndTime,      
+                    BookingDate,
+                    StartTime,
+                    EndTime,
                     NumberOfPeople
                 );
 
@@ -140,17 +193,17 @@ namespace Forms.ViewModels.ServiceSupervisor
                     await LoadDataAsync();
                     ShowErrorMessage = false;
                     ErrorMessage = string.Empty;
-               
                     SelectedRoom = null;
-                    SelectedStartTime = null; 
-                    SelectedEndTime = null;   
+                    SelectedStartTime = null;
+                    SelectedEndTime = null;
                     NumberOfPeople = 0;
                 }
                 else
                 {
-                    ErrorMessage = "Phòng đã được đặt trong khoảng thời gian này";
+                    ErrorMessage = "Có lỗi xảy ra khi tạo booking.";
                     ShowErrorMessage = true;
                 }
+
             }
             catch (Exception ex)
             {
@@ -158,6 +211,8 @@ namespace Forms.ViewModels.ServiceSupervisor
                 ShowErrorMessage = true;
             }
         }
+
+
 
         [RelayCommand]
         private async Task DeleteBooking(int bookingId)

@@ -35,14 +35,14 @@
 
                     <!-- Title -->
                     <TextBlock Grid.Row="0" Text="Danh sách hóa đơn sửa chữa" 
-                             FontSize="18" FontWeight="SemiBold" Margin="16"/>
+                               FontSize="18" FontWeight="SemiBold" Margin="16"/>
 
                     <!-- Search Bar -->
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="16">
                         <TextBox Width="300" Height="55"
-                                materialDesign:HintAssist.Hint="Tìm kiếm hóa đơn"
-                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                                 materialDesign:HintAssist.Hint="Tìm kiếm hóa đơn"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
                         <Button Content="Tìm kiếm" Margin="8,0,0,0"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Command="{Binding SearchCommand}"/>
@@ -78,30 +78,63 @@
                     </DataGrid>
                 </Grid>
             </materialDesign:Card>
-            
-            
 
             <!-- Right Side - Forms -->
             <StackPanel Grid.Column="1" Margin="0,16,16,16">
                 <!-- Create Invoice Form -->
-                <materialDesign:Card Margin="0,0,0,16" UniformCornerRadius="20" Height="237">
+                <materialDesign:Card Margin="0,0,0,16" UniformCornerRadius="20">
                     <StackPanel Margin="16">
-                        <TextBlock Text="Lập hóa đơn sửa chữa" 
-                       FontSize="18" FontWeight="SemiBold" 
-                       Margin="0,0,0,16"/>
-                                <TextBox materialDesign:HintAssist.Hint="Nội dung hóa đơn" 
-                     Margin="0,0,0,16"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     Text="{Binding NewInvoiceContent, UpdateSourceTrigger=PropertyChanged}"/>
-                                <TextBox materialDesign:HintAssist.Hint="Tổng tiền (VND)" 
-                     Margin="0,0,0,16"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     Text="{Binding NewInvoiceTotalAmount, UpdateSourceTrigger=PropertyChanged}"/>
-                                <Button Content="Tạo hóa đơn" 
-                    Style="{StaticResource MaterialDesignRaisedButton}"
-                    Command="{Binding CreateInvoiceCommand}"/>
+                        <TextBlock Text="Thêm thiết bị hỏng" 
+                                   FontSize="18" FontWeight="SemiBold" 
+                                   Margin="0,0,0,16"/>
+                        <TextBox materialDesign:HintAssist.Hint="Tên thiết bị" 
+                                 Margin="0,0,0,16"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding NewDeviceName, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox materialDesign:HintAssist.Hint="Nguyên nhân hỏng" 
+                                 Margin="0,0,0,16"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding NewDeviceReason, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox materialDesign:HintAssist.Hint="Chi phí sửa chữa (VND)" 
+                                 Margin="0,0,0,16"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding NewRepairCost, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Content="Thêm thiết bị" 
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Command="{Binding AddDeviceCommand}"/>
                     </StackPanel>
+                </materialDesign:Card>
 
+                <!-- DataGrid danh sách thiết bị hỏng -->
+                <materialDesign:Card UniformCornerRadius="20">
+                    <Grid Height="434">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="101*"/>
+                            <RowDefinition Height="333*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Danh sách thiết bị hỏng" 
+                                   FontSize="18" FontWeight="SemiBold" 
+                                   Margin="16,16,16,16" Grid.RowSpan="2"/>
+                        <DataGrid Margin="16,16,16,16" AutoGenerateColumns="False" 
+                                  ItemsSource="{Binding DamagedDevices}" 
+                                  IsReadOnly="True" Grid.RowSpan="2">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Tên thiết bị" Binding="{Binding DeviceName}" Width="*"/>
+                                <DataGridTextColumn Header="Nguyên nhân" Binding="{Binding Reason}" Width="2*"/>
+                                <DataGridTextColumn Header="Chi phí sửa chữa" Binding="{Binding RepairCost, StringFormat={}{0:N0} VND}"/>
+                                <DataGridTemplateColumn Header="Thao tác">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Xóa" 
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Command="{Binding DataContext.RemoveDeviceCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding DeviceId}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
                 </materialDesign:Card>
             </StackPanel>
         </Grid>

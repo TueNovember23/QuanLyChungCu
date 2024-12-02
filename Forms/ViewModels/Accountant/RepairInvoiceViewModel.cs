@@ -27,6 +27,15 @@ namespace Forms.ViewModels.Accountant
         [ObservableProperty]
         private double newInvoiceTotalAmount;
 
+        [ObservableProperty]
+        private ObservableCollection<Equipment> brokenEquipments = new();
+
+        [ObservableProperty]
+        private ObservableCollection<MalfuntionEquipmentDTO> selectedEquipments = new();
+
+        [ObservableProperty]
+        private double totalRepairCost;
+
 
         public RepairInvoiceViewModel(IRepairInvoiceService repairInvoiceService)
         {
@@ -62,30 +71,59 @@ namespace Forms.ViewModels.Accountant
         }
 
         [RelayCommand]
-        private async Task CreateInvoice()
+        private void AddBrokenEquipmentToInvoice(Equipment equipment)
         {
-            // Dữ liệu từ form
-            var newInvoice = new RepairInvoice
+            var malfuntionEquipment = new MalfuntionEquipmentDTO
             {
-                InvoiceDate = DateOnly.FromDateTime(DateTime.Now),
-                InvoiceContent = NewInvoiceContent,
-                TotalAmount = NewInvoiceTotalAmount,
-                Status = "Đang xử lý", // Mặc định
-                //CreatedBy = CurrentUserId
+                EquipmentId = equipment.EquipmentId,
+                EquipmentName = equipment.EquipmentName,
+                Description = "Mô tả hư hỏng",
+                SolvingMethod = "Phương pháp sửa chữa",
+                RepairPrice = 0
             };
 
-            try
-            {
-                await _repairInvoiceService.AddRepairInvoiceAsync(newInvoice);
-                MessageBox.Show("Hóa đơn sửa chữa được tạo thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                await LoadRepairInvoicesAsync();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi tạo hóa đơn sửa chữa: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            SelectedEquipments.Add(malfuntionEquipment);
+            CalculateTotalRepairCost();
         }
+
+        private void CalculateTotalRepairCost()
+        {
+            TotalRepairCost = SelectedEquipments.Sum(e => e.RepairPrice);
+        }
+
+
+
+        [RelayCommand]
+        private async Task CreateInvoiceAsync()
+        {
+            // Tạo hóa đơn mới
+            var invoice = new RepairInvoice
+            {
+                InvoiceContent = "Nội dung hóa đơn",
+                TotalAmount = TotalRepairCost,
+                Status = "Chưa thanh toán",
+                //CreatedBy = CurrentUserId ?? throw new InvalidOperationException("User ID is not set.")
+            };
+
+            // Chuẩn bị danh sách thiết bị hỏng
+            var malfunctionEquipments = SelectedEquipments.Select(equipment => new MalfuntionEquipment
+            {
+                EquipmentId = equipment.EquipmentId,
+                Description = equipment.Description,
+                SolvingMethod = equipment.SolvingMethod,
+                RepairPrice = equipment.RepairPrice
+            }).ToList();
+
+            // Gửi tới Service để xử lý
+            await _repairInvoiceService.AddRepairInvoiceWithDetailsAsync(invoice, malfunctionEquipments);
+
+            // Làm mới giao diện
+            SelectedEquipments.Clear();
+            CalculateTotalRepairCost();
+            await LoadRepairInvoicesAsync();
+        }
+
+
 
 
         [RelayCommand]

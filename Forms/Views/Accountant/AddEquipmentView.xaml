@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Thêm thiết bị mới" 
         Width="500" 
-        Height="423"
+        Height="527"
         WindowStartupLocation="CenterScreen">
 
     <Grid Margin="20">

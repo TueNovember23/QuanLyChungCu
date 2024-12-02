@@ -13,5 +13,6 @@ namespace Services.DTOs.RepairInvoiceDTO
         public decimal TotalAmount { get; set; }
         public string Status { get; set; }
         public DateTime InvoiceDate { get; set; }
+        public List<MalfuntionEquipmentDTO> MalfuntionEquipments { get; set; } = new List<MalfuntionEquipmentDTO>();
     }
 }

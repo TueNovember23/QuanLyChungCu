@@ -22,18 +22,29 @@
         <header:Header Grid.Row="0"/>
 
         <!-- Search Box -->
+        <!-- Thêm nút tìm kiếm vào phần tìm kiếm trong view -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
             <TextBox Width="300" Height="40" Padding="10 10"
-                     VerticalAlignment="Center"
-                     materialDesign:HintAssist.Hint="Tìm kiếm phòng sinh hoạt chung"
-                     materialDesign:TextFieldAssist.DecorationVisibility="Visible"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+             VerticalAlignment="Center"
+             materialDesign:HintAssist.Hint="Tìm kiếm mã căn hộ"
+             materialDesign:TextFieldAssist.DecorationVisibility="Visible"
+             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+             Text="{Binding SearchApartmentCode, UpdateSourceTrigger=PropertyChanged}" />
+            <DatePicker 
+        materialDesign:HintAssist.Hint="Tìm kiếm theo ngày đặt phòng"
+        SelectedDate="{Binding SearchBookingDate, UpdateSourceTrigger=PropertyChanged}"
+        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+        Margin="0 8"/>
+            <Button Content="Tìm kiếm"
+            Width="120" Height="40" Margin="10 0"
+            Style="{StaticResource MaterialDesignFlatButton}"
+            Command="{Binding SearchCommand}" />
             <Button Content="Làm mới"
-                    Width="120" Height="40" Margin="10 0"
-                    Style="{StaticResource MaterialDesignFlatButton}"
-                    Command="{Binding RefreshCommand}" />
+            Width="120" Height="40" Margin="10 0"
+            Style="{StaticResource MaterialDesignFlatButton}"
+            Command="{Binding RefreshCommand}" />
         </StackPanel>
+
 
         <!-- Main Content -->
         <Grid Grid.Row="2">
@@ -111,6 +122,13 @@
                              DisplayMemberPath="RoomName"
                              Margin="0 8"/>
 
+                    <ComboBox materialDesign:HintAssist.Hint="Chọn căn hộ"
+                      ItemsSource="{Binding Apartments}"
+                      SelectedItem="{Binding SelectedApartment}"
+                      DisplayMemberPath="ApartmentCode"
+                      Margin="0 8"/>
+
+
                     <DatePicker 
                             materialDesign:HintAssist.Hint="Ngày đặt phòng"
                             SelectedDate="{Binding SelectedDate}"
@@ -149,7 +167,12 @@
                        TextWrapping="Wrap"
                        Margin="0 8"/>
 
-                            <Button Content="Đăng ký"
+                    <TextBlock Text="{Binding SelectedRoom.AvailableCapacityText}"
+                       Foreground="Gray"
+                       FontStyle="Italic"
+                       Margin="0 8"/>
+
+                    <Button Content="Đăng ký"
                     Command="{Binding RegisterCommand}"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     Margin="0 16 0 0"/>

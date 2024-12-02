@@ -76,6 +76,30 @@ namespace Services.Services.AccountantServices
             };
         }
 
+        public async Task<List<Equipment>> GetBrokenEquipmentsAsync()
+        {
+            return await _unitOfWork.GetRepository<Equipment>().Entities
+                .Where(e => e.Status == "Hỏng")
+                .ToListAsync();
+        }
+
+        public async Task AddRepairInvoiceWithDetailsAsync(RepairInvoice invoice, List<MalfuntionEquipment> malfunctions)
+        {
+            // Thêm hóa đơn
+            await _unitOfWork.GetRepository<RepairInvoice>().InsertAsync(invoice);
+            await _unitOfWork.SaveAsync();
+
+            // Thêm chi tiết thiết bị hỏng
+            foreach (var malfunction in malfunctions)
+            {
+                malfunction.RepairInvoiceId = invoice.InvoiceId;
+                await _unitOfWork.GetRepository<MalfuntionEquipment>().InsertAsync(malfunction);
+            }
+
+            await _unitOfWork.SaveAsync();
+        }
+
+
         public async Task AddRepairInvoiceAsync(RepairInvoice invoice)
         {
             await _unitOfWork.GetRepository<RepairInvoice>().InsertAsync(invoice);

@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:Forms.Views.ServiceSupervisor"
         mc:Ignorable="d"
         Height="850" Width="1200" WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         WindowStyle="None" ResizeMode="NoResize" Background="{x:Null}" AllowsTransparency="True" Loaded="Window_Loaded">
     <Window.Resources>
         <Storyboard x:Key="ExpandSidebar">

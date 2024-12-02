@@ -38,8 +38,8 @@ namespace Services.Services.AccountantServices
                         .OrderByDescending(m => m.MaintanaceDate)
                         .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
                         .FirstOrDefault(),
-                    Notes = e.Discription,  // Assuming Notes maps to Description
-                    LastCheckDate = e.Maintenances  // Or map to another appropriate date field
+                    Notes = e.Discription,  
+                    LastCheckDate = e.Maintenances  
                         .OrderByDescending(m => m.MaintanaceDate)
                         .Select(m => m.MaintanaceDate.ToDateTime(TimeOnly.MinValue))
                         .FirstOrDefault()

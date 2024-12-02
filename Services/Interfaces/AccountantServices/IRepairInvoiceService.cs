@@ -15,5 +15,6 @@ namespace Services.Interfaces.AccountantServices
         Task<ResponseRepairInvoiceDTO?> GetRepairInvoiceByIdAsync(int id);
         Task AddRepairInvoiceAsync(RepairInvoice invoice);
         Task DeleteRepairInvoiceAsync(int id);
+        Task AddRepairInvoiceWithDetailsAsync(RepairInvoice invoice, List<MalfuntionEquipment> malfunctions);
     }
 }
