@@ -111,7 +111,6 @@ namespace Forms.Views.AdministrativeStaff
             ExitText.Visibility = Visibility.Collapsed;
         }
 
-
         private void AccountView_Click(object sender, RoutedEventArgs e)
         {
             LoadUserControl(new AccountView());

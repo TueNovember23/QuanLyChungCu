@@ -51,9 +51,11 @@ namespace Services.Services.ServiceSupervisorServices
             var vehicles = await _vehicleRepository.GetAllAsync();
             return new VehicleStatisticsDTO
             {
-                BicycleCount = vehicles.Count(v => v.VehicleCategory?.CategoryName?.Contains("Xe đạp") == true),
-                MotorcycleCount = vehicles.Count(v => v.VehicleCategory?.CategoryName?.Contains("Xe máy") == true),
-                CarCount = vehicles.Count(v => v.VehicleCategory?.CategoryName?.Contains("Ô tô") == true)
+                BicycleCount = vehicles.Count(v => v.VehicleCategory?.CategoryName == "Xe đạp"),
+                MotorcycleCount = vehicles.Count(v => v.VehicleCategory?.CategoryName == "Xe máy"),
+                CarCount = vehicles.Count(v => v.VehicleCategory?.CategoryName == "Ô tô"),
+                ElectricMotorcycleCount = vehicles.Count(v => v.VehicleCategory?.CategoryName == "Xe máy điện"),
+                ElectricCarCount = vehicles.Count(v => v.VehicleCategory?.CategoryName == "Ô tô điện")
             };
         }
 

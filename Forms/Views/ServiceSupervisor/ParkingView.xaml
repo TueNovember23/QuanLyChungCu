@@ -8,135 +8,160 @@
              xmlns:header="clr-namespace:Forms.Views"
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1100">
-
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="2*" />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Grid.Column="0" Background="#F6F6F8" Grid.ColumnSpan="2" Margin="0,0,1,0" Name="RenderHeader">
-            <header:Header />
-        </Grid>
+        <header:Header Grid.Row="0"/>
 
         <!-- Main Content -->
-        <Grid Grid.Column="0" Margin="16,16,5,16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Margin="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="669*"/>
+                <ColumnDefinition Width="431*"/>
+            </Grid.ColumnDefinitions>
 
-            <!-- Lọc loại xe -->
-            <materialDesign:Card Grid.Row="0" Margin="11,60,11,0" UniformCornerRadius="20" Grid.RowSpan="2" Height="109" VerticalAlignment="Top">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Lọc xe theo loại" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16" />
-                    <ComboBox materialDesign:HintAssist.Hint="Chọn loại xe" 
-                        ItemsSource="{Binding VehicleTypes}" 
-                        SelectedItem="{Binding SelectedVehicleType}"
-                        Margin="0,8,0,16" />
-                </StackPanel>
-            </materialDesign:Card>
+            <!-- Left Panel -->
+            <Grid Grid.Column="0">
+                <!-- Search Card -->
+                <materialDesign:Card Margin="16,16,11,0" UniformCornerRadius="20" Height="162" VerticalAlignment="Top">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Tìm kiếm xe" 
+                                 FontSize="18" 
+                                 FontWeight="SemiBold" 
+                                 Margin="0,0,0,16"/>
+                        <TextBox materialDesign:HintAssist.Hint="Nhập biển số hoặc tên chủ xe" 
+                                Margin="0,0,0,16" 
+                                Text="{Binding SearchText}"/>
+                        <Button Content="Tìm kiếm" 
+                                Style="{StaticResource MaterialDesignRaisedButton}" 
+                                Command="{Binding SearchVehiclesCommand}"
+                                Height="40"/>
+                    </StackPanel>
+                </materialDesign:Card>
 
-            <!-- Danh sách xe -->
-            <materialDesign:Card Grid.Row="1" Margin="11,189,11,16" UniformCornerRadius="20" IsEnabled="{Binding !IsLoading}">
-                <StackPanel>
-                    <Grid Margin="16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Danh sách xe" FontSize="18" FontWeight="SemiBold"/>
-                        <Button Grid.Column="1" 
-                                Style="{StaticResource MaterialDesignIconButton}"
-                                Command="{Binding LoadVehiclesCommand}">
-                            <materialDesign:PackIcon Kind="Refresh"/>
-                        </Button>
-                    </Grid>
-                    <ListView x:Name="VehicleListView"
-                            ItemsSource="{Binding Vehicles}"
-                            SelectedItem="{Binding SelectedVehicle}" 
-                            Width="731" 
-                            SelectionMode="Single" 
-                            Height="400"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Biển số" DisplayMemberBinding="{Binding VehicleNumber}" Width="110"/>
-                                <GridViewColumn Header="Loại xe" DisplayMemberBinding="{Binding VehicleType}" Width="105"/>
-                                <GridViewColumn Header="Chủ xe" DisplayMemberBinding="{Binding VehicleOwner}" Width="108"/>
-                                <GridViewColumn Header="Căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="105"/>
-                                <GridViewColumn Header="Phí gửi" DisplayMemberBinding="{Binding MonthlyFee}" Width="105"/>
-                                <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="130"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </StackPanel>
-            </materialDesign:Card>
+                <!-- Vehicle List -->
+                <materialDesign:Card Margin="16,192,11,16" UniformCornerRadius="20">
+                    <StackPanel Margin="16">
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Danh sách xe" 
+                                     FontSize="18" 
+                                     FontWeight="SemiBold"/>
+                            <Button Grid.Column="1" 
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    Command="{Binding LoadVehiclesCommand}">
+                                <materialDesign:PackIcon Kind="Refresh"/>
+                            </Button>
+                        </Grid>
+
+                        <ListView x:Name="VehicleListView"
+                                ItemsSource="{Binding Vehicles}"
+                                SelectedItem="{Binding SelectedVehicle}" 
+                                SelectionMode="Single" 
+                                Height="450"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Biển số" DisplayMemberBinding="{Binding VehicleNumber}" Width="106"/>
+                                    <GridViewColumn Header="Loại xe" DisplayMemberBinding="{Binding VehicleType}" Width="105"/>
+                                    <GridViewColumn Header="Chủ xe" DisplayMemberBinding="{Binding VehicleOwner}" Width="115"/>
+                                    <GridViewColumn Header="Căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="105"/>
+                                    <GridViewColumn Header="Phí gửi" DisplayMemberBinding="{Binding MonthlyFee}" Width="104"/>
+                                    <GridViewColumn Header="T/thái" DisplayMemberBinding="{Binding Status}" Width="115"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                </materialDesign:Card>
+            </Grid>
+
+            <!-- Right Panel -->
+            <StackPanel Grid.Column="1" Margin="11,16,16,16">
+                <!-- Vehicle Info Card -->
+                <materialDesign:Card Margin="0,0,0,16" UniformCornerRadius="20">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Thông tin tổng quan" 
+                                 FontSize="18" 
+                                 FontWeight="SemiBold" 
+                                 Margin="0,0,0,14"/>
+                        <TextBox materialDesign:HintAssist.Hint="Căn hộ" 
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Text="{Binding SelectedApartmentCode}"
+                                IsEnabled="False"
+                                Margin="0,0,0,14"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Loại xe"
+                                Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                ItemsSource="{Binding VehicleTypes}"
+                                SelectedItem="{Binding SelectedVehicleType, Mode=OneWay}"
+                                IsEnabled="False"
+                                Margin="0,0,0,14"/>
+                        <TextBox materialDesign:HintAssist.Hint="Biển số xe"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Text="{Binding SelectedVehicleNumber}"
+                                IsEnabled="{Binding IsLicensePlateEnabled}"
+                                Margin="0,0,0,14"/>
+                        <TextBox materialDesign:HintAssist.Hint="Tên chủ xe"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Text="{Binding SelectedVehicleOwner}"
+                                Margin="0,0,0,14"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Trạng thái"
+                                Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                ItemsSource="{Binding VehicleStatuses}"
+                                SelectedItem="{Binding SelectedVehicleStatus}"
+                                Margin="0,0,0,14"/>
+                        <Button Content="Sửa thông tin" 
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Command="{Binding EditVehicleCommand}"
+                                Height="34"/>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Statistics Card -->
+                <materialDesign:Card UniformCornerRadius="20">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Thống kê phương tiện" 
+                                 FontSize="18" 
+                                 FontWeight="SemiBold" 
+                                 Margin="0,0,0,16"/>
+                        <StackPanel>
+                            <TextBlock Text="{Binding BicycleCount, StringFormat=Xe đạp: {0}}"
+                                     FontSize="14"
+                                     Margin="0,0,0,8"/>
+                            <TextBlock Text="{Binding MotorcycleCount, StringFormat=Xe máy: {0}}"
+                                     FontSize="14"
+                                     Margin="0,0,0,8"/>
+                            <TextBlock Text="{Binding ElectricMotorcycleCount, StringFormat=Xe máy điện: {0}}"
+                                     FontSize="14"
+                                     Margin="0,0,0,8"/>
+                            <TextBlock Text="{Binding CarCount, StringFormat=Ô tô: {0}}"
+                                     FontSize="14"
+                                     Margin="0,0,0,8"/>
+                            <TextBlock Text="{Binding ElectricCarCount, StringFormat=Ô tô điện: {0}}"
+                                     FontSize="14"
+                                     Margin="0,0,0,8"/>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
         </Grid>
 
-        <!-- Chức năng -->
-        <StackPanel Margin="0,60,16,16" Grid.Column="1">
-            <materialDesign:Card Margin="16" UniformCornerRadius="20">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Thông tin tổng quan" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Căn hộ" 
-                         Text="{Binding SelectedApartmentCode}"
-                         IsEnabled="False"
-                         Margin="0,0,0,16"/>
-                    <ComboBox materialDesign:HintAssist.Hint="Loại xe"
-                        ItemsSource="{Binding VehicleTypes}"
-                        SelectedItem="{Binding SelectedVehicleType, Mode=OneWay}"
-                        IsEnabled="False"
-                        Margin="0,8,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Biển số xe"
-                         Text="{Binding SelectedVehicleNumber}"
-                         IsEnabled="{Binding IsLicensePlateEnabled}"
-                         Margin="0,0,0,16"/>
-
-                    <TextBox materialDesign:HintAssist.Hint="Tên chủ xe"
-                         Text="{Binding SelectedVehicleOwner}"
-                         Margin="0,0,0,16"/>
-
-                    <ComboBox materialDesign:HintAssist.Hint="Trạng thái"
-                        ItemsSource="{Binding VehicleStatuses}"
-                        SelectedItem="{Binding SelectedVehicleStatus}"
-                        Margin="0,0,0,16"/>
-
-                    <Button Content="Sửa thông tin" 
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        Command="{Binding EditVehicleCommand}"/>
-                </StackPanel>
-            </materialDesign:Card>
-
-            <!-- Tìm kiếm xe -->
-            <materialDesign:Card Margin="16" UniformCornerRadius="20" Height="147">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Tìm kiếm xe" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBox materialDesign:HintAssist.Hint="Nhập biển số hoặc tên chủ xe"
-                         Text="{Binding SearchText}"
-                         Margin="0,0,0,16"/>
-                    <Button Content="Tìm kiếm" 
-                        Style="{StaticResource MaterialDesignRaisedButton}" 
-                        Command="{Binding SearchVehiclesCommand}"/>
-                </StackPanel>
-            </materialDesign:Card>
-            <materialDesign:Card UniformCornerRadius="20" Height="148" Width="278">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Thống kê" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                    <TextBlock Text="{Binding BicycleCount, StringFormat=Số lượng xe đạp: \{0\}}" FontSize="12" Margin="0,0,0,12"/>
-                    <TextBlock Text="{Binding MotorcycleCount, StringFormat=Số lượng xe máy: \{0\}}" FontSize="12" Margin="0,0,0,12"/>
-                    <TextBlock Text="{Binding CarCount, StringFormat=Số lượng ô tô: \{0\}}" FontSize="12" Margin="0,0,0,12"/>
-                </StackPanel>
-            </materialDesign:Card>
-
-            <!-- Thống kê -->
-        </StackPanel>
+        <!-- Loading Indicator -->
         <materialDesign:Card 
+            Grid.Row="1"
             Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
             HorizontalAlignment="Center" 
-            VerticalAlignment="Center" Height="36" Width="34">
-            <ProgressBar IsIndeterminate="True" Margin="16"/>
+            VerticalAlignment="Center"
+            UniformCornerRadius="8">
+            <ProgressBar IsIndeterminate="True" 
+                        Style="{StaticResource MaterialDesignCircularProgressBar}"
+                        Margin="16"/>
         </materialDesign:Card>
     </Grid>
 </UserControl>
