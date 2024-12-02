@@ -1,4 +1,5 @@
 ﻿using Core;
+using Forms.Views.AdministrativeStaff;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
@@ -25,7 +26,8 @@ namespace Forms
         {
             if (e.Exception is BusinessException businessException)
             {
-                MessageBox.Show(businessException.Message, "Lỗi nghiệp vụ", MessageBoxButton.OK, MessageBoxImage.Warning);
+                BusinessErrorView f = new(businessException.Message);
+                f.ShowDialog();
                 e.Handled = true;
             }
             else
