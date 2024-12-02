@@ -68,7 +68,7 @@
                             <DataTemplate>
                                 <Button Content="Xem chi tiết" Width="auto" Height="30"
                                         Style="{StaticResource MaterialDesignFlatButton}"
-                                        Command="{Binding DataContext.ViewDetailsCommand, 
+                                        Command="{Binding DataContext.ViewDetailCommand, 
                                                     RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                         CommandParameter="{Binding MaintenanceId}" />
                             </DataTemplate>

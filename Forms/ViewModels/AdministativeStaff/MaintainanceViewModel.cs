@@ -75,5 +75,12 @@ namespace Forms.ViewModels.AdministativeStaff
             f.User = User;
             f.ShowDialog();
         }
+
+        [RelayCommand]
+        public void ViewDetail(int id)
+        {
+            DetailMaintenanceView f = new(_maintananceService, id);
+            f.ShowDialog();
+        }
     }
 }
