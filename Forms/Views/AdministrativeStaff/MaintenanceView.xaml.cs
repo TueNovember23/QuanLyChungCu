@@ -1,5 +1,7 @@
 ﻿using Forms.ViewModels.AdministativeStaff;
 using Microsoft.Extensions.DependencyInjection;
+using Services.DTOs.AccountDTO;
+using Services.DTOs.LoginDTO;
 using System.Windows.Controls;
 
 namespace Forms.Views.AdministrativeStaff
@@ -9,11 +11,20 @@ namespace Forms.Views.AdministrativeStaff
     /// </summary>
     public partial class MaintenanceView : UserControl
     {
-        public MaintenanceView(string username)
+        private LoginResponseDTO? _user;
+        public LoginResponseDTO? User {
+            get { return _user; } 
+            set
+            {
+                _user = value;
+                (DataContext as MaintainanceViewModel)!.User = User;
+            }
+        }
+
+        public MaintenanceView()
         {
             InitializeComponent();
             DataContext = App.ServiceProvider?.GetService<MaintainanceViewModel>()!;
-            ((MaintainanceViewModel)DataContext).Username = username;
         }
     }
 }

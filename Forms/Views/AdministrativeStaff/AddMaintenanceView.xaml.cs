@@ -1,4 +1,6 @@
 ﻿using Repositories.Repositories.Entities;
+using Services.DTOs.AccountDTO;
+using Services.DTOs.LoginDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using Services.Services.AdministrativeStaffServices;
 using System;
@@ -27,7 +29,7 @@ namespace Forms.Views.AdministrativeStaff
         private List<ResponseEquipment> _equipmentList = [];
         private List<ResponseEquipment> _selectedEquipmentList = [];
 
-        public string Username { get; set; } = "";
+        public LoginResponseDTO? User { get; set; }
 
         public AddMaintenanceView(IMaintananceService service)
         {

@@ -1,4 +1,8 @@
 ﻿using Forms.Views.AdministrativeStaff;
+using Microsoft.VisualBasic.ApplicationServices;
+using Repositories.Repositories.Entities;
+using Services.DTOs.AccountDTO;
+using Services.DTOs.LoginDTO;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,12 +19,7 @@ namespace Forms.Views.AdministrativeStaff
         private bool isMaximized = false;
         private const double SIDEBAR_COLLAPSED_WIDTH = 60;
         private const double SIDEBAR_EXPANDED_WIDTH = 200;
-        private string _username = "";
-        public string Username
-        {
-            get { return _username; }
-            set { _username = value; }
-        }
+        public LoginResponseDTO? User { get; set; }
 
         public AdministrativeStaffLayoutView()
         {
@@ -120,7 +119,8 @@ namespace Forms.Views.AdministrativeStaff
 
         private void MaintanceView_Click(object sender, RoutedEventArgs e)
         {
-            MaintenanceView mv = new(Username);
+            MaintenanceView mv = new();
+            mv.User = User;
             LoadUserControl(mv);
         }
     }

@@ -34,7 +34,7 @@
 
                         <!-- Username Label and Field -->
                         <TextBlock Text="Tài khoản" FontSize="14" Foreground="#2C3E50" Margin="0,0,0,-5"/>
-                        <TextBox mtrld:HintAssist.Hint="Tên đăng nhập" Name="usernameTextBox" Height="35" FontSize="16" Margin="0,0,0,10" Padding="4"
+                        <TextBox Name="usernameTextBox" Height="35" FontSize="16" Margin="0,0,0,10" Padding="4"
                                  Background="Transparent" BorderBrush="#2C3E50" BorderThickness="0,0,0,2"
                                  Text="{Binding Username, Mode=TwoWay}"/>
 
@@ -57,8 +57,7 @@
                                          Visibility="{Binding IsPasswordVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
 
                             <!-- TextBox hiển thị mật khẩu khi ở trạng thái hiển thị -->
-                            <TextBox mtrld:HintAssist.Hint="Mật khẩu"
-                                     Text="{Binding Password, Mode=TwoWay}"
+                            <TextBox Text="{Binding Password, Mode=TwoWay}"
                                      FontSize="16" Padding="4"
                                      Background="Transparent" BorderBrush="#2C3E50" BorderThickness="0,0,0,2"
                                      VerticalContentAlignment="Center"

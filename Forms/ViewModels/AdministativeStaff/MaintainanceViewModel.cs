@@ -1,6 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Forms.Views.AdministrativeStaff;
+using Microsoft.VisualBasic.ApplicationServices;
+using Repositories.Repositories.Entities;
+using Services.DTOs.AccountDTO;
+using Services.DTOs.LoginDTO;
 using Services.DTOs.MaintenanceDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using System.Collections.ObjectModel;
@@ -10,7 +14,6 @@ namespace Forms.ViewModels.AdministativeStaff
     public partial class MaintainanceViewModel : ObservableObject
     {
         private readonly IMaintananceService _maintananceService;
-        private string _username = "";
 
         [ObservableProperty]
         private ObservableCollection<ResponseMaintenance> maintenances = [];
@@ -21,11 +24,7 @@ namespace Forms.ViewModels.AdministativeStaff
         [ObservableProperty]
         private string searchText = "";
 
-        public string Username
-        {
-            get { return _username; }
-            set { _username = value; }
-        }
+        public LoginResponseDTO? User { get; set; }
 
         public MaintainanceViewModel(IMaintananceService maintananceService)
         {
@@ -73,6 +72,7 @@ namespace Forms.ViewModels.AdministativeStaff
         public void AddMaintenance()
         {
             AddMaintenanceView f = new(_maintananceService);
+            f.User = User;
             f.ShowDialog();
         }
     }
