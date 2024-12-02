@@ -11,5 +11,7 @@ namespace Services.Interfaces.AdministrativeStaffServices
         public Task CompleteMaintenance(int id);
         public Task<List<ResponseEquipment>> GetAllEquipment();
         public Task<int> GetNextMaintenanceId();
+        public Task AddMaintainService(CreateMaintenanceDTO dto);
+
     }
 }

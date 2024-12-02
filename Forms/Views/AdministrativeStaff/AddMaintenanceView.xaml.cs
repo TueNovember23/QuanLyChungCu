@@ -1,6 +1,8 @@
-﻿using Repositories.Repositories.Entities;
+﻿using Core;
+using Repositories.Repositories.Entities;
 using Services.DTOs.AccountDTO;
 using Services.DTOs.LoginDTO;
+using Services.DTOs.MaintenanceDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using Services.Services.AdministrativeStaffServices;
 using System;
@@ -107,9 +109,31 @@ namespace Forms.Views.AdministrativeStaff
             }
         }
 
-        private void AddMaintenance_Click(object sender, RoutedEventArgs e)
+        private async void AddMaintenance_Click(object sender, RoutedEventArgs e)
         {
+            // Lấy danh sách thiết bị được chọn từ DataGrid
+            var selectedEquipmentIds = _selectedEquipmentList.Select(e => e.EquipmentId.ToString()).ToList();
 
+            // Tạo DTO cho lịch bảo trì
+            CreateMaintenanceDTO dto = new()
+            {
+                MaintenanceId = int.Parse(MaintenanceIdInput.Text),
+                MaintenanceName = MaintenanceNameInput.Text,
+                MaintanaceDate = DateOnly.FromDateTime(MaintenanceDateInput.SelectedDate ?? throw new BusinessException("Ngày bảo trì không hợp lệ")),
+                Description = DescriptionInput.Text,
+                CreatedBy = User?.Username ?? "", // Thay thế bằng tài khoản đang đăng nhập
+                Department = "departmentName", // Thay thế bằng tên bộ phận thực hiện bảo trì
+                EquipmentId = selectedEquipmentIds
+            };
+
+            dto.Validate();
+
+            await _maintananceService.AddMaintainService(dto);
+
+            MessageBox.Show("Lịch bảo trì đã được tạo thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            this.Close();
         }
+
     }
 }

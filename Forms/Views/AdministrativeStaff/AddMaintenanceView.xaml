@@ -68,7 +68,12 @@
                 <!-- Mô tả -->
                 <TextBox x:Name="DescriptionInput" materialDesign:HintAssist.Hint="Mô tả"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,10" />
-
+                
+                <!-- Bộ phận thực hiện -->
+                <ComboBox x:Name="DepartmentInput" materialDesign:HintAssist.Hint="Bộ phận thực hiện"
+                     Style="{StaticResource MaterialDesignOutlinedComboBox}" Margin="0,0,0,10">
+                </ComboBox>
+                
                 <!-- Nút lưu -->
                 <Button Content="Lưu lịch bảo trì" Width="200" HorizontalAlignment="Right" 
                     Style="{StaticResource MaterialDesignRaisedButton}" 
