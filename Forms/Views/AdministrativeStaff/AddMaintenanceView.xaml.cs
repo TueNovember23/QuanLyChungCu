@@ -1,23 +1,10 @@
 ﻿using Core;
 using Repositories.Repositories.Entities;
-using Services.DTOs.AccountDTO;
 using Services.DTOs.LoginDTO;
 using Services.DTOs.MaintenanceDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using Services.Services.AdministrativeStaffServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Forms.Views.AdministrativeStaff
 {
@@ -30,7 +17,7 @@ namespace Forms.Views.AdministrativeStaff
 
         private List<ResponseEquipment> _equipmentList = [];
         private List<ResponseEquipment> _selectedEquipmentList = [];
-
+        private List<Department> departments = [];
         public LoginResponseDTO? User { get; set; }
 
         public AddMaintenanceView(IMaintananceService service)
@@ -43,9 +30,11 @@ namespace Forms.Views.AdministrativeStaff
         public async Task InitalizeAsync()
         {
             MaintenanceIdInput.Text = (await _maintananceService.GetNextMaintenanceId()).ToString();
-            _ = LoadEquipmentData();
+            await LoadEquipmentData();
+            departments = await _maintananceService.GetAllDepartments();
+            DepartmentInput.ItemsSource = departments.Select(_ => _.DepartmentName);
         }
-
+        
         private async Task LoadEquipmentData()
         {
             _equipmentList = await _maintananceService.GetAllEquipment();
@@ -122,11 +111,9 @@ namespace Forms.Views.AdministrativeStaff
                 MaintanaceDate = DateOnly.FromDateTime(MaintenanceDateInput.SelectedDate ?? throw new BusinessException("Ngày bảo trì không hợp lệ")),
                 Description = DescriptionInput.Text,
                 CreatedBy = User?.Username ?? "", // Thay thế bằng tài khoản đang đăng nhập
-                Department = "departmentName", // Thay thế bằng tên bộ phận thực hiện bảo trì
+                Department = DepartmentInput.SelectedItem.ToString(), // Thay thế bằng tên bộ phận thực hiện bảo trì
                 EquipmentId = selectedEquipmentIds
             };
-
-            dto.Validate();
 
             await _maintananceService.AddMaintainService(dto);
 

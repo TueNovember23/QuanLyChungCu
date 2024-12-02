@@ -67,6 +67,10 @@ namespace Services.Services.AdministrativeStaffServices
             return maintenances;
         }
 
+        public async Task<List<Department>> GetAllDepartments()
+        {
+            return await _unitOfWork.GetRepository<Department>().Entities.Where(_ => !_.IsDeleted).ToListAsync();
+        }
 
         public async Task<Maintenance> GetMaintenanceById(int id)
         {
@@ -84,14 +88,21 @@ namespace Services.Services.AdministrativeStaffServices
 
         public async Task<List<ResponseEquipment>> GetAllEquipment()
         {
-            List<ResponseEquipment> responses = await _unitOfWork.GetRepository<Equipment>().Entities
-                .Select(_ => new ResponseEquipment
-                {
-                    EquipmentId = _.EquipmentId,
-                    EquipmentName = _.EquipmentName
-                })
-                .ToListAsync();
-            return responses;
+            try
+            {
+                List<ResponseEquipment> responses = await _unitOfWork.GetRepository<Equipment>().Entities
+                    .Select(_ => new ResponseEquipment
+                    {
+                        EquipmentId = _.EquipmentId,
+                        EquipmentName = _.EquipmentName
+                    })
+                    .ToListAsync();
+                return responses;
+            } catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+                return [];
+            }
         }
 
         public async Task<int> GetNextMaintenanceId()
@@ -108,6 +119,8 @@ namespace Services.Services.AdministrativeStaffServices
                 ?? throw new BusinessException("Tài khoản không tồn tại");
             Department department = await _unitOfWork.GetRepository<Department>().Entities.FirstOrDefaultAsync(_ => _.DepartmentName == dto.Department && !_.IsDeleted)
                 ?? throw new BusinessException("Bộ phận không tồn tại");
+
+            dto.Validate();
 
             Maintenance maintenance = new()
             {

@@ -9,6 +9,7 @@ namespace Services.Interfaces.AdministrativeStaffServices
         public Task<List<ResponseMaintenance>> GetAll();
         public Task<List<ResponseMaintenance>> Search(string searchText);
         public Task CompleteMaintenance(int id);
+        public Task<List<Department>> GetAllDepartments();
         public Task<List<ResponseEquipment>> GetAllEquipment();
         public Task<int> GetNextMaintenanceId();
         public Task AddMaintainService(CreateMaintenanceDTO dto);
