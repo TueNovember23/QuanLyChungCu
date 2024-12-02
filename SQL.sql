@@ -392,17 +392,17 @@ BEGIN
     SET @FloorId = (SELECT MIN(FloorId) FROM Floor); -- ID tầng bắt đầu
     SET @MaxFloorId = (SELECT MAX(FloorId) FROM Floor); -- ID tầng kết thúc
 
-    WHILE @FloorId <= @MaxFloorId -- Lặp qua tất cả các tầng
+    WHILE @FloorId <= @MaxFloorId
     BEGIN
-        SET @ApartmentNumber = 1; -- Reset số thứ tự căn hộ
+        SET @ApartmentNumber = 1;
 
-        WHILE @ApartmentNumber <= 10 -- Mỗi tầng có 10 căn hộ
+        WHILE @ApartmentNumber <= 10
         BEGIN
             INSERT INTO Apartment (ApartmentNumber, Area, Status, FloorId)
             VALUES (
                 @ApartmentNumber, -- Số thứ tự căn hộ
-                100,              -- Diện tích căn hộ, giả sử mặc định là 100
-                N'Đã bán',         -- Trạng thái mặc định là "Trống"
+                FLOOR(50 + (RAND() * (100 - 50 + 1))), -- Diện tích căn hộ ngẫu nhiên
+                N'Đã bán',        -- Trạng thái mặc định là "Đã bán"
                 @FloorId          -- Tầng tương ứng
             );
 
@@ -414,9 +414,10 @@ BEGIN
 END;
 GO
 
+
 INSERT INTO Resident (ResidentId, FullName, Gender, DateOfBirth, RelationShipWithOwner, MoveInDate, MoveOutDate, ApartmentId)
-VALUES ('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', N'Chủ hộ', '2015-03-01', '2023-01-03', 3),
-('123445678913', N'Nguyễn Thị E', N'Nữ', '1995-01-01', N'Con', '2015-03-01', NULL, 3),
+VALUES
+('123445678513', N'Nguyễn Thị E', N'Nữ', '1995-01-01', N'Con', '2015-03-01', NULL, 3),
 ('123445678914', N'Nguyễn Văn F', N'Nam', '1995-01-01', N'Em', '2015-03-01', NULL, 3),
 ('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', N'Chủ hộ', '2015-01-01', NULL, 1),
 ('123345678910', N'Nguyễn Thị B', N'Nữ', '1991-01-01', N'Vợ', '2015-01-01', NULL, 1),
@@ -424,12 +425,11 @@ VALUES ('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', N'Chủ hộ
 ('123445678911', N'Nguyễn Văn C', N'Nam', '1960-01-01', N'Cha', '2015-03-01', '2023-01-03', 1),
 ('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', N'Chủ hộ', '2015-03-01', '2023-01-03', 3),
 ('123445678913', N'Nguyễn Thị E', N'Nữ', '1995-01-01', N'Con', '2015-03-01', NULL, 3),
-('123445678914', N'Nguyễn Văn F', N'Nam', '1995-01-01', N'Em', '2015-03-01', NULL, 3),
-('105456789012', N'Nguyễn Thị X', N'Nữ', '1991-01-01', N'Chủ hộ', '2015-01-01', NULL, 2)
+('123445678944', N'Nguyễn Văn F', N'Nam', '1995-01-01', N'Em', '2015-03-01', NULL, 3),
+('105456789012', N'Nguyễn Thị X', N'Nữ', '1991-01-01', N'Chủ hộ', '2015-01-01', NULL, 2);
 UPDATE Apartment
 SET NumberOfPeople = 3
 WHERE ApartmentId = 1
-
 INSERT INTO Representative (RepresentativeId, FullName, Gender, DateOfBirth, Email, PhoneNumber)
 VALUES
 ('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', 'nguyenvana@mail.com', '0123456789'),
@@ -451,27 +451,20 @@ VALUES
 (N'Vệ sinh', 20, N'Phòng vệ sinh'),
 (N'Hành chính', 25, N'Phòng hành chính')
 
-INSERT INTO Maintenance (MaintenanceId, MaintenanceName, MaintanaceDate, Description, CreatedBy, DepartmentId)
-VALUES
-    (1, N'Bảo trì thang máy', '2024-1-1', N'Bảo trì thang máy', 1, 2),
-    (2, N'Bảo trì hệ thống điện', '2024-1-1', N'Bảo trì hệ thống điện hàng tháng', 1, 2),
-    (3, N'Bảo trì hệ thống nước', '2024-1-1', N'Bảo trì hệ thống nước hàng tháng', 1, 2),
-    (4, N'Bảo trì hệ thống thông gió', '2024-1-1', N'Bảo trì hệ thống thông gió hàng tháng', 1, 2),
-    (5, N'Bảo trì hệ thống an ninh', '2024-1-1', N'Bảo trì hệ thống an ninh hàng tháng', 1, 2),
-    (6, N'Vệ sinh khu vực chung', '2024-1-1', N'Vệ sinh khu vực chung hàng tháng', 1, 4);
-
 INSERT INTO Equipment (EquipmentId, EquipmentName, Discription, AreaId, Status)
 VALUES
-(1, N'Máy bơm nước', N'Dùng để bơm nước cho toàn bộ tòa nhà', 1, N'Hoạt động'),
-(2, N'Máy phát điện', N'Cung cấp điện dự phòng cho tòa nhà', 2, N'Hoạt động'),
-(3, N'Hệ thống chiếu sáng', N'Đèn chiếu sáng hành lang', 3, N'Hỏng'),
-(4, N'Hệ thống camera', N'Camera an ninh', 2, N'Hoạt động'),
-(5, N'Thiết bị chữa cháy', N'Bình chữa cháy', 4, N'Hoạt động'),
-(6, N'Hệ thống thoát nước', N'Ống thoát nước', 4, N'Hỏng'),
-(7, N'Thang máy', N'Thang máy block E', 1, N'Hoạt động');
+(1, N'Máy bơm nước Block E1', N'Dùng để bơm nước cho toàn bộ tòa nhà', 1, N'Hoạt động'),
+(2, N'Máy phát điện Block E2', N'Cung cấp điện dự phòng cho tòa nhà', 2, N'Hoạt động'),
+(3, N'Hệ thống chiếu sáng lầu 1 Block D1', N'Đèn chiếu sáng hành lang', 3, N'Hỏng'),
+(4, N'Hệ thống camera Block E2', N'Camera an ninh', 2, N'Hoạt động'),
+(5, N'Thiết bị chữa cháy Block D2', N'Bình chữa cháy', 4, N'Hoạt động'),
+(6, N'Hệ thống thoát nước Block D2', N'Ống thoát nước', 4, N'Hỏng'),
+(7, N'Thang máy Block E1', N'Thang máy block E1', 1, N'Hoạt động');
+
+
 
 -- GO
--- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROFLLBACK IMMEDIATE
+-- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE
 -- GO
 -- USE [master]
 -- GO
