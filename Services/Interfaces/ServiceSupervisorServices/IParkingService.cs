@@ -9,5 +9,10 @@ namespace Services.Interfaces.ServiceSupervisorServices
         Task<bool> DeleteVehicleAsync(string vehicleNumber);
         Task<VehicleStatisticsDTO> GetVehicleStatisticsAsync();
         Task<bool> UpdateVehicleAsync(VehicleDTO updatedVehicle);
+        // Add new methods
+        Task<List<ParkingSpaceDTO>> GetParkingSpacesAsync();
+        Task<VehicleLimitDTO> GetVehicleLimitsByApartmentAsync(int apartmentId);
+        Task<bool> ValidateVehicleRegistrationAsync(string vehicleType, int apartmentId);
+        Task<(List<ParkingSpaceDTO> spaces, VehicleLimitDTO limits)> GetParkingDataAsync(int apartmentId, CancellationToken cancellationToken = default);
     }
 }

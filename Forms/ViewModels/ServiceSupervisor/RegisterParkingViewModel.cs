@@ -17,6 +17,8 @@ namespace Forms.ViewModels.ServiceSupervisor
     public partial class RegisterParkingViewModel : ObservableObject
     {
         private readonly IRegisterVehicleService _registerVehicleService;
+        private readonly IParkingService _parkingService;
+            private CancellationTokenSource? _loadDataCancellationToken;
 
         [ObservableProperty]
         private ObservableCollection<ApartmentDTO> _apartments = new();
@@ -48,6 +50,12 @@ namespace Forms.ViewModels.ServiceSupervisor
         [ObservableProperty]
         private string _selectedApartmentCode = string.Empty;
 
+        [ObservableProperty]
+        private ObservableCollection<ParkingSpaceDTO> _parkingSpaces = new();
+
+        [ObservableProperty]
+        private VehicleLimitDTO? _apartmentLimits;
+
         public ICommand SearchCommand { get; }
         public ICommand RegisterCommand { get; }
 
@@ -64,9 +72,10 @@ namespace Forms.ViewModels.ServiceSupervisor
         private const string ERROR_MAX_VEHICLES = "Căn hộ đã đăng ký tối đa 10 xe!";
         private const string ERROR_PROCESSING = "Đang xử lý, vui lòng đợi!";
 
-        public RegisterParkingViewModel(IRegisterVehicleService registerVehicleService)
+        public RegisterParkingViewModel(IRegisterVehicleService registerVehicleService, IParkingService parkingService)
         {
             _registerVehicleService = registerVehicleService;
+            _parkingService = parkingService;
             SearchCommand = new RelayCommand(SearchApartments);
             RegisterCommand = new RelayCommand(async () => await RegisterVehicleAsync());
             LoadApartmentsAsync();
@@ -108,6 +117,46 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
         }
 
+        private async Task LoadParkingSpacesAsync()
+        {
+            try
+            {
+                var spaces = await _parkingService.GetParkingSpacesAsync();
+                ParkingSpaces = new ObservableCollection<ParkingSpaceDTO>(spaces);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading parking spaces: {ex.Message}");
+            }
+        }
+
+        private async Task LoadApartmentLimitsAsync(int apartmentId)
+        {
+            try
+            {
+                ApartmentLimits = await _parkingService.GetVehicleLimitsByApartmentAsync(apartmentId);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading apartment limits: {ex.Message}");
+            }
+        }
+
+        private async Task ValidateVehicleRegistrationAsync()
+        {
+            if (SelectedApartment == null || string.IsNullOrEmpty(SelectedVehicleType))
+                return;
+
+            var isValid = await _parkingService.ValidateVehicleRegistrationAsync(
+                SelectedVehicleType, 
+                SelectedApartment.ApartmentId);
+
+            if (!isValid)
+            {
+                throw new BusinessException("Exceeded vehicle limits for this apartment or no available parking spaces");
+            }
+        }
+
         partial void OnSelectedVehicleTypeChanged(string value)
         {
             IsLicensePlateRequired = value != "Xe đạp";
@@ -122,6 +171,42 @@ namespace Forms.ViewModels.ServiceSupervisor
             if (value != null)
             {
                 SelectedApartmentCode = value.ApartmentCode;
+                // Cancel previous loading operation
+                _loadDataCancellationToken?.Cancel();
+                _loadDataCancellationToken = new CancellationTokenSource();
+                LoadParkingDataAsync(value.ApartmentId, _loadDataCancellationToken.Token);
+            }
+        }
+
+        private async void LoadParkingDataAsync(int apartmentId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                IsProcessing = true;
+
+                // Đổi tên method call cho đúng
+                var parkingData = await _parkingService.GetParkingDataAsync(
+                    apartmentId,
+                    cancellationToken
+                );
+
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    ParkingSpaces = new ObservableCollection<ParkingSpaceDTO>(parkingData.spaces);
+                    ApartmentLimits = parkingData.limits;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Ignore canceled operations
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải thông tin: {ex.Message}");
+            }
+            finally
+            {
+                IsProcessing = false;
             }
         }
 
@@ -231,19 +316,23 @@ namespace Forms.ViewModels.ServiceSupervisor
             {
                 IsProcessing = true;
 
-                var normalizedNumber = !IsLicensePlateRequired ? string.Empty :
-                                    VehicleNumber.Trim().Replace(" ", "").Replace("-", "").ToUpper();
-
-                var existingVehicle = await _registerVehicleService.GetVehicleByNumberAsync(normalizedNumber);
-                if (existingVehicle != null)
+                if (IsLicensePlateRequired)  // Thêm điều kiện này
                 {
-                    MessageBox.Show(ERROR_LICENSE_PLATE_EXISTS);
-                    return;
+                    var normalizedNumber = VehicleNumber.Trim().Replace(" ", "").Replace("-", "").ToUpper();
+                    var existingVehicle = await _registerVehicleService.GetVehicleByNumberAsync(normalizedNumber);
+                    if (existingVehicle != null)
+                    {
+                        MessageBox.Show(ERROR_LICENSE_PLATE_EXISTS);
+                        return;
+                    }
                 }
 
                 var vehicle = new VehicleDTO
                 {
-                    VehicleNumber = normalizedNumber,
+                    // Với xe đạp, để VehicleNumber là null hoặc empty
+                    VehicleNumber = IsLicensePlateRequired ? 
+                        VehicleNumber.Trim().Replace(" ", "").Replace("-", "").ToUpper() : 
+                        $"BIKE_{SelectedApartment.ApartmentCode}_{DateTime.Now.Ticks}",  // Tạo ID duy nhất cho xe đạp
                     VehicleType = SelectedVehicleType,
                     VehicleOwner = VehicleOwner.Trim(),
                     ApartmentId = SelectedApartment?.ApartmentId ?? 0,
