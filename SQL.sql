@@ -269,6 +269,14 @@ CREATE TABLE Violation (
     constraint FK_Violation_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
     constraint FK_Violation_Regulation foreign key (RegulationId) references Regulation(RegulationId)
 )
+
+CREATE TABLE ParkingConfig (
+    ConfigId INT PRIMARY KEY IDENTITY(1,1),
+    CategoryId INT,
+    MaxPerApartment INT NOT NULL,
+    TotalSpacePercent INT NOT NULL,
+    FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
+);
 GO
 
 -- cập nhật số tầng của block khi thêm tầng
