@@ -526,7 +526,7 @@ INSERT INTO Violation (ApartmentId, RegulationId, CreatedDate, Detail) VALUES
 (2, 2, '2024-11-05', N'Hút thuốc tại hành lang tầng trệt'),
 (3, 3, '2024-11-10', N'Vào khu vực hạn chế không có quyền truy cập');
 
--- Add to SQL.sql
+-- Bảng ParkingConfig
 CREATE TABLE ParkingConfig (
     ConfigId INT PRIMARY KEY IDENTITY(1,1),
     CategoryId INT,
@@ -535,10 +535,10 @@ CREATE TABLE ParkingConfig (
     FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
 );
 
--- Insert configuration 
+-- Dữ liệu bảng ParkingConfig 
 INSERT INTO ParkingConfig (CategoryId, MaxPerApartment, TotalSpacePercent) VALUES
-(1, 2, 50),  -- Xe đạp: 2 /căn, 50% total
-(2, 2, 150), -- Xe máy: 2  /căn, 150% total  
-(3, 1, 30),  -- Ô tô: 1  /căn , 30% total
-(4, 2, 150), -- Xe máy điện: 2  /căn  (counts toward motorcycle limit)
-(5, 1, 30);  -- Ô tô điện: 1  /căn  (counts toward car limit)
+(1, 1, 20),   -- Xe đạp: 1/căn, 20% tổng số căn hộ
+(2, 3, 160),  -- Xe máy: 3/căn, 160% tổng số căn hộ  
+(3, 1, 50),   -- Ô tô: 1/căn, 50% tổng số căn hộ
+(4, 3, 160),  -- Xe máy điện: theo giới hạn xe máy (3/căn)
+(5, 1, 50);   -- Ô tô điện: theo giới hạn ô tô (1/căn)

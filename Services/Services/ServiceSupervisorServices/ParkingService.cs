@@ -68,7 +68,7 @@ namespace Services.Services.ServiceSupervisorServices
                 VehicleType = vehicle.VehicleCategory?.CategoryName ?? "Chưa xác định",
                 VehicleOwner = vehicle.VehicleOwner ?? "Chưa có chủ xe",
                 ApartmentCode = vehicle.Apartment?.ApartmentCode ?? "Chưa có mã căn hộ",
-                Status = vehicle.Status ?? "Đang gửi", // Default to "Đang gửi"
+                Status = vehicle.Status ?? "Đang gửi", 
                 MonthlyFee = (float)(vehicle.VehicleCategory?.MonthlyFee ?? 0),
                 ApartmentId = vehicle.ApartmentId
             };
@@ -83,7 +83,7 @@ namespace Services.Services.ServiceSupervisorServices
 
                 vehicle.VehicleOwner = updatedVehicle.VehicleOwner;
                 vehicle.VehicleCategoryId = GetCategoryId(updatedVehicle.VehicleType);
-                vehicle.Status = updatedVehicle.Status; // Update status
+                vehicle.Status = updatedVehicle.Status; 
 
                 var result = await _vehicleRepository.SaveChangesAsync();
                 return result > 0;
@@ -163,7 +163,6 @@ namespace Services.Services.ServiceSupervisorServices
         {
             try
             {
-                // Lấy spaces và limits trong một lần gọi để tránh race condition
                 var spaces = await GetParkingSpacesAsync();
                 var limits = await GetVehicleLimitsByApartmentAsync(apartmentId);
 
