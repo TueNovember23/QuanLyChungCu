@@ -348,6 +348,10 @@ INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('ad', '1', N'
 INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('ac', '1', N'Kế toán 1', 2);
 INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('se', '1', N'Dịch vụ 1', 3);
 
+INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('admin', '1', N'Nhân viên hành chính 2', 1);
+INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('account', '1', N'Kế toán 2', 2);
+INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('service', '1', N'Dịch vụ 2', 3);
+
 insert into area (AreaName, Location) values (N'Khu vực Block E', 'Block E')
 insert into area (AreaName, Location) values (N'Khu vực Block D', 'Block D')
 insert into area (AreaName, Location) values (N'Khu vực Gửi xe', N'Phía trước Block D')
