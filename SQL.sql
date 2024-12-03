@@ -480,3 +480,57 @@ VALUES
 -- EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'QuanLyChungCu'
 -- GO
 
+---------------------------
+-- Bảng Department
+INSERT INTO Department (DepartmentName, NumberOfStaff, Description, IsDeleted) VALUES
+(N'Quản lý tài sản', 5, N'Quản lý thiết bị và tài sản chung', 0),
+(N'Dịch vụ khách hàng', 3, N'Hỗ trợ cư dân và giải quyết khiếu nại', 0);
+
+
+-- Bảng VehicleCategory
+INSERT INTO VehicleCategory (CategoryName, MonthlyFee) VALUES
+(N'Xe đạp', 50000),
+(N'Xe máy', 100000),
+(N'Ô tô', 200000),
+(N'Xe máy điện', 120000),
+(N'Ô tô điện', 250000);
+
+-- Bảng Vehicle
+INSERT INTO Vehicle (VehicleId, VehicleOwner, ApartmentId, VehicleCategoryId) VALUES
+('59D1-12345', N'Nguyễn Văn Lnh', 1, 2),
+('30A-67890', N'Trần Thị Bảo', 2, 3),
+('92F1-34567', N'Lê Văn Cường', 3, 2),
+('51G-12345', N'Nguyễn Thị Lan', 4, 5)
+
+-- Bảng Regulation
+INSERT INTO Regulation (Title, Content, Category, Priority, IsActive, CreatedDate)
+VALUES 
+    (N'Quy định về phòng cháy chữa cháy', N'Các hộ dân cần tuân thủ nghiêm ngặt quy định PCCC', N'Phòng cháy', N'Cao', 1, '2024-11-01'),
+    (N'Quy định về đổ rác', N'Đổ rác đúng giờ và đúng nơi quy định', N'Vệ sinh', N'Trung bình', 1, '2024-10-22'),
+    (N'Quy định về an ninh', N'Đăng ký khách qua đêm với bảo vệ', N'An ninh', N'Cao', 1, '2024-08-31'),
+    (N'Quy định về giữ xe', N'Gửi xe đúng vị trí được phân công', N'Sinh hoạt', N'Trung bình', 1, '2022-10-08'),
+    (N'Quy định về nuôi thú cưng', N'Đăng ký thú cưng với ban quản lý', N'Khác', N'Thấp', 1, '2024-12-05'),
+    (N'Quy định về sử dụng thang máy', N'Không để trẻ em đi thang máy một mình', N'An ninh', N'Cao', 1, '2024-01-15');
+
+-- Bảng Violation
+INSERT INTO Violation (ApartmentId, RegulationId, CreatedDate, Detail) VALUES
+(1, 1, '2024-11-01', N'Xả rác tại khu vực công cộng'),
+(2, 2, '2024-11-05', N'Hút thuốc tại hành lang tầng trệt'),
+(3, 3, '2024-11-10', N'Vào khu vực hạn chế không có quyền truy cập');
+
+-- Add to SQL.sql
+CREATE TABLE ParkingConfig (
+    ConfigId INT PRIMARY KEY IDENTITY(1,1),
+    CategoryId INT,
+    MaxPerApartment INT NOT NULL,
+    TotalSpacePercent INT NOT NULL,
+    FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
+);
+
+-- Insert configuration 
+INSERT INTO ParkingConfig (CategoryId, MaxPerApartment, TotalSpacePercent) VALUES
+(1, 2, 50),  -- Xe đạp: 2 /căn, 50% total
+(2, 2, 150), -- Xe máy: 2  /căn, 150% total  
+(3, 1, 30),  -- Ô tô: 1  /căn , 30% total
+(4, 2, 150), -- Xe máy điện: 2  /căn  (counts toward motorcycle limit)
+(5, 1, 30);  -- Ô tô điện: 1  /căn  (counts toward car limit)
