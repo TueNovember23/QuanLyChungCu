@@ -34,24 +34,34 @@ namespace Repositories.Repositories
             return await _context.Violations
                 .Include(v => v.Apartment)
                 .Include(v => v.Regulation)
+                .Include(v => v.ViolationPenalties)
                 .FirstOrDefaultAsync(v => v.ViolationId == id);
         }
 
         public async Task<IEnumerable<Violation>> SearchViolatAsync(string searchText)
         {
-            return await _context.Violations
+            using var context = new ApplicationDbContext(); // Create new context for search
+            
+            if (string.IsNullOrWhiteSpace(searchText))
+                return await GetViolatAllAsync();
+
+            var normalizedSearch = searchText.Trim().ToLower();
+            
+            return await context.Violations
                 .Include(v => v.Apartment)
                 .Include(v => v.Regulation)
                 .Include(v => v.ViolationPenalties)
                 .Where(v =>
-                    v.Apartment.ApartmentCode.Contains(searchText) ||
-                    v.Regulation.Title.Contains(searchText) ||
-                    v.Detail.Contains(searchText) ||
+                    v.Apartment.ApartmentCode.ToLower().Contains(normalizedSearch) ||
+                    v.Regulation.Title.ToLower().Contains(normalizedSearch) ||
+                    (v.Detail != null && v.Detail.ToLower().Contains(normalizedSearch)) ||
                     v.ViolationPenalties.Any(p => 
-                        p.PenaltyMethod.Contains(searchText) ||
-                        p.ProcessingStatus.Contains(searchText))
+                        (p.PenaltyMethod != null && p.PenaltyMethod.ToLower().Contains(normalizedSearch)) ||
+                        (p.ProcessingStatus != null && p.ProcessingStatus.ToLower().Contains(normalizedSearch))
+                    )
                 )
                 .OrderByDescending(v => v.CreatedDate)
+                .AsNoTracking() // Add this to prevent tracking
                 .ToListAsync();
         }
 

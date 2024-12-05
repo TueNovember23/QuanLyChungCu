@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Threading;
 
 namespace Forms.ViewModels.Accountant
 {
@@ -23,11 +24,84 @@ namespace Forms.ViewModels.Accountant
         private readonly IApartmentService _apartmentService;
         private readonly IRegulationService _regulationService;
 
+        private CancellationTokenSource? _searchCancellationToken;
+
         [ObservableProperty]
         private bool _isLoading;
 
         [ObservableProperty]
         private string _searchText = string.Empty;
+
+        partial void OnSearchTextChanged(string value)
+        {
+            // Cancel previous search if any
+            _searchCancellationToken?.Cancel();
+            _searchCancellationToken = new CancellationTokenSource();
+
+            // Debounce search using async delay
+            _ = SearchWithDebounceAsync(_searchCancellationToken.Token);
+        }
+
+        private async Task SearchWithDebounceAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await Task.Delay(300, cancellationToken); // Wait 300ms after typing
+                await Application.Current.Dispatcher.InvokeAsync(async () =>
+                {
+                    await FilterViolationsAsync();
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                // Search was cancelled, ignore
+            }
+        }
+
+        private async Task FilterViolationsAsync()
+        {
+            if (IsLoading) return; // Prevent concurrent searches
+
+            try 
+            {
+                IsLoading = true;
+                
+                IEnumerable<ViolationResponseDTO> searchResults;
+                
+                // Get data based on search text
+                if (!string.IsNullOrWhiteSpace(SearchText))
+                {
+                    searchResults = await _violationService.SearchAsync(SearchText);
+                }
+                else 
+                {
+                    searchResults = await _violationService.GetAllAsync();
+                }
+                
+                // Apply status filter if selected
+                if (!string.IsNullOrEmpty(FilterStatus))
+                {
+                    searchResults = searchResults.Where(v => 
+                        v.LatestProcessingStatus == FilterStatus).ToList();
+                }
+                
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Violations = new ObservableCollection<ViolationResponseDTO>(searchResults);
+                });
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}");
+                });
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
         [ObservableProperty]
         private ObservableCollection<ViolationResponseDTO> _violations = new();
@@ -98,7 +172,6 @@ namespace Forms.ViewModels.Accountant
             {
                 IsLoading = true;
 
-                // Load data sequentially instead of using Task.WhenAll
                 Violations = new ObservableCollection<ViolationResponseDTO>(
                     await _violationService.GetAllAsync());
 
@@ -111,31 +184,6 @@ namespace Forms.ViewModels.Accountant
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        [RelayCommand]
-        private async Task SearchAsync()
-        {
-            try
-            {
-                IsLoading = true;
-                var results = await _violationService.SearchAsync(SearchText);
-                
-                if (!string.IsNullOrEmpty(FilterStatus))
-                {
-                    results = results.Where(v => v.LatestProcessingStatus == FilterStatus);
-                }
-                
-                Violations = new ObservableCollection<ViolationResponseDTO>(results);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
             finally
             {
@@ -181,13 +229,11 @@ namespace Forms.ViewModels.Accountant
 
                 if (SelectedViolation == null)
                 {
-                    // Create new
                     var result = await _violationService.CreateAsync(dto);
                     Violations.Add(result);
                 }
                 else
                 {
-                    // Update existing
                     var result = await _violationService.UpdateAsync(dto, SelectedViolation.ViolationId);
                     var index = Violations.IndexOf(SelectedViolation);
                     if (index != -1)
@@ -229,6 +275,9 @@ namespace Forms.ViewModels.Accountant
                 if (string.IsNullOrEmpty(PenaltyMethod))
                     throw new BusinessException("Vui lòng nhập phương án xử lý");
 
+                if (string.IsNullOrEmpty(SelectedProcessingStatus))
+                    throw new BusinessException("Vui lòng chọn trạng thái xử lý");
+
                 IsLoading = true;
 
                 var penaltyDto = new ViolationPenaltyDTO
@@ -249,6 +298,7 @@ namespace Forms.ViewModels.Accountant
 
                 await LoadPenaltyHistoryAsync(SelectedViolation.ViolationId);
                 ResetPenaltyForm();
+                await LoadDataAsync();
             }
             catch (BusinessException bex)
             {
@@ -297,7 +347,17 @@ namespace Forms.ViewModels.Accountant
         private async Task EditPenaltyAsync()
         {
             if (SelectedPenaltyHistory == null) return;
-            await LoadPenaltyForEdit(SelectedPenaltyHistory);
+            
+            var result = MessageBox.Show(
+                "Bạn có chắc muốn sửa thông tin xử lý này?",
+                "Xác nhận", 
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                await LoadPenaltyForEdit(SelectedPenaltyHistory);
+            }
         }
 
         partial void OnSelectedViolationChanged(ViolationResponseDTO? value)
@@ -323,34 +383,13 @@ namespace Forms.ViewModels.Accountant
             FilterViolationsAsync().ConfigureAwait(false);
         }
 
-        private async Task FilterViolationsAsync()
+        private bool ValidateFine(decimal fine)
         {
-            try 
-            {
-                IsLoading = true;
-                var allViolations = await _violationService.GetAllAsync();
-                var filtered = allViolations.AsEnumerable();
-                
-                if (!string.IsNullOrEmpty(SearchText))
-                {
-                    filtered = filtered.Where(v => 
-                        v.ApartmentCode.Contains(SearchText, StringComparison.OrdinalIgnoreCase) || 
-                        v.RegulationTitle.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-                }
-                
-                if (!string.IsNullOrEmpty(FilterStatus))
-                {
-                    // Lọc theo trạng thái xử lý mới nhất
-                    filtered = filtered.Where(v => 
-                        v.LatestProcessingStatus == FilterStatus);
-                }
-                
-                Violations = new ObservableCollection<ViolationResponseDTO>(filtered);
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            if (fine <= 0)
+                throw new BusinessException("Số tiền phạt phải lớn hơn 0");
+            if (fine > 100000000) 
+                throw new BusinessException("Số tiền phạt không được vượt quá 100 triệu");
+            return true;
         }
     }
 }

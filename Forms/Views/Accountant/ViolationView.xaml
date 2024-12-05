@@ -37,8 +37,14 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBox Grid.Column="0"
-                                    materialDesign:HintAssist.Hint="Tìm kiếm vi phạm..."
-                                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                                     materialDesign:HintAssist.Hint="Tìm kiếm theo căn hộ, nội quy vi phạm..."
+                                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     materialDesign:TextFieldAssist.HasClearButton="True">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" 
+                                                Command="{Binding FilterViolationsCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
 
                             <ComboBox Grid.Column="1" Margin="8,0"
                                     materialDesign:HintAssist.Hint="Trạng thái xử lý"

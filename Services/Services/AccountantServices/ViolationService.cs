@@ -42,8 +42,15 @@ namespace Services.Services.AccountantServices
 
         public async Task<IEnumerable<ViolationResponseDTO>> SearchAsync(string searchText)
         {
-            var violations = await _violationRepository.SearchViolatAsync(searchText);
-            return _mapper.Map<IEnumerable<ViolationResponseDTO>>(violations);
+            try
+            {
+                var violations = await _violationRepository.SearchViolatAsync(searchText);
+                return _mapper.Map<IEnumerable<ViolationResponseDTO>>(violations);
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Lỗi khi tìm kiếm: {ex.Message}");
+            }
         }
 
         public async Task<ViolationResponseDTO> CreateAsync(CreateViolationDTO dto)
@@ -86,11 +93,19 @@ namespace Services.Services.AccountantServices
             await _unitOfWork.SaveAsync();
         }
 
-        // Add methods
         public async Task<bool> SavePenaltyAsync(ViolationPenaltyDTO penaltyDTO)
         {
             if (!penaltyDTO.IsValid())
                 throw new BusinessException("Dữ liệu xử lý không hợp lệ");
+
+            var existingPenalty = await _violationRepository
+                .GetPenaltiesByViolationIdAsync(penaltyDTO.ViolationId);
+            
+            if (existingPenalty.Any(p => 
+                p.ProcessedDate?.Date == penaltyDTO.ProcessedDate.Date))
+            {
+                throw new BusinessException("Đã tồn tại xử lý trong ngày này");
+            }
 
             try
             {
@@ -118,6 +133,10 @@ namespace Services.Services.AccountantServices
 
         public async Task<bool> UpdatePenaltyAsync(ViolationPenaltyDTO penaltyDTO)
         {
+            var violation = await _violationRepository.GetViolatByIdAsync(penaltyDTO.ViolationId);
+            if (violation == null)
+                throw new BusinessException("Không tìm thấy vi phạm");
+
             if (!penaltyDTO.IsValid())
                 throw new BusinessException("Dữ liệu xử lý không hợp lệ");
 
