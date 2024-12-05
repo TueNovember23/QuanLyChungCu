@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Repositories.Repositories.Entities;
+using System.Configuration;
 
 namespace Repositories.Repositories.Base;
 
@@ -67,6 +65,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Violation> Violations { get; set; }
 
+    public virtual DbSet<ViolationPenalty> ViolationPenalties { get; set; }
+
     public virtual DbSet<WaterFee> WaterFees { get; set; }
 
     public virtual DbSet<WaterInvoice> WaterInvoices { get; set; }
@@ -79,7 +79,6 @@ public partial class ApplicationDbContext : DbContext
             optionsBuilder.UseSqlServer(connectionString);
         }
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
@@ -542,6 +541,27 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(d => d.RegulationId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Violation_Regulation");
+        });
+
+        modelBuilder.Entity<ViolationPenalty>(entity =>
+        {
+            entity.HasKey(e => e.PenaltyId).HasName("PK__Violatio__567E06C7FEFB4DB1");
+
+            entity.ToTable("ViolationPenalty");
+
+            entity.Property(e => e.Fine).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.PenaltyLevel).HasMaxLength(20);
+            entity.Property(e => e.PenaltyMethod).HasMaxLength(255);
+            entity.Property(e => e.ProcessedDate).HasColumnType("datetime");
+            entity.Property(e => e.ProcessingStatus)
+                .HasMaxLength(20)
+                .HasDefaultValue("Chờ xử lý");
+
+            entity.HasOne(d => d.Violation).WithMany(p => p.ViolationPenalties)
+                .HasForeignKey(d => d.ViolationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ViolationPenalty_Violation");
         });
 
         modelBuilder.Entity<WaterFee>(entity =>

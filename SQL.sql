@@ -277,7 +277,20 @@ CREATE TABLE ParkingConfig (
     TotalSpacePercent INT NOT NULL,
     FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
 );
+
+CREATE TABLE ViolationPenalty (
+    PenaltyId int IDENTITY(1, 1) PRIMARY KEY,
+    ViolationId int NOT NULL,
+    PenaltyLevel nvarchar(20) CHECK (PenaltyLevel IN (N'Nhẹ', N'Trung bình', N'Nặng')),
+    Fine decimal(18,2), -- Số tiền phạt
+    PenaltyMethod nvarchar(255), -- Phương thức xử phạt
+    ProcessingStatus nvarchar(20) DEFAULT N'Chờ xử lý' CHECK (ProcessingStatus IN (N'Chờ xử lý', N'Đang xử lý', N'Đã xử lý')),
+    ProcessedDate datetime, -- Ngày xử lý 
+    Note nvarchar(255),
+    CONSTRAINT FK_ViolationPenalty_Violation FOREIGN KEY (ViolationId) REFERENCES Violation(ViolationId)
+);
 GO
+
 
 -- cập nhật số tầng của block khi thêm tầng
 CREATE TRIGGER TRG_Floor_Insert
