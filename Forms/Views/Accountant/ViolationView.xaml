@@ -11,180 +11,176 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto" MinHeight="80"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
         <header:Header Grid.Row="0"/>
 
+        <!-- Main Content -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="271*"/>
+                <ColumnDefinition Width="241*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Left Panel - Danh sách vi phạm -->
-            <materialDesign:Card Grid.Column="0" Margin="16" UniformCornerRadius="20">
+            <materialDesign:Card Grid.Column="0" Margin="16,16,16,16" UniformCornerRadius="20">
                 <DockPanel Margin="12">
-                    <!-- Search and Filter Bar -->
+                    <!-- Search & Filter -->
                     <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Search Box -->
                             <TextBox Grid.Column="0"
-                                     materialDesign:HintAssist.Hint="Tìm kiếm vi phạm..."
-                                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                                <TextBox.InputBindings>
-                                    <KeyBinding Command="{Binding SearchCommand}" Key="Return"/>
-                                </TextBox.InputBindings>
-                            </TextBox>
+                                    materialDesign:HintAssist.Hint="Tìm kiếm vi phạm..."
+                                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <!-- Refresh Button -->
-                            <Button Grid.Column="1" Margin="8,0,0,0"
-                                 Style="{StaticResource MaterialDesignIconButton}"
-                                 Command="{Binding LoadRegulationsCommand}"
-                                 ToolTip="Làm mới danh sách">
+                            <ComboBox Grid.Column="1" Margin="8,0"
+                                    materialDesign:HintAssist.Hint="Trạng thái xử lý"
+                                    ItemsSource="{Binding ProcessingStatuses}"
+                                    SelectedItem="{Binding FilterStatus}"
+                                    MinWidth="120"/>
+
+                            <Button Grid.Column="2"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    Command="{Binding LoadRegulationsCommand}">
                                 <materialDesign:PackIcon Kind="Refresh"/>
                             </Button>
                         </Grid>
                     </StackPanel>
 
-
                     <!-- Violations List -->
-                    <ListView ItemsSource="{Binding Violations}"
-                              SelectedItem="{Binding SelectedViolation}" Height="533">
+                    <ListView ItemsSource="{Binding Violations}" 
+                             SelectedItem="{Binding SelectedViolation}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Căn hộ" 
                                               DisplayMemberBinding="{Binding ApartmentCode}" 
-                                              Width="110"/>
+                                              Width="Auto"/>
                                 <GridViewColumn Header="Nội quy vi phạm" 
                                               DisplayMemberBinding="{Binding RegulationTitle}" 
-                                              Width="170"/>
-                                <GridViewColumn Header="Ngày" 
+                                              Width="Auto"/>
+                                <GridViewColumn Header="Ngày vi phạm" 
                                               DisplayMemberBinding="{Binding CreatedDate, StringFormat={}{0:dd/MM/yyyy}}" 
-                                              Width="100"/>
-                                <GridViewColumn Header="Chi tiết" 
-                                              DisplayMemberBinding="{Binding Detail}" 
-                                              Width="200"/>
+                                              Width="Auto"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
                 </DockPanel>
             </materialDesign:Card>
 
-            <!-- Right Panel - Chi tiết vi phạm -->
-            <materialDesign:Card Grid.Column="1" Margin="16" UniformCornerRadius="20">
-                <ScrollViewer>
-                    <StackPanel Margin="16">
-                        <TextBlock Text="Chi tiết vi phạm" 
-                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                 Margin="0,0,0,16"/>
+            <!-- Right Panel -->
+            <materialDesign:Card Grid.Column="1" Margin="16,16,16,16" UniformCornerRadius="20">
+                <TabControl>
+                    <!-- Tab Thêm vi phạm -->
+                    <TabItem Header="Thêm vi phạm">
+                        <ScrollViewer>
+                            <StackPanel Margin="16">
+                                <ComboBox materialDesign:HintAssist.Hint="Chọn căn hộ *"
+                                         ItemsSource="{Binding Apartments}"
+                                         DisplayMemberPath="ApartmentCode"
+                                         SelectedItem="{Binding SelectedApartment}"
+                                         Margin="0,0,0,16"/>
 
-                        <!-- Apartment Selection -->
-                        <ComboBox materialDesign:HintAssist.Hint="Chọn căn hộ *"
-                                 ItemsSource="{Binding Apartments}"
-                                 DisplayMemberPath="ApartmentCode"
-                                 SelectedItem="{Binding SelectedApartment}"
-                                 Margin="0,0,0,16"/>
+                                <ComboBox materialDesign:HintAssist.Hint="Chọn nội quy vi phạm *"
+                                         ItemsSource="{Binding Regulations}"
+                                         DisplayMemberPath="Title"
+                                         SelectedItem="{Binding SelectedRegulation}"
+                                         Margin="0,0,0,16"/>
 
-                        <!-- Regulation Selection -->
-                        <ComboBox materialDesign:HintAssist.Hint="Chọn nội quy vi phạm *"
-                                 ItemsSource="{Binding Regulations}"
-                                 DisplayMemberPath="Title"
-                                 SelectedItem="{Binding SelectedRegulation}"
-                                 Margin="0,0,0,16"/>
+                                <TextBox materialDesign:HintAssist.Hint="Chi tiết vi phạm"
+                                        Text="{Binding ViolationDetail}"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        AcceptsReturn="True"
+                                        TextWrapping="Wrap"
+                                        Height="100"
+                                        Margin="0,0,0,16"/>
 
-                        <!-- Violation Details -->
-                        <TextBox materialDesign:HintAssist.Hint="Chi tiết vi phạm *"
-                                 Text="{Binding ViolationDetail}"
-                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 AcceptsReturn="True"
-                                 TextWrapping="Wrap"
-                                 Height="100"
-                                 Margin="0,0,0,16"/>
+                                <DatePicker materialDesign:HintAssist.Hint="Ngày vi phạm *"
+                                           SelectedDate="{Binding ViolationDate}"
+                                           Margin="0,0,0,16"/>
 
-                        <!-- Date Selection -->
-                        <DatePicker materialDesign:HintAssist.Hint="Ngày vi phạm *"
-                                   SelectedDate="{Binding ViolationDate}"
-                                   Margin="0,0,0,16"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="Làm mới"
+                                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                                            Command="{Binding CreateNewCommand}"
+                                            Margin="0,0,8,0"/>
+                                    <Button Content="Lưu"
+                                            Style="{StaticResource MaterialDesignRaisedButton}"
+                                            Command="{Binding SaveCommand}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
 
-                        <!-- Action Buttons -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="Làm mới"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Command="{Binding CreateNewCommand}"
-                                    Margin="0,0,8,0"/>
-                            <Button Content="Lưu"
-                                    Style="{StaticResource MaterialDesignRaisedButton}"
-                                    Command="{Binding SaveCommand}"/>
-                        </StackPanel>
-                    </StackPanel>
-                </ScrollViewer>
-            </materialDesign:Card>
+                    <!-- Tab Xử lý và lịch sử -->
+                    <TabItem Header="Xử lý vi phạm">
+                        <ScrollViewer>
+                            <StackPanel Margin="16">
+                                <!-- Thông tin vi phạm đã chọn -->
+                                <TextBlock Text="Vi phạm được chọn"
+                                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                         Margin="0,0,0,16"/>
 
-            <!-- Loading Indicator -->
-            <materialDesign:Card Grid.ColumnSpan="2"
-                                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                HorizontalAlignment="Center" 
-                                VerticalAlignment="Center">
-                <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
-                            IsIndeterminate="True"
-                            Margin="16"/>
+                                <!-- Form xử lý -->
+                                <GroupBox Header="Thông tin xử lý">
+                                    <StackPanel Margin="0,8">
+                                        <ComboBox materialDesign:HintAssist.Hint="Mức độ xử phạt *"
+                                                 ItemsSource="{Binding PenaltyLevels}"
+                                                 SelectedItem="{Binding SelectedPenaltyLevel}"
+                                                 Margin="0,0,0,8"/>
+
+                                        <TextBox materialDesign:HintAssist.Hint="Số tiền phạt *"
+                                                Text="{Binding Fine}"
+                                                Margin="0,0,0,8"/>
+
+                                        <TextBox materialDesign:HintAssist.Hint="Phương án xử lý *"
+                                                Text="{Binding PenaltyMethod}"
+                                                TextWrapping="Wrap"
+                                                AcceptsReturn="True"
+                                                Height="80"
+                                                Margin="0,0,0,8"/>
+
+                                        <ComboBox materialDesign:HintAssist.Hint="Trạng thái xử lý"
+                                                 ItemsSource="{Binding ProcessingStatuses}"
+                                                 SelectedItem="{Binding SelectedProcessingStatus}"
+                                                 Margin="0,0,0,16"/>
+
+                                        <Button Content="Lưu xử lý"
+                                                Command="{Binding SavePenaltyCommand}"
+                                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                                HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <!-- Lịch sử xử lý -->
+                                <GroupBox Header="Lịch sử xử lý" Margin="0,16,0,0">
+                                    <DataGrid ItemsSource="{Binding PenaltyHistory}"
+                                             AutoGenerateColumns="False"
+                                             IsReadOnly="True"
+                                             Height="200">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Ngày xử lý" 
+                                                              Binding="{Binding ProcessedDate, StringFormat={}{0:dd/MM/yyyy}}"/>
+                                            <DataGridTextColumn Header="Mức độ" 
+                                                              Binding="{Binding PenaltyLevel}"/>
+                                            <DataGridTextColumn Header="Số tiền" 
+                                                              Binding="{Binding Fine, StringFormat={}{0:N0} VNĐ}"/>
+                                            <DataGridTextColumn Header="Trạng thái" 
+                                                              Binding="{Binding ProcessingStatus}"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
             </materialDesign:Card>
         </Grid>
-
-        <TabControl Grid.Row="2" Margin="16,16,16,16">
-            <!-- Tab Thông tin vi phạm -->
-            <TabItem Header="Thông tin vi phạm">
-                <!-- Nội dung hiện tại -->
-            </TabItem>
-
-            <!-- Tab Xử lý vi phạm -->
-            <TabItem Header="Xử lý vi phạm">
-                <StackPanel Margin="16">
-                    <ComboBox materialDesign:HintAssist.Hint="Mức độ xử phạt"
-                              ItemsSource="{Binding PenaltyLevels}"
-                              SelectedItem="{Binding SelectedPenaltyLevel}"
-                              Margin="0,0,0,16"/>
-
-                    <TextBox materialDesign:HintAssist.Hint="Số tiền phạt"
-                             Text="{Binding Fine}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             Margin="0,0,0,16"/>
-
-                    <TextBox materialDesign:HintAssist.Hint="Phương án xử lý"
-                             Text="{Binding PenaltyMethod}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             AcceptsReturn="True"
-                             TextWrapping="Wrap"
-                             Height="100"
-                             Margin="0,0,0,16"/>
-
-                    <ComboBox materialDesign:HintAssist.Hint="Trạng thái xử lý"
-                              ItemsSource="{Binding ProcessingStatuses}"
-                              SelectedItem="{Binding SelectedProcessingStatus}"
-                              Margin="0,0,0,16"/>
-
-                    <TextBox materialDesign:HintAssist.Hint="Ghi chú"
-                             Text="{Binding PenaltyNote}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             AcceptsReturn="True"
-                             TextWrapping="Wrap"
-                             Height="60"
-                             Margin="0,0,0,16"/>
-
-                    <Button Content="Lưu xử lý"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            Command="{Binding SavePenaltyCommand}"
-                            HorizontalAlignment="Right"/>
-                </StackPanel>
-            </TabItem>
-        </TabControl>
     </Grid>
 </UserControl>
