@@ -22,6 +22,9 @@ namespace Services.DTOs.ViolationDTO
             if (RegulationId <= 0)
                 throw new BusinessException("Vui lòng chọn nội quy");
 
+            if (CreatedDate > DateTime.Today)
+                throw new BusinessException("Ngày vi phạm không được ở tương lai");
+
             return true;
         }
     }
