@@ -271,6 +271,8 @@ namespace Forms.ViewModels.Accountant
 
                 if (Fine <= 0)
                     throw new BusinessException("Số tiền phạt phải lớn hơn 0");
+                if (Fine > 100000000) 
+                    throw new BusinessException("Số tiền phạt không được vượt quá 100 triệu");
 
                 if (string.IsNullOrEmpty(PenaltyMethod))
                     throw new BusinessException("Vui lòng nhập phương án xử lý");
@@ -383,13 +385,13 @@ namespace Forms.ViewModels.Accountant
             FilterViolationsAsync().ConfigureAwait(false);
         }
 
-        private bool ValidateFine(decimal fine)
-        {
-            if (fine <= 0)
-                throw new BusinessException("Số tiền phạt phải lớn hơn 0");
-            if (fine > 100000000) 
-                throw new BusinessException("Số tiền phạt không được vượt quá 100 triệu");
-            return true;
-        }
+        // private bool ValidateFine(decimal fine)
+        // {
+        //     if (fine <= 0)
+        //         throw new BusinessException("Số tiền phạt phải lớn hơn 0");
+        //     if (fine > 100000000) 
+        //         throw new BusinessException("Số tiền phạt không được vượt quá 100 triệu");
+        //     return true;
+        // }
     }
 }
