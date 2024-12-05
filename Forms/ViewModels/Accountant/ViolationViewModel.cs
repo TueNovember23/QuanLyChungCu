@@ -53,6 +53,33 @@ namespace Forms.ViewModels.Accountant
         [ObservableProperty]
         private DateTime _violationDate = DateTime.Today;
 
+        [ObservableProperty]
+        private string _selectedPenaltyLevel = string.Empty;
+
+        [ObservableProperty]
+        private decimal _fine;
+
+        [ObservableProperty]
+        private string _penaltyMethod = string.Empty;
+
+        [ObservableProperty]
+        private string _selectedProcessingStatus = "Chờ xử lý";
+
+        [ObservableProperty]
+        private ObservableCollection<ViolationPenaltyDTO> _penaltyHistory = new();
+
+        [ObservableProperty]
+        private ObservableCollection<string> _penaltyLevels = new(new[] { "Nhẹ", "Trung bình", "Nặng" });
+
+        [ObservableProperty]
+        private ObservableCollection<string> _processingStatuses = new(new[] { "Chờ xử lý", "Đang xử lý", "Đã xử lý" });
+
+        [ObservableProperty]
+        private string _filterStatus = string.Empty;
+
+        [ObservableProperty]
+        private ViolationPenaltyDTO? _selectedPenaltyHistory;
+
         public ViolationViewModel(
             IViolationService violationService,
             IApartmentService apartmentService,
@@ -98,11 +125,17 @@ namespace Forms.ViewModels.Accountant
             {
                 IsLoading = true;
                 var results = await _violationService.SearchAsync(SearchText);
+                
+                if (!string.IsNullOrEmpty(FilterStatus))
+                {
+                    results = results.Where(v => v.LatestProcessingStatus == FilterStatus);
+                }
+                
                 Violations = new ObservableCollection<ViolationResponseDTO>(results);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message);
             }
             finally
             {
@@ -179,6 +212,94 @@ namespace Forms.ViewModels.Accountant
             }
         }
 
+        [RelayCommand]
+        private async Task SavePenaltyAsync()
+        {
+            try
+            {
+                if (SelectedViolation == null)
+                    throw new BusinessException("Vui lòng chọn vi phạm cần xử lý");
+
+                if (string.IsNullOrEmpty(SelectedPenaltyLevel))
+                    throw new BusinessException("Vui lòng chọn mức độ xử phạt");
+
+                if (Fine <= 0)
+                    throw new BusinessException("Số tiền phạt phải lớn hơn 0");
+
+                if (string.IsNullOrEmpty(PenaltyMethod))
+                    throw new BusinessException("Vui lòng nhập phương án xử lý");
+
+                IsLoading = true;
+
+                var penaltyDto = new ViolationPenaltyDTO
+                {
+                    PenaltyId = SelectedPenaltyHistory?.PenaltyId ?? 0,
+                    ViolationId = SelectedViolation.ViolationId,
+                    PenaltyLevel = SelectedPenaltyLevel,
+                    Fine = Fine,
+                    PenaltyMethod = PenaltyMethod,
+                    ProcessingStatus = SelectedProcessingStatus,
+                    ProcessedDate = DateTime.Now
+                };
+
+                if (SelectedPenaltyHistory != null)
+                    await _violationService.UpdatePenaltyAsync(penaltyDto);
+                else
+                    await _violationService.SavePenaltyAsync(penaltyDto);
+
+                await LoadPenaltyHistoryAsync(SelectedViolation.ViolationId);
+                ResetPenaltyForm();
+            }
+            catch (BusinessException bex)
+            {
+                MessageBox.Show(bex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private void ResetPenaltyForm()
+        {
+            SelectedPenaltyLevel = string.Empty;
+            Fine = 0;
+            PenaltyMethod = string.Empty;
+            SelectedProcessingStatus = "Chờ xử lý";
+        }
+
+        private async Task LoadPenaltyHistoryAsync(int violationId)
+        {
+            try
+            {
+                var history = await _violationService.GetPenaltyHistoryAsync(violationId);
+                PenaltyHistory = new ObservableCollection<ViolationPenaltyDTO>(history);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải lịch sử xử lý: {ex.Message}");
+            }
+        }
+
+        private async Task LoadPenaltyForEdit(ViolationPenaltyDTO penalty)
+        {
+            SelectedPenaltyLevel = penalty.PenaltyLevel;
+            Fine = penalty.Fine;
+            PenaltyMethod = penalty.PenaltyMethod;
+            SelectedProcessingStatus = penalty.ProcessingStatus;
+        }
+
+        [RelayCommand]
+        private async Task EditPenaltyAsync()
+        {
+            if (SelectedPenaltyHistory == null) return;
+            await LoadPenaltyForEdit(SelectedPenaltyHistory);
+        }
+
         partial void OnSelectedViolationChanged(ViolationResponseDTO? value)
         {
             if (value != null)
@@ -187,6 +308,48 @@ namespace Forms.ViewModels.Accountant
                 SelectedRegulation = Regulations.FirstOrDefault(r => r.Title == value.RegulationTitle);
                 ViolationDetail = value.Detail ?? string.Empty;
                 ViolationDate = value.CreatedDate;
+                _ = LoadPenaltyHistoryAsync(value.ViolationId);
+            }
+            else
+            {
+                ResetPenaltyForm();
+                PenaltyHistory.Clear();
+            }
+        }
+
+        partial void OnFilterStatusChanged(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return;
+            FilterViolationsAsync().ConfigureAwait(false);
+        }
+
+        private async Task FilterViolationsAsync()
+        {
+            try 
+            {
+                IsLoading = true;
+                var allViolations = await _violationService.GetAllAsync();
+                var filtered = allViolations.AsEnumerable();
+                
+                if (!string.IsNullOrEmpty(SearchText))
+                {
+                    filtered = filtered.Where(v => 
+                        v.ApartmentCode.Contains(SearchText, StringComparison.OrdinalIgnoreCase) || 
+                        v.RegulationTitle.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+                }
+                
+                if (!string.IsNullOrEmpty(FilterStatus))
+                {
+                    // Lọc theo trạng thái xử lý mới nhất
+                    filtered = filtered.Where(v => 
+                        v.LatestProcessingStatus == FilterStatus);
+                }
+                
+                Violations = new ObservableCollection<ViolationResponseDTO>(filtered);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
     }

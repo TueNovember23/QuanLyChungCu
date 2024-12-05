@@ -136,8 +136,20 @@
                                                  Margin="0,0,0,8"/>
 
                                         <TextBox materialDesign:HintAssist.Hint="Số tiền phạt *"
-                                                Text="{Binding Fine}"
-                                                Margin="0,0,0,8"/>
+                                                 Text="{Binding Fine, StringFormat=N0, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="Validation.HasError" Value="True">
+                                                            <Setter Property="ToolTip"
+                                                                    Value="{Binding RelativeSource={RelativeSource Self},
+                                                                           Path=(Validation.Errors)[0].ErrorContent}"/>
+                                                            <Setter Property="BorderBrush" Value="Red"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
 
                                         <TextBox materialDesign:HintAssist.Hint="Phương án xử lý *"
                                                 Text="{Binding PenaltyMethod}"
@@ -161,6 +173,7 @@
                                 <!-- Lịch sử xử lý -->
                                 <GroupBox Header="Lịch sử xử lý" Margin="0,16,0,0">
                                     <DataGrid ItemsSource="{Binding PenaltyHistory}"
+                                             SelectedItem="{Binding SelectedPenaltyHistory}"
                                              AutoGenerateColumns="False"
                                              IsReadOnly="True"
                                              Height="200">
@@ -173,6 +186,17 @@
                                                               Binding="{Binding Fine, StringFormat={}{0:N0} VNĐ}"/>
                                             <DataGridTextColumn Header="Trạng thái" 
                                                               Binding="{Binding ProcessingStatus}"/>
+                                            <DataGridTemplateColumn>
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Command="{Binding DataContext.EditPenaltyCommand, 
+                                                                RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                Style="{StaticResource MaterialDesignIconButton}">
+                                                            <materialDesign:PackIcon Kind="Edit"/>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </GroupBox>
