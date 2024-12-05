@@ -11,7 +11,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto" MinHeight="80"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -25,9 +26,9 @@
 
             <!-- Left Panel - Danh sách vi phạm -->
             <materialDesign:Card Grid.Column="0" Margin="16" UniformCornerRadius="20">
-                <DockPanel Margin="16">
+                <DockPanel Margin="12">
                     <!-- Search and Filter Bar -->
-                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -53,11 +54,10 @@
                         </Grid>
                     </StackPanel>
 
-                   
 
                     <!-- Violations List -->
                     <ListView ItemsSource="{Binding Violations}"
-                              SelectedItem="{Binding SelectedViolation}">
+                              SelectedItem="{Binding SelectedViolation}" Height="533">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Căn hộ" 
@@ -138,5 +138,53 @@
                             Margin="16"/>
             </materialDesign:Card>
         </Grid>
+
+        <TabControl Grid.Row="2" Margin="16,16,16,16">
+            <!-- Tab Thông tin vi phạm -->
+            <TabItem Header="Thông tin vi phạm">
+                <!-- Nội dung hiện tại -->
+            </TabItem>
+
+            <!-- Tab Xử lý vi phạm -->
+            <TabItem Header="Xử lý vi phạm">
+                <StackPanel Margin="16">
+                    <ComboBox materialDesign:HintAssist.Hint="Mức độ xử phạt"
+                              ItemsSource="{Binding PenaltyLevels}"
+                              SelectedItem="{Binding SelectedPenaltyLevel}"
+                              Margin="0,0,0,16"/>
+
+                    <TextBox materialDesign:HintAssist.Hint="Số tiền phạt"
+                             Text="{Binding Fine}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Margin="0,0,0,16"/>
+
+                    <TextBox materialDesign:HintAssist.Hint="Phương án xử lý"
+                             Text="{Binding PenaltyMethod}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             Height="100"
+                             Margin="0,0,0,16"/>
+
+                    <ComboBox materialDesign:HintAssist.Hint="Trạng thái xử lý"
+                              ItemsSource="{Binding ProcessingStatuses}"
+                              SelectedItem="{Binding SelectedProcessingStatus}"
+                              Margin="0,0,0,16"/>
+
+                    <TextBox materialDesign:HintAssist.Hint="Ghi chú"
+                             Text="{Binding PenaltyNote}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             Height="60"
+                             Margin="0,0,0,16"/>
+
+                    <Button Content="Lưu xử lý"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Command="{Binding SavePenaltyCommand}"
+                            HorizontalAlignment="Right"/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

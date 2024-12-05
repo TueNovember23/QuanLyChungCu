@@ -542,3 +542,16 @@ INSERT INTO ParkingConfig (CategoryId, MaxPerApartment, TotalSpacePercent) VALUE
 (3, 1, 50),   -- Ô tô: 1/căn, 50% tổng số căn hộ
 (4, 3, 160),  -- Xe máy điện: theo giới hạn xe máy (3/căn)
 (5, 1, 50);   -- Ô tô điện: theo giới hạn ô tô (1/căn)
+
+
+CREATE TABLE ViolationPenalty (
+    PenaltyId int IDENTITY(1, 1) PRIMARY KEY,
+    ViolationId int NOT NULL,
+    PenaltyLevel nvarchar(20) CHECK (PenaltyLevel IN (N'Nhẹ', N'Trung bình', N'Nặng')),
+    Fine decimal(18,2), -- Số tiền phạt
+    PenaltyMethod nvarchar(255), -- Phương thức xử phạt
+    ProcessingStatus nvarchar(20) DEFAULT N'Chờ xử lý' CHECK (ProcessingStatus IN (N'Chờ xử lý', N'Đang xử lý', N'Đã xử lý')),
+    ProcessedDate datetime, -- Ngày xử lý 
+    Note nvarchar(255),
+    CONSTRAINT FK_ViolationPenalty_Violation FOREIGN KEY (ViolationId) REFERENCES Violation(ViolationId)
+)

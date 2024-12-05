@@ -127,11 +127,11 @@
                                 Style="{StaticResource MaterialDesignRaisedButton}"
                                 Command="{Binding RegisterCommand}"
                                 Height="40"
-                                Margin="0,16,0,0"/>
+                                Margin="0,12,0,0"/>
 
                        
 
-                        <!-- Right Panel - Inside ScrollViewer after Register Button -->
+                        <!-- Right Panel -->
                         <StackPanel Margin="0,20,0,0">
                             <!-- Parking Space Info -->
                             <TextBlock Text="Thông tin bãi đỗ xe" 
