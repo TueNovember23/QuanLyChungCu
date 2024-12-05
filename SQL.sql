@@ -278,6 +278,15 @@ CREATE TABLE ParkingConfig (
     FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
 );
 
+-- Dữ liệu bảng ParkingConfig
+-- Dữ liệu mặc định tính tỷ lệ slot để xe theo căn hộ, chia slot đổ xe cho căn hộ theo tỉ lệ đã set mặc định. Không được sửa vì sẽ lỗi.
+INSERT INTO ParkingConfig (CategoryId, MaxPerApartment, TotalSpacePercent) VALUES
+(1, 1, 20),   -- Xe đạp: 1/căn, 20% tổng số căn hộ
+(2, 3, 160),  -- Xe máy: 3/căn, 160% tổng số căn hộ  
+(3, 1, 50),   -- Ô tô: 1/căn, 50% tổng số căn hộ
+(4, 3, 160),  -- Xe máy điện: theo giới hạn xe máy (3/căn)
+(5, 1, 50);   -- Ô tô điện: theo giới hạn ô tô (1/căn)
+
 CREATE TABLE ViolationPenalty (
     PenaltyId int IDENTITY(1, 1) PRIMARY KEY,
     ViolationId int NOT NULL,
@@ -288,9 +297,8 @@ CREATE TABLE ViolationPenalty (
     ProcessedDate datetime, -- Ngày xử lý 
     Note nvarchar(255),
     CONSTRAINT FK_ViolationPenalty_Violation FOREIGN KEY (ViolationId) REFERENCES Violation(ViolationId)
-);
+)
 GO
-
 
 -- cập nhật số tầng của block khi thêm tầng
 CREATE TRIGGER TRG_Floor_Insert
@@ -539,32 +547,5 @@ INSERT INTO Violation (ApartmentId, RegulationId, CreatedDate, Detail) VALUES
 (2, 2, '2024-11-05', N'Hút thuốc tại hành lang tầng trệt'),
 (3, 3, '2024-11-10', N'Vào khu vực hạn chế không có quyền truy cập');
 
--- Bảng ParkingConfig
-CREATE TABLE ParkingConfig (
-    ConfigId INT PRIMARY KEY IDENTITY(1,1),
-    CategoryId INT,
-    MaxPerApartment INT NOT NULL,
-    TotalSpacePercent INT NOT NULL,
-    FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
-);
-
--- Dữ liệu bảng ParkingConfig 
-INSERT INTO ParkingConfig (CategoryId, MaxPerApartment, TotalSpacePercent) VALUES
-(1, 1, 20),   -- Xe đạp: 1/căn, 20% tổng số căn hộ
-(2, 3, 160),  -- Xe máy: 3/căn, 160% tổng số căn hộ  
-(3, 1, 50),   -- Ô tô: 1/căn, 50% tổng số căn hộ
-(4, 3, 160),  -- Xe máy điện: theo giới hạn xe máy (3/căn)
-(5, 1, 50);   -- Ô tô điện: theo giới hạn ô tô (1/căn)
 
 
-CREATE TABLE ViolationPenalty (
-    PenaltyId int IDENTITY(1, 1) PRIMARY KEY,
-    ViolationId int NOT NULL,
-    PenaltyLevel nvarchar(20) CHECK (PenaltyLevel IN (N'Nhẹ', N'Trung bình', N'Nặng')),
-    Fine decimal(18,2), -- Số tiền phạt
-    PenaltyMethod nvarchar(255), -- Phương thức xử phạt
-    ProcessingStatus nvarchar(20) DEFAULT N'Chờ xử lý' CHECK (ProcessingStatus IN (N'Chờ xử lý', N'Đang xử lý', N'Đã xử lý')),
-    ProcessedDate datetime, -- Ngày xử lý 
-    Note nvarchar(255),
-    CONSTRAINT FK_ViolationPenalty_Violation FOREIGN KEY (ViolationId) REFERENCES Violation(ViolationId)
-)
