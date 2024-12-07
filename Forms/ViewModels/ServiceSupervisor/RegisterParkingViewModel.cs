@@ -7,6 +7,7 @@ using Services.Interfaces.ServiceSupervisorServices;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -69,7 +70,7 @@ namespace Forms.ViewModels.ServiceSupervisor
         private const string ERROR_OWNER_NAME_REQUIRED = "Vui lòng nhập tên chủ xe!";
         private const string ERROR_OWNER_NAME_TOO_LONG = "Tên chủ xe không được vượt quá 50 ký tự!";
         private const string ERROR_OWNER_NAME_INVALID = "Tên chủ xe không hợp lệ! Chỉ được phép nhập chữ cái và khoảng trắng.";
-        private const string ERROR_MAX_VEHICLES = "Căn hộ đã đăng ký tối đa 10 xe!";
+        private const string ERROR_MAX_VEHICLES = "Căn hộ đã đăng ký tối đa 5 xe!";
         private const string ERROR_PROCESSING = "Đang xử lý, vui lòng đợi!";
 
         public RegisterParkingViewModel(IRegisterVehicleService registerVehicleService, IParkingService parkingService)
@@ -171,20 +172,19 @@ namespace Forms.ViewModels.ServiceSupervisor
             if (value != null)
             {
                 SelectedApartmentCode = value.ApartmentCode;
-                // Cancel previous loading operation
+
                 _loadDataCancellationToken?.Cancel();
                 _loadDataCancellationToken = new CancellationTokenSource();
-                LoadParkingDataAsync(value.ApartmentId, _loadDataCancellationToken.Token);
+                _ = LoadParkingDataAsync(value.ApartmentId, _loadDataCancellationToken.Token);
             }
         }
 
-        private async void LoadParkingDataAsync(int apartmentId, CancellationToken cancellationToken)
+        private async Task LoadParkingDataAsync(int apartmentId, CancellationToken cancellationToken)
         {
             try
             {
                 IsProcessing = true;
 
-                // Đổi tên method call cho đúng
                 var parkingData = await _parkingService.GetParkingDataAsync(
                     apartmentId,
                     cancellationToken
@@ -198,7 +198,6 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
             catch (OperationCanceledException)
             {
-                // Ignore canceled operations
             }
             catch (Exception ex)
             {
@@ -257,25 +256,37 @@ namespace Forms.ViewModels.ServiceSupervisor
         {
             if (!IsLicensePlateRequired)
                 return true;
+                
+            return ValidateLicensePlate(VehicleNumber, SelectedVehicleType);
+        }
 
-            if (string.IsNullOrWhiteSpace(VehicleNumber))
+        private bool ValidateLicensePlate(string? licensePlate, string vehicleType) 
+        {
+            if (vehicleType == "Xe đạp")
+                return true;
+
+            if (string.IsNullOrWhiteSpace(licensePlate))
             {
-                MessageBox.Show(ERROR_LICENSE_PLATE_REQUIRED);
+                MessageBox.Show("Vui lòng nhập biển số xe!");
+                return false;  
+            }
+
+            var normalized = licensePlate.Trim()
+                                    .Replace(" ", "")
+                                    .Replace("-", "")
+                                    .ToUpper();
+
+            if (normalized.Length > 12)
+            {
+                MessageBox.Show("Biển số xe không được vượt quá 12 ký tự!");
                 return false;
             }
 
-            string normalizedNumber = VehicleNumber.Trim().Replace(" ", "").Replace("-", "").ToUpper();
-
-            if (normalizedNumber.Length > 12)
-            {
-                MessageBox.Show(ERROR_LICENSE_PLATE_TOO_LONG);
-                return false;
-            }
-
+            // Regex kiểm tra format: 2 số - 1-2 chữ - 4-6 số
             string pattern = @"^\d{2}[A-Z]{1,2}\d{4,6}$";
-            if (!Regex.IsMatch(normalizedNumber, pattern))
+            if (!Regex.IsMatch(normalized, pattern))
             {
-                MessageBox.Show(ERROR_LICENSE_PLATE_INVALID);
+                MessageBox.Show("Biển số xe không hợp lệ!");
                 return false;
             }
 
@@ -316,7 +327,9 @@ namespace Forms.ViewModels.ServiceSupervisor
             {
                 IsProcessing = true;
 
-                if (IsLicensePlateRequired)  // Thêm điều kiện này
+                await ValidateVehicleLimitsAsync();
+
+                if (IsLicensePlateRequired)  
                 {
                     var normalizedNumber = VehicleNumber.Trim().Replace(" ", "").Replace("-", "").ToUpper();
                     var existingVehicle = await _registerVehicleService.GetVehicleByNumberAsync(normalizedNumber);
@@ -329,10 +342,9 @@ namespace Forms.ViewModels.ServiceSupervisor
 
                 var vehicle = new VehicleDTO
                 {
-                    // Với xe đạp, để VehicleNumber là null hoặc empty
                     VehicleNumber = IsLicensePlateRequired ? 
-                        VehicleNumber.Trim().Replace(" ", "").Replace("-", "").ToUpper() : 
-                        $"BIKE_{SelectedApartment.ApartmentCode}_{DateTime.Now.Ticks}",  // Tạo ID duy nhất cho xe đạp
+                        FormatLicensePlate(VehicleNumber) :  
+                        $"{SelectedApartment.ApartmentId}_Xedap",
                     VehicleType = SelectedVehicleType,
                     VehicleOwner = VehicleOwner.Trim(),
                     ApartmentId = SelectedApartment?.ApartmentId ?? 0,
@@ -345,6 +357,10 @@ namespace Forms.ViewModels.ServiceSupervisor
                 if (result.Success)
                 {
                     MessageBox.Show("Đăng ký xe thành công!");
+                    if (SelectedApartment != null)
+                    {
+                        await LoadParkingDataAsync(SelectedApartment.ApartmentId, CancellationToken.None);
+                    }
                     ClearForm();
                 }
                 else
@@ -354,7 +370,7 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
             catch (BusinessException bex)
             {
-                MessageBox.Show($"Lỗi nghiệp vụ: {bex.Message}");
+                MessageBox.Show($"{bex.Message}");
             }
             catch (Exception ex)
             {
@@ -371,11 +387,130 @@ namespace Forms.ViewModels.ServiceSupervisor
         {
             SearchText = string.Empty;
             VehicleNumber = string.Empty;
-            SelectedVehicleType = string.Empty;
             VehicleOwner = string.Empty;
             SelectedApartment = null;
             SelectedApartmentCode = string.Empty;
             IsLicensePlateRequired = true;
+        }
+
+        private string FormatLicensePlate(string licensePlate)
+        {
+            if (string.IsNullOrWhiteSpace(licensePlate))
+                return string.Empty;
+                
+            var normalized = licensePlate.Trim()
+                                    .Replace(" ", "")
+                                    .Replace("-", "")
+                                    .ToUpper();
+                                    
+            // Validate format trước khi format
+            if (!Regex.IsMatch(normalized, @"^\d{2}[A-Z]{1,2}\d{4,6}$"))
+                return normalized;
+
+            try {
+                var numbers = normalized.Substring(0, 2);
+                var letters = normalized.Substring(2, normalized.Length - 6);
+                var lastNumbers = normalized.Substring(normalized.Length - 4);
+                return $"{numbers}-{letters}-{lastNumbers}";
+            }
+            catch {
+                return normalized; 
+            }
+        }
+
+        private async Task ValidateVehicleLimitsAsync()
+        {
+            if (SelectedApartment == null || string.IsNullOrEmpty(SelectedVehicleType))
+                return;
+
+            var limits = await _parkingService.GetVehicleLimitsByApartmentAsync(SelectedApartment.ApartmentId);
+
+            switch (SelectedVehicleType)
+            {
+                case "Xe đạp" when limits.CurrentBicycles >= limits.MaxBicycles:
+                    throw new BusinessException("Căn hộ đã đạt giới hạn xe đạp");
+
+                case "Xe máy" or "Xe máy điện" when limits.CurrentMotorcycles >= limits.MaxMotorcycles:
+                    throw new BusinessException("Căn hộ đã đạt giới hạn xe máy/xe máy điện");
+
+                case "Ô tô" or "Ô tô điện" when limits.CurrentCars >= limits.MaxCars:
+                    throw new BusinessException("Căn hộ đã đạt giới hạn ô tô/ô tô điện");
+            }
+        }
+
+        [RelayCommand]
+        private void FormatLicensePlate()
+        {
+            VehicleNumber = FormatLicensePlateText(VehicleNumber);
+        }
+
+        partial void OnVehicleNumberChanged(string value)
+        {
+            if (!IsLicensePlateRequired) return;
+    
+            if (string.IsNullOrWhiteSpace(value)) return;
+
+            var formatted = FormatLicensePlateText(value);
+            if (formatted != value)
+            {
+                VehicleNumber = formatted;
+            }
+        }
+
+        private string FormatLicensePlateText(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            var normalized = input.Replace(" ", "").Replace("-", "").ToUpper();
+
+            if (normalized.Length < 4)
+                return normalized;
+
+            try
+            {
+                var result = new StringBuilder();
+        
+                if (normalized.Length >= 2)
+                {
+                    result.Append(normalized.Substring(0, 2));
+                }
+
+                if (normalized.Length > 2)
+                {
+                    result.Append('-');
+                }
+
+                var letterStart = 2;
+                var letterCount = 0;
+                while (letterStart + letterCount < normalized.Length && 
+                       char.IsLetter(normalized[letterStart + letterCount]) && 
+                       letterCount < 2)
+                {
+                    letterCount++;
+                }
+
+                if (letterCount > 0)
+                {
+                    result.Append(normalized.Substring(letterStart, letterCount));
+                }
+
+                if (letterStart + letterCount < normalized.Length)
+                {
+                    result.Append('-');
+                }
+
+                if (letterStart + letterCount < normalized.Length)
+                {
+                    result.Append(normalized.Substring(letterStart + letterCount));
+                }
+
+                return result.ToString();
+            }
+            catch
+            {
+                return normalized;
+            }
         }
     }
 }

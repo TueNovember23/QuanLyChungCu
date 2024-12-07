@@ -78,7 +78,8 @@ namespace Repositories.Repositories
                 var vehicle = await _context.Vehicles
                     .FirstOrDefaultAsync(v => v.VehicleId == vehicleNumber);
 
-                if (vehicle == null) return false;
+                if (vehicle == null) 
+                    return false;
 
                 _context.Vehicles.Remove(vehicle);
                 var result = await _context.SaveChangesAsync();
@@ -89,7 +90,7 @@ namespace Repositories.Repositories
             catch
             {
                 await transaction.RollbackAsync();
-                return false;
+                throw;
             }
         }
 
@@ -180,6 +181,14 @@ namespace Repositories.Repositories
                 .ToListAsync(cancellationToken);
 
             return (totalApartments, configs, usedSpaces, apartmentVehicles);
+        }
+
+        public async Task<Vehicle?> FindAsync(Func<Vehicle, bool> predicate)
+        {
+            return await Task.Run(() => _context.Vehicles
+                .Include(v => v.VehicleCategory)
+                .Include(v => v.Apartment)
+                .FirstOrDefault(predicate));
         }
     }
 }

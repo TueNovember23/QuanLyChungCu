@@ -75,9 +75,9 @@
                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="170"/>
-                                    <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="150"/>
-                                    <GridViewColumn Header="Tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="150"/>
+                                    <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="220"/>
+                                    <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="200"/>
+                                    <GridViewColumn Header="Tầng" DisplayMemberBinding="{Binding FloorNumber}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -113,8 +113,12 @@
                         <TextBox materialDesign:HintAssist.Hint="Biển số xe *"
                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                 Margin="0,0,0,16"
-                                Text="{Binding VehicleNumber}"
-                                IsEnabled="{Binding IsLicensePlateRequired}"/>
+                                Text="{Binding VehicleNumber, UpdateSourceTrigger=PropertyChanged}"
+                                IsEnabled="{Binding IsLicensePlateRequired}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Space" Command="{Binding FormatLicensePlateCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
 
                         <!-- Thông tin chủ xe -->
                         <TextBox materialDesign:HintAssist.Hint="Tên chủ xe *"

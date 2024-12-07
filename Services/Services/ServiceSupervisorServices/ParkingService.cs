@@ -38,13 +38,28 @@ namespace Services.Services.ServiceSupervisorServices
 
         public async Task<bool> DeleteVehicleAsync(string vehicleNumber)
         {
-            var success = await _vehicleRepository.DeleteAsync(vehicleNumber);
-            if (success)
+            try
             {
-                await _vehicleRepository.SaveChangesAsync();
-                return true;
+                var vehicle = await _vehicleRepository.GetByNumberAsync(vehicleNumber);
+                if (vehicle == null)
+                    return false;
+
+                if (vehicle.Status != "Huỷ gửi")
+                {
+                    throw new BusinessException("Chỉ có thể xoá xe đã huỷ gửi!");
+                }
+
+                var success = await _vehicleRepository.DeleteAsync(vehicleNumber);
+                return success;
             }
-            return false;
+            catch (BusinessException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Lỗi khi xoá xe: {ex.Message}");
+            }
         }
 
         public async Task<VehicleStatisticsDTO> GetVehicleStatisticsAsync()
@@ -170,7 +185,7 @@ namespace Services.Services.ServiceSupervisorServices
             }
             catch (Exception ex) 
             {
-                throw new BusinessException($"Lỗi khi lấy thông tin bãi đỗ xe: {ex.Message}");
+                throw new BusinessException("Vui lòng chọn 1 căn hộ để đăng ký xe!");
             }
         }
     }

@@ -332,7 +332,7 @@ namespace Forms.ViewModels.Accountant
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải lịch sử xử lý: {ex.Message}");
+                MessageBox.Show($"Vui lòng chọn 1 vi phạm để xử lý!");
             }
         }
 

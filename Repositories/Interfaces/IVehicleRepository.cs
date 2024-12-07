@@ -32,5 +32,7 @@ namespace Repositories.Interfaces
             Dictionary<int, int> usedSpaces,
             List<Vehicle> apartmentVehicles
         )> GetParkingDataAsync(int apartmentId, CancellationToken cancellationToken = default);
+
+        Task<Vehicle?> FindAsync(Func<Vehicle, bool> predicate);
     }
 }
