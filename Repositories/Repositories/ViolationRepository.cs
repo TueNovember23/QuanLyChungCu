@@ -40,7 +40,7 @@ namespace Repositories.Repositories
 
         public async Task<IEnumerable<Violation>> SearchViolatAsync(string searchText)
         {
-            using var context = new ApplicationDbContext(); // Create new context for search
+            using var context = new ApplicationDbContext();
             
             if (string.IsNullOrWhiteSpace(searchText))
                 return await GetViolatAllAsync();
@@ -61,7 +61,7 @@ namespace Repositories.Repositories
                     )
                 )
                 .OrderByDescending(v => v.CreatedDate)
-                .AsNoTracking() // Add this to prevent tracking
+                .AsNoTracking() 
                 .ToListAsync();
         }
 
@@ -106,6 +106,14 @@ namespace Repositories.Repositories
         {
             return await _context.ViolationPenalties
                 .FirstOrDefaultAsync(p => p.PenaltyId == penaltyId);
+        }
+
+        public async Task<IEnumerable<Violation>> GetViolationsByRegulationId(int regulationId)
+        {
+            return await _context.Violations
+                .Include(v => v.ViolationPenalties)
+                .Where(v => v.RegulationId == regulationId)
+                .ToListAsync();
         }
     }
 }

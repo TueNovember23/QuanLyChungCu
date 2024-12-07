@@ -21,5 +21,6 @@ namespace Services.Interfaces.AccountantServices
         Task<bool> SavePenaltyAsync(ViolationPenaltyDTO penaltyDTO);
         Task<bool> UpdatePenaltyAsync(ViolationPenaltyDTO penaltyDTO);
         Task<IEnumerable<ViolationPenaltyDTO>> GetPenaltyHistoryAsync(int violationId);
+        Task<bool> HasActiveViolationsForRegulation(int regulationId);
     }
 }

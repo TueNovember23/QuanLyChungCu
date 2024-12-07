@@ -34,11 +34,9 @@ namespace Forms.ViewModels.Accountant
 
         partial void OnSearchTextChanged(string value)
         {
-            // Cancel previous search if any
             _searchCancellationToken?.Cancel();
             _searchCancellationToken = new CancellationTokenSource();
 
-            // Debounce search using async delay
             _ = SearchWithDebounceAsync(_searchCancellationToken.Token);
         }
 
@@ -46,7 +44,7 @@ namespace Forms.ViewModels.Accountant
         {
             try
             {
-                await Task.Delay(300, cancellationToken); // Wait 300ms after typing
+                await Task.Delay(300, cancellationToken);
                 await Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
                     await FilterViolationsAsync();
@@ -60,7 +58,7 @@ namespace Forms.ViewModels.Accountant
 
         private async Task FilterViolationsAsync()
         {
-            if (IsLoading) return; // Prevent concurrent searches
+            if (IsLoading) return;
 
             try 
             {
@@ -68,7 +66,6 @@ namespace Forms.ViewModels.Accountant
                 
                 IEnumerable<ViolationResponseDTO> searchResults;
                 
-                // Get data based on search text
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     searchResults = await _violationService.SearchAsync(SearchText);
@@ -78,7 +75,6 @@ namespace Forms.ViewModels.Accountant
                     searchResults = await _violationService.GetAllAsync();
                 }
                 
-                // Apply status filter if selected
                 if (!string.IsNullOrEmpty(FilterStatus))
                 {
                     searchResults = searchResults.Where(v => 
@@ -168,7 +164,7 @@ namespace Forms.ViewModels.Accountant
 
         private async Task LoadDataAsync()
         {
-            try
+            try 
             {
                 IsLoading = true;
 
@@ -178,8 +174,11 @@ namespace Forms.ViewModels.Accountant
                 Apartments = new ObservableCollection<ResponseApartmentDTO>(
                     await _apartmentService.GetAllApartmentForViolation());
 
+                // Chỉ lấy regulations đang active
+                var activeRegulations = await _regulationService.GetAllAsync();
                 Regulations = new ObservableCollection<RegulationResponseDTO>(
-                    await _regulationService.GetAllAsync());
+                    activeRegulations.Where(r => r.IsActive)
+                );
             }
             catch (Exception ex)
             {
@@ -384,14 +383,5 @@ namespace Forms.ViewModels.Accountant
             if (string.IsNullOrEmpty(value)) return;
             FilterViolationsAsync().ConfigureAwait(false);
         }
-
-        // private bool ValidateFine(decimal fine)
-        // {
-        //     if (fine <= 0)
-        //         throw new BusinessException("Số tiền phạt phải lớn hơn 0");
-        //     if (fine > 100000000) 
-        //         throw new BusinessException("Số tiền phạt không được vượt quá 100 triệu");
-        //     return true;
-        // }
     }
 }

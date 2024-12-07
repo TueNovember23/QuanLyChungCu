@@ -17,8 +17,9 @@ namespace Repositories.Interfaces
         Task DeleteViolatAsync(int id);
 
         Task<IEnumerable<ViolationPenalty>> GetPenaltiesByViolationIdAsync(int violationId);
-        Task<ViolationPenalty?> GetPenaltyByIdAsync(int penaltyId); // New method
+        Task<ViolationPenalty?> GetPenaltyByIdAsync(int penaltyId);
         Task AddPenaltyAsync(ViolationPenalty penalty);
-        Task UpdatePenaltyAsync(ViolationPenalty penalty); // New method
+        Task UpdatePenaltyAsync(ViolationPenalty penalty); 
+        Task<IEnumerable<Violation>> GetViolationsByRegulationId(int regulationId);
     }
 }

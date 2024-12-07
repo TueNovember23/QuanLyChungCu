@@ -156,5 +156,19 @@ namespace Services.Services.AccountantServices
                 throw new BusinessException($"Lỗi khi cập nhật xử lý: {ex.Message}");
             }
         }
+
+        public async Task<bool> HasActiveViolationsForRegulation(int regulationId)
+        {
+            try
+            {
+                var violations = await _violationRepository.GetViolationsByRegulationId(regulationId);
+                return violations.Any(v => v.ViolationPenalties.Any(p => 
+                    p.ProcessingStatus != "Đã xử lý")); 
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Lỗi kiểm tra vi phạm: {ex.Message}");
+            }
+        }
     }
 }
