@@ -298,6 +298,14 @@ CREATE TABLE ViolationPenalty (
     Note nvarchar(255),
     CONSTRAINT FK_ViolationPenalty_Violation FOREIGN KEY (ViolationId) REFERENCES Violation(ViolationId)
 )
+
+CREATE TABLE ParkingConfig (
+    ConfigId INT PRIMARY KEY IDENTITY(1,1),
+    CategoryId INT,
+    MaxPerApartment INT NOT NULL,
+    TotalSpacePercent INT NOT NULL,
+    FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
+);
 GO
 
 -- cập nhật số tầng của block khi thêm tầng
