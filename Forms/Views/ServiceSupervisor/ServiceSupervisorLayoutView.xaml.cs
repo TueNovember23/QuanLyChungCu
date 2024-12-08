@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Services.DTOs.LoginDTO;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,6 +9,7 @@ namespace Forms.Views.ServiceSupervisor
 {
     public partial class ServiceSupervisorLayoutView : Window
     {
+        public LoginResponseDTO? User { get; set; }
         public ServiceSupervisorLayoutView()
         {
             InitializeComponent();

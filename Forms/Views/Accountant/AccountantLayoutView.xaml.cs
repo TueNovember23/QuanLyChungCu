@@ -1,4 +1,5 @@
 ﻿using Forms.Views.ServiceSupervisor;
+using Services.DTOs.LoginDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace Forms.Views.Accountant
     /// </summary>
     public partial class AccountantLayoutView : Window
     {
+        public LoginResponseDTO? User { get; set; }
+
         public AccountantLayoutView()
         {
             InitializeComponent();

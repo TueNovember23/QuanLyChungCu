@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Forms.Views.Accountant;
 using Forms.Views.AdministrativeStaff;
+using Forms.Views.ServiceSupervisor;
 using Services.DTOs.LoginDTO;
 using Services.Interfaces.SharedServices;
 using System.Windows;
@@ -52,9 +54,19 @@ namespace Forms.ViewModels
                         administrativeStaffLayoutView.Show();
                         _loginWindow?.Close();
                     }
-                    else
+                    else if(response.Role == "Accountant")
                     {
-                        MessageBox.Show("Login success");
+                        AccountantLayoutView f = new();
+                        f.User = response;
+                        f.Show();
+                        _loginWindow?.Close();
+                    }
+                    else if(response.Role == "ServiceSupervisor")
+                    {
+                        ServiceSupervisorLayoutView f = new();
+                        f.User = response;
+                        f.Show();
+                        _loginWindow?.Close();
                     }
                 }
                 else
