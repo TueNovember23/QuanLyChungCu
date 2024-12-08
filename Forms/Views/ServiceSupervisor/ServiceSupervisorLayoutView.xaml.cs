@@ -1,4 +1,5 @@
-﻿using Forms.Views.Accountant;
+using Forms.Views.Accountant;
+using Services.DTOs.LoginDTO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,6 +9,7 @@ namespace Forms.Views.ServiceSupervisor
 {
     public partial class ServiceSupervisorLayoutView : Window
     {
+        public LoginResponseDTO? User { get; set; }
         public ServiceSupervisorLayoutView()
         {
             InitializeComponent();
@@ -20,7 +22,7 @@ namespace Forms.Views.ServiceSupervisor
 
         private void ParkingViewButton_Click(object sender, RoutedEventArgs e)
         {
-            
+
             LoadUserControl(new ParkingView());
         }
 
@@ -50,7 +52,9 @@ namespace Forms.Views.ServiceSupervisor
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            LoginView f = new();
+            f.Show();
+            this.Close();
         }
 
         private void Sidebar_MouseEnter(object sender, MouseEventArgs e)

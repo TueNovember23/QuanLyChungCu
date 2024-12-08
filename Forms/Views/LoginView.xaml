@@ -6,7 +6,8 @@
         Title="Login" Height="500" Width="700"
         WindowStyle="None" ResizeMode="NoResize"
         AllowsTransparency="True"
-        Background="Transparent" WindowStartupLocation="CenterScreen">
+        Background="Transparent" WindowStartupLocation="CenterScreen"
+        Icon="/Resources/building-icon.png">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -14,7 +15,7 @@
     </Window.Resources>
 
     <!-- Outer Border to round the corners of the entire window -->
-    <Border Background="#d7d7d7" CornerRadius="20">
+    <Border Background="#d7d7d7" CornerRadius="30">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*" />
@@ -98,8 +99,8 @@
                        Margin="-700,0,0,10"/>
 
                 <Image Source="/Resources/building.png"
-       Margin="0 -80 0 0"
-       Stretch="UniformToFill" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Margin="0 -80 0 0"
+                       Stretch="UniformToFill" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
                        Height="250"/>
             </Grid>
         </Grid>

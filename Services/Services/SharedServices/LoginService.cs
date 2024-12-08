@@ -16,7 +16,7 @@ namespace Services.Services.SharedServices
             request.Validate();
             Account account = await _unitOfWork.GetRepository<Account>()
                 .FindAsync(x => x.Username == request.Username && x.Password == request.Password)
-                ?? throw new BusinessException("Invalid username or password");
+                ?? throw new BusinessException("Tên đăng nhập hoặc mật khẩu không chính xác");
             LoginResponseDTO response = _mapper.Map<LoginResponseDTO>(account);
             response.Role = account.Role.RoleName;
             return response;

@@ -1,9 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Forms.Views.AdministrativeStaff;
-using Microsoft.VisualBasic.ApplicationServices;
-using Repositories.Repositories.Entities;
-using Services.DTOs.AccountDTO;
 using Services.DTOs.LoginDTO;
 using Services.DTOs.MaintenanceDTO;
 using Services.Interfaces.AdministrativeStaffServices;
@@ -69,11 +66,12 @@ namespace Forms.ViewModels.AdministativeStaff
         }
 
         [RelayCommand]
-        public void AddMaintenance()
+        public async Task AddMaintenance()
         {
             AddMaintenanceView f = new(_maintananceService);
             f.User = User;
             f.ShowDialog();
+            await LoadMaintenancesAsync();
         }
 
         [RelayCommand]

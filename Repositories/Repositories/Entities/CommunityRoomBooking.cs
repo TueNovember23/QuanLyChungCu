@@ -15,6 +15,14 @@ public partial class CommunityRoomBooking
 
     public int NumberOfPeople { get; set; }
 
+    public string? Reason { get; set; }
+
+    public int? Priority { get; set; }
+
+    public bool CanUseWithOtherPeople { get; set; }
+
+    public string? Status { get; set; }
+
     public int ApartmentId { get; set; }
 
     public int CommunityRoomId { get; set; }

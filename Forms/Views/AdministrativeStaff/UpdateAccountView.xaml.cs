@@ -1,4 +1,5 @@
-﻿using Services.DTOs.AccountDTO;
+﻿using Core;
+using Services.DTOs.AccountDTO;
 using Services.Interfaces.AdministrativeStaffServices;
 using System.Windows;
 
@@ -24,16 +25,25 @@ namespace Forms.Views.AdministrativeStaff
             this.Close();
         }
 
-        private void RegisterAccount_Click(object sender, RoutedEventArgs e)
+        private async void RegisterAccount_Click(object sender, RoutedEventArgs e)
         {
-            UpdateAccountDTO dto = new()
+            try
             {
-                Password = PasswordInput.Password,
-                ComfirmPassword = ConfirmPasswordInput.Password
-            };
-            _service.UpdateAccount(_username, dto);
-            MessageBox.Show("Thay đổi mật khẩu thành công");
-            this.Close();
+                UpdateAccountDTO dto = new()
+                {
+                    Password = PasswordInput.Password,
+                    ComfirmPassword = ConfirmPasswordInput.Password
+                };
+
+                await _service.UpdateAccount(_username, dto);
+
+                MessageBox.Show("Cập nhật thành công");
+                this.Close();
+            }
+            catch
+            {
+                throw;
+            }
         }
     }
 }
