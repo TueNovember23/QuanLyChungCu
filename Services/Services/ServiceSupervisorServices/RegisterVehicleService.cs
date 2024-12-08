@@ -73,12 +73,15 @@ namespace Services.Services.ServiceSupervisorServices
 
             try
             {
-                var existingVehicle = await _vehicleRepository.GetByNumberAsync(vehicleDto.VehicleNumber);
-                if (existingVehicle != null)
+                if (vehicleDto.VehicleType != "Xe đạp")
                 {
-                    response.Success = false;
-                    response.Message = "Biển số xe đã tồn tại";
-                    return response;
+                    var existingVehicle = await _vehicleRepository.GetByNumberAsync(vehicleDto.VehicleNumber);
+                    if (existingVehicle != null)
+                    {
+                        response.Success = false;
+                        response.Message = "Biển số xe đã tồn tại";
+                        return response;
+                    }
                 }
 
                 var vehicle = new Vehicle

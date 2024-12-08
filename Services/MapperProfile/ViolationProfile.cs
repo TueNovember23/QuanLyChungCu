@@ -19,11 +19,19 @@ namespace Services.MapperProfile
                 .ForMember(dest => dest.RegulationTitle,
                     opt => opt.MapFrom(src => src.Regulation.Title))
                 .ForMember(dest => dest.CreatedDate,
-                    opt => opt.MapFrom(src => src.CreatedDate.ToDateTime(TimeOnly.MinValue)));
+                    opt => opt.MapFrom(src => src.CreatedDate.ToDateTime(TimeOnly.MinValue)))
+                .ForMember(dest => dest.LatestProcessingStatus,
+                    opt => opt.MapFrom(src => src.ViolationPenalties
+                        .OrderByDescending(p => p.ProcessedDate)
+                        .Select(p => p.ProcessingStatus)
+                        .FirstOrDefault() ?? "Chờ xử lý"));
 
             CreateMap<CreateViolationDTO, Violation>()
                 .ForMember(dest => dest.CreatedDate,
                     opt => opt.MapFrom(src => DateOnly.FromDateTime(src.CreatedDate)));
+
+            CreateMap<ViolationPenalty, ViolationPenaltyDTO>();
+            CreateMap<ViolationPenaltyDTO, ViolationPenalty>();
         }
     }
 }

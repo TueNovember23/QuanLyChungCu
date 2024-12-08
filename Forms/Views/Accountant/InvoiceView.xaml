@@ -127,7 +127,7 @@
                         <TextBlock Text="Hóa đơn xe"/>
                     </StackPanel>
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding ParkingInvoices}"
+                <DataGrid ItemsSource="{Binding VehicleInvoices}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True">
                     <DataGrid.Columns>

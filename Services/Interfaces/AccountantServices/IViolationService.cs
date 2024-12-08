@@ -17,5 +17,10 @@ namespace Services.Interfaces.AccountantServices
         Task<ViolationResponseDTO> CreateAsync(CreateViolationDTO dto);
         Task<ViolationResponseDTO> UpdateAsync(CreateViolationDTO dto, int id);
         Task DeleteAsync(int id);
+
+        Task<bool> SavePenaltyAsync(ViolationPenaltyDTO penaltyDTO);
+        Task<bool> UpdatePenaltyAsync(ViolationPenaltyDTO penaltyDTO);
+        Task<IEnumerable<ViolationPenaltyDTO>> GetPenaltyHistoryAsync(int violationId);
+        Task<bool> HasActiveViolationsForRegulation(int regulationId);
     }
 }

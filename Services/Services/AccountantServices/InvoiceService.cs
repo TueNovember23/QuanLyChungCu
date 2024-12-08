@@ -32,7 +32,7 @@ namespace Services.Services.AccountantServices
                     .ThenInclude(m => m.Apartment)
                 .Where(i => i.Month == month && i.Year == year)
                 .ToListAsync();
-
+            Console.WriteLine($"Số lượng hóa đơn xe: {invoices.SelectMany(i => i.VechicleInvoices).Count()}");
             return new InvoiceGroupDTO
             {
                 TotalInvoices = invoices.Select(i => new ResponseInvoiceDTO

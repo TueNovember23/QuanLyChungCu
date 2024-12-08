@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace Services.Services.AccountantServices
 {
-    // Services/Services/AccountantServices/ViolationService.cs
     public class ViolationService : IViolationService
     {
         private readonly IViolationRepository _violationRepository;
@@ -43,8 +42,15 @@ namespace Services.Services.AccountantServices
 
         public async Task<IEnumerable<ViolationResponseDTO>> SearchAsync(string searchText)
         {
-            var violations = await _violationRepository.SearchViolatAsync(searchText);
-            return _mapper.Map<IEnumerable<ViolationResponseDTO>>(violations);
+            try
+            {
+                var violations = await _violationRepository.SearchViolatAsync(searchText);
+                return _mapper.Map<IEnumerable<ViolationResponseDTO>>(violations);
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Lỗi khi tìm kiếm: {ex.Message}");
+            }
         }
 
         public async Task<ViolationResponseDTO> CreateAsync(CreateViolationDTO dto)
@@ -85,6 +91,84 @@ namespace Services.Services.AccountantServices
 
             await _violationRepository.DeleteViolatAsync(id);
             await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<bool> SavePenaltyAsync(ViolationPenaltyDTO penaltyDTO)
+        {
+            if (!penaltyDTO.IsValid())
+                throw new BusinessException("Dữ liệu xử lý không hợp lệ");
+
+            var existingPenalty = await _violationRepository
+                .GetPenaltiesByViolationIdAsync(penaltyDTO.ViolationId);
+            
+            if (existingPenalty.Any(p => 
+                p.ProcessedDate?.Date == penaltyDTO.ProcessedDate.Date))
+            {
+                throw new BusinessException("Đã tồn tại xử lý trong ngày này");
+            }
+
+            try
+            {
+                // Kiểm tra vi phạm tồn tại
+                var violation = await _violationRepository.GetViolatByIdAsync(penaltyDTO.ViolationId);
+                if (violation == null)
+                    throw new BusinessException("Không tìm thấy vi phạm");
+
+                var penalty = _mapper.Map<ViolationPenalty>(penaltyDTO);
+                await _violationRepository.AddPenaltyAsync(penalty);
+                await _unitOfWork.SaveAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Lỗi khi lưu xử lý: {ex.Message}");
+            }
+        }
+
+        public async Task<IEnumerable<ViolationPenaltyDTO>> GetPenaltyHistoryAsync(int violationId)
+        {
+            var penalties = await _violationRepository.GetPenaltiesByViolationIdAsync(violationId);
+            return _mapper.Map<IEnumerable<ViolationPenaltyDTO>>(penalties); 
+        }
+
+        public async Task<bool> UpdatePenaltyAsync(ViolationPenaltyDTO penaltyDTO)
+        {
+            var violation = await _violationRepository.GetViolatByIdAsync(penaltyDTO.ViolationId);
+            if (violation == null)
+                throw new BusinessException("Không tìm thấy vi phạm");
+
+            if (!penaltyDTO.IsValid())
+                throw new BusinessException("Dữ liệu xử lý không hợp lệ");
+
+            try
+            {
+                var penalty = await _violationRepository.GetPenaltyByIdAsync(penaltyDTO.PenaltyId);
+                if (penalty == null)
+                    throw new BusinessException("Không tìm thấy thông tin xử lý");
+
+                _mapper.Map(penaltyDTO, penalty);
+                await _violationRepository.UpdatePenaltyAsync(penalty);
+                await _unitOfWork.SaveAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Lỗi khi cập nhật xử lý: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> HasActiveViolationsForRegulation(int regulationId)
+        {
+            try
+            {
+                var violations = await _violationRepository.GetViolationsByRegulationId(regulationId);
+                return violations.Any(v => v.ViolationPenalties.Any(p => 
+                    p.ProcessingStatus != "Đã xử lý")); 
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Lỗi kiểm tra vi phạm: {ex.Message}");
+            }
         }
     }
 }

@@ -75,9 +75,9 @@
                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="170"/>
-                                    <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="150"/>
-                                    <GridViewColumn Header="Tầng" DisplayMemberBinding="{Binding FloorNumber}" Width="150"/>
+                                    <GridViewColumn Header="Mã căn hộ" DisplayMemberBinding="{Binding ApartmentCode}" Width="220"/>
+                                    <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="200"/>
+                                    <GridViewColumn Header="Tầng" DisplayMemberBinding="{Binding FloorNumber}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -94,40 +94,131 @@
                         <TextBlock Text="Thông tin xe và chủ xe" 
                                  FontSize="18" 
                                  FontWeight="SemiBold" 
-                                 Margin="0,0,0,20"/>
+                                 Margin="0,0,0,16"/>
 
                         <!-- Thông tin căn hộ -->
                         <TextBox materialDesign:HintAssist.Hint="Mã căn hộ"
                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Margin="0,0,0,25"
+                                Margin="0,0,0,16"
                                 Text="{Binding SelectedApartmentCode}"
                                 IsReadOnly="True"/>
 
                         <!-- Thông tin xe -->
                         <ComboBox materialDesign:HintAssist.Hint="Loại xe *"
                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                 Margin="0,0,0,25"
+                                 Margin="0,0,0,16"
                                  ItemsSource="{Binding VehicleTypes}"
                                  SelectedItem="{Binding SelectedVehicleType}"/>
 
                         <TextBox materialDesign:HintAssist.Hint="Biển số xe *"
                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Margin="0,0,0,25"
-                                Text="{Binding VehicleNumber}"
-                                IsEnabled="{Binding IsLicensePlateRequired}"/>
+                                Margin="0,0,0,16"
+                                Text="{Binding VehicleNumber, UpdateSourceTrigger=PropertyChanged}"
+                                IsEnabled="{Binding IsLicensePlateRequired}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Space" Command="{Binding FormatLicensePlateCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
 
                         <!-- Thông tin chủ xe -->
                         <TextBox materialDesign:HintAssist.Hint="Tên chủ xe *"
                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Margin="0,0,0,25"
+                                Margin="0,0,0,16"
                                 Text="{Binding VehicleOwner}"/>
 
                         <!-- Nút đăng ký -->
                         <Button Content="Đăng ký thông tin xe"
                                 Style="{StaticResource MaterialDesignRaisedButton}"
                                 Command="{Binding RegisterCommand}"
-                                Height="46"
-                                Margin="0,25,0,0"/>
+                                Height="40"
+                                Margin="0,12,0,0"/>
+
+                       
+
+                        <!-- Right Panel -->
+                        <StackPanel Margin="0,20,0,0">
+                            <!-- Parking Space Info -->
+                            <TextBlock Text="Thông tin bãi đỗ xe" 
+                                      FontSize="16" 
+                                      FontWeight="SemiBold" 
+                                      Margin="0,0,0,10"/>
+
+                            <ItemsControl ItemsSource="{Binding ParkingSpaces}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding VehicleType}" Grid.Column="0"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                <TextBlock Text="{Binding UsedSpaces}"/>
+                                                <TextBlock Text="/"/>
+                                                <TextBlock Text="{Binding TotalSpaces}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Apartment Vehicle Limits -->
+                            <TextBlock Text="Số xe đã đăng ký" 
+                                      FontSize="16"
+                                      FontWeight="SemiBold"
+                                      Margin="0,20,0,10"/>
+                                      
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ApartmentLimits}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Xe đạp:" Grid.Column="0"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding ApartmentLimits.CurrentBicycles}"/>
+                                        <TextBlock Text="/"/>
+                                        <TextBlock Text="{Binding ApartmentLimits.MaxBicycles}"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Xe máy:" Grid.Column="0"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding ApartmentLimits.CurrentMotorcycles}"/>
+                                        <TextBlock Text="/"/>
+                                        <TextBlock Text="{Binding ApartmentLimits.MaxMotorcycles}"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Ô tô:" Grid.Column="0"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding ApartmentLimits.CurrentCars}"/>
+                                        <TextBlock Text="/"/>
+                                        <TextBlock Text="{Binding ApartmentLimits.MaxCars}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </materialDesign:Card>

@@ -48,9 +48,6 @@ namespace Forms.ViewModels.ServiceSupervisor
         private ObservableCollection<string> _vehicleStatuses = new() { "Đang gửi", "Huỷ gửi" };
 
         [ObservableProperty]
-        private bool _isLicensePlateEnabled = true;
-
-        [ObservableProperty]
         private ObservableCollection<string> _vehicleTypes = new()
         { "Xe đạp", "Xe máy", "Xe máy điện", "Ô tô", "Ô tô điện" };
 
@@ -81,7 +78,6 @@ namespace Forms.ViewModels.ServiceSupervisor
                 SelectedVehicleNumber = value.VehicleNumber?.Trim();
                 SelectedVehicleOwner = value.VehicleOwner;
                 SelectedVehicleStatus = value.Status;
-                IsLicensePlateEnabled = value.VehicleType != "Xe đạp";
             }
         }
 
@@ -280,6 +276,52 @@ namespace Forms.ViewModels.ServiceSupervisor
             }
 
             return true;
+        }
+
+        [RelayCommand]
+        private async Task DeleteVehicleAsync()
+        {
+            if (SelectedVehicle == null)
+            {
+                MessageBox.Show("Vui lòng chọn xe cần xoá!");
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Bạn có chắc chắn muốn xoá xe {SelectedVehicle.VehicleNumber}?",
+                "Xác nhận xoá",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                IsLoading = true;
+
+                var success = await _parkingService.DeleteVehicleAsync(SelectedVehicle.VehicleNumber);
+
+                if (success)
+                {
+                    MessageBox.Show("Xoá xe thành công!");
+                    await LoadVehiclesAsync();
+                    ClearSelection();
+                }
+                else
+                {
+                    MessageBox.Show("Không thể xoá xe!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không thể xoá xe đang gửi!");
+                Debug.WriteLine($"Delete error: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
     }
 }

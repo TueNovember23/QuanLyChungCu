@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1100">
 
-    <Grid HorizontalAlignment="Left" Width="1100">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <!-- Header -->
@@ -52,17 +52,17 @@
                       IsReadOnly="True">
                 <DataGrid.Columns>
                     <!-- Cột Tên tài khoản -->
-                    <DataGridTextColumn Header="Tên tài khoản" Binding="{Binding Username}" Width="auto"/>
+                    <DataGridTextColumn Header="Tên tài khoản" Binding="{Binding Username}" Width="*"/>
                     <!-- Cột Email -->
-                    <DataGridTextColumn Header="Họ tên" Binding="{Binding FullName}" Width="auto"/>
+                    <DataGridTextColumn Header="Họ tên" Binding="{Binding FullName}" Width="*"/>
                     <!-- Cột Vai trò -->
-                    <DataGridTextColumn Header="Vai trò" Binding="{Binding Role}" Width="auto"/>
+                    <DataGridTextColumn Header="Vai trò" Binding="{Binding Role}" Width="*"/>
 
                     <!-- Cột nút Sửa -->
-                    <DataGridTemplateColumn Header="Sửa" Width="auto">
+                    <DataGridTemplateColumn Header="Sửa" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Sửa" Width="auto" Height="30"
+                                <Button Content="Sửa" Width="Auto"  Height="30"
                                         Style="{StaticResource MaterialDesignFlatButton}"
                                         Command="{Binding DataContext.EditAccountCommand, 
                                                     RelativeSource={RelativeSource AncestorType=UserControl}}" 
@@ -72,10 +72,10 @@
                     </DataGridTemplateColumn>
 
                     <!-- Cột nút Xóa -->
-                    <DataGridTemplateColumn Header="Xóa" Width="auto">
+                    <DataGridTemplateColumn Header="Xóa" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Xóa" Width="auto" Height="30"
+                                <Button Content="Xóa" Width="Auto" Height="30"
                                         Style="{StaticResource MaterialDesignFlatButton}"
                                         Command="{Binding DataContext.DeleteAccountCommand, 
                                                     RelativeSource={RelativeSource AncestorType=UserControl}}" 
