@@ -20,6 +20,19 @@ namespace Forms
             ConfigureServices();
             InitializeComponent();
             this.DispatcherUnhandledException += OnDispatcherUnhandledException;
+            TaskScheduler.UnobservedTaskException += (sender, exceptionEvent) =>
+            {
+                if (exceptionEvent.Exception.InnerException is BusinessException businessException)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        // Hiển thị lỗi bằng BusinessErrorView
+                        BusinessErrorView errorView = new BusinessErrorView(businessException.Message);
+                        errorView.ShowDialog();
+                    });
+                    exceptionEvent.SetObserved(); // Đánh dấu ngoại lệ đã được xử lý
+                }
+            };
         }
 
         private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
