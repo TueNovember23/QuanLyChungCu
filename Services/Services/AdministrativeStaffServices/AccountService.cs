@@ -4,7 +4,6 @@ using Repositories.Interfaces;
 using Repositories.Repositories.Entities;
 using Services.DTOs.AccountDTO;
 using Services.Interfaces.AdministrativeStaffServices;
-using System.ComponentModel;
 
 namespace Services.Services.AdministrativeStaffServices
 {
@@ -87,7 +86,14 @@ namespace Services.Services.AdministrativeStaffServices
         {
             Account account = await _unitOfWork.GetRepository<Account>().Entities.FirstOrDefaultAsync(_ => _.Username == username)
                  ?? throw new BusinessException($"Không tìm thấy tài khoản {username}");
-            dto.Validate();
+            if(string.IsNullOrWhiteSpace(dto.Password) || string.IsNullOrWhiteSpace(dto.ComfirmPassword))
+            {
+                throw new BusinessException("Vui lòng điền đầy đủ thông tin");
+            }
+            if (dto.Password != dto.ComfirmPassword)
+            {
+                throw new BusinessException("Mật khẩu không khớp");
+            }
             account.Password = dto.Password;
             await _unitOfWork.SaveAsync();
         }

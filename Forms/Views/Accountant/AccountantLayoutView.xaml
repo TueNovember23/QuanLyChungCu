@@ -86,13 +86,13 @@
                             </Button>
                         </ListViewItem>
                         <!-- Exit Button -->
-                        <ListViewItem HorizontalAlignment="Stretch" Margin="0 100 0 0">
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0 85 0 0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" 
                                     BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" x:Name="btnExit" Click="btnExit_Click" Margin="10,5,0,5" HorizontalContentAlignment="Left">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="ExitToApp"/>
-                                    <TextBlock x:Name="ExitText" Text="Exit" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="ExitText" Text="Logout" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>

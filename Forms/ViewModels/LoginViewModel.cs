@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Forms.Views.Accountant;
 using Forms.Views.AdministrativeStaff;
+using Forms.Views.ServiceSupervisor;
 using Services.DTOs.LoginDTO;
 using Services.Interfaces.SharedServices;
 using System.Windows;
@@ -50,16 +52,25 @@ namespace Forms.ViewModels
                         AdministrativeStaffLayoutView administrativeStaffLayoutView = new();
                         administrativeStaffLayoutView.User = response;
                         administrativeStaffLayoutView.Show();
+                        Username = "";
                         _loginWindow?.Close();
                     }
-                    else
+                    else if(response.Role == "Accountant")
                     {
-                        MessageBox.Show("Login success");
+                        AccountantLayoutView f = new();
+                        f.User = response;
+                        f.Show();
+                        Username = "";
+                        _loginWindow?.Close();
                     }
-                }
-                else
-                {
-                    throw new Core.BusinessException("Tên đăng nhập hoặc mật khẩu không chính xác");
+                    else if(response.Role == "ServiceSupervisor")
+                    {
+                        ServiceSupervisorLayoutView f = new();
+                        f.User = response;
+                        f.Show();
+                        Username = "";
+                        _loginWindow?.Close();
+                    }
                 }
             }
             finally

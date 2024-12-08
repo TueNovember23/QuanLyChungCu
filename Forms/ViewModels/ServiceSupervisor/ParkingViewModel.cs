@@ -164,7 +164,7 @@ namespace Forms.ViewModels.ServiceSupervisor
 
                 var updatedVehicle = new VehicleDTO
                 {
-                    VehicleNumber = SelectedVehicleType == "Xe đạp" ? "" : SelectedVehicleNumber?.Trim(),
+                    VehicleNumber = SelectedVehicle.VehicleNumber,
                     VehicleType = SelectedVehicleType,
                     VehicleOwner = SelectedVehicleOwner,
                     ApartmentId = SelectedVehicle.ApartmentId,

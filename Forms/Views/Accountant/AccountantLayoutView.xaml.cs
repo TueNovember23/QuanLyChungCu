@@ -1,4 +1,5 @@
 ﻿using Forms.Views.ServiceSupervisor;
+using Services.DTOs.LoginDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace Forms.Views.Accountant
     /// </summary>
     public partial class AccountantLayoutView : Window
     {
+        public LoginResponseDTO? User { get; set; }
+
         public AccountantLayoutView()
         {
             InitializeComponent();
@@ -56,7 +59,9 @@ namespace Forms.Views.Accountant
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            LoginView f = new();
+            f.Show();
+            this.Close();
         }
 
         private void Sidebar_MouseEnter(object sender, MouseEventArgs e)

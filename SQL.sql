@@ -241,6 +241,10 @@ create table CommunityRoomBooking (
     StartTime time,
     EndTime time,
     NumberOfPeople int DEFAULT 1 Not NULL,
+    Reason nvarchar(255),
+    Priority int, -- 1: Cao, 2: Trung bình, 3: Thấp
+    CanUseWithOtherPeople bit DEFAULT 0 NOT NULL, -- 0: Không, 1: Có
+    Status nvarchar(20) DEFAULT N'Đã đăng ký', -- Đã đăng ký, Chờ duyệt, Đã hủy
     ApartmentId int not null,
     CommunityRoomId int not null,
     constraint FK_CommunityRoomBooking_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
@@ -268,6 +272,53 @@ CREATE TABLE Violation (
     constraint FK_Violation_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
     constraint FK_Violation_Regulation foreign key (RegulationId) references Regulation(RegulationId)
 )
+
+CREATE TABLE ParkingConfig (
+    ConfigId INT PRIMARY KEY IDENTITY(1,1),
+    CategoryId INT,
+    MaxPerApartment INT NOT NULL,
+    TotalSpacePercent INT NOT NULL,
+    FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
+);
+
+-- Dữ liệu bảng ParkingConfig
+-- Dữ liệu mặc định tính tỷ lệ slot để xe theo căn hộ, chia slot đổ xe cho căn hộ theo tỉ lệ đã set mặc định. Không được sửa vì sẽ lỗi.
+INSERT INTO ParkingConfig (CategoryId, MaxPerApartment, TotalSpacePercent) VALUES
+(1, 1, 20),   -- Xe đạp: 1/căn, 20% tổng số căn hộ
+(2, 3, 160),  -- Xe máy: 3/căn, 160% tổng số căn hộ  
+(3, 1, 50),   -- Ô tô: 1/căn, 50% tổng số căn hộ
+(4, 3, 160),  -- Xe máy điện: theo giới hạn xe máy (3/căn)
+(5, 1, 50);   -- Ô tô điện: theo giới hạn ô tô (1/căn)
+
+CREATE TABLE ViolationPenalty (
+    PenaltyId int IDENTITY(1, 1) PRIMARY KEY,
+    ViolationId int NOT NULL,
+    PenaltyLevel nvarchar(20) CHECK (PenaltyLevel IN (N'Nhẹ', N'Trung bình', N'Nặng')),
+    Fine decimal(18,2), -- Số tiền phạt
+    PenaltyMethod nvarchar(255), -- Phương thức xử phạt
+    ProcessingStatus nvarchar(20) DEFAULT N'Chờ xử lý' CHECK (ProcessingStatus IN (N'Chờ xử lý', N'Đang xử lý', N'Đã xử lý')),
+    ProcessedDate datetime, -- Ngày xử lý 
+    Note nvarchar(255),
+    CONSTRAINT FK_ViolationPenalty_Violation FOREIGN KEY (ViolationId) REFERENCES Violation(ViolationId)
+)
+
+CREATE TABLE ParkingConfig (
+    ConfigId INT PRIMARY KEY IDENTITY(1,1),
+    CategoryId INT,
+    MaxPerApartment INT NOT NULL,
+    TotalSpacePercent INT NOT NULL,
+    FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
+);
+
+CREATE TABLE HouseholdMovement (
+    MovementId INT PRIMARY KEY IDENTITY(1,1),
+    ApartmentId INT NOT NULL,
+    ResidentId char(12) NOT NULL,
+    MovementDate DATE NOT NULL,
+    MovementType NVARCHAR(50) NOT NULL DEFAULT N'Chuyển vào',
+    CONSTRAINT FK_HouseholdMovement_Apartment FOREIGN KEY (ApartmentId) REFERENCES Apartment(ApartmentId),
+    CONSTRAINT FK_HouseholdMovement_Resident FOREIGN KEY (ResidentId) REFERENCES Resident(ResidentId)
+);
 GO
 
 -- cập nhật số tầng của block khi thêm tầng
@@ -347,6 +398,10 @@ INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('ad', '1', N'
 INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('ac', '1', N'Kế toán 1', 2);
 INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('se', '1', N'Dịch vụ 1', 3);
 
+INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('admin', '1', N'Nhân viên hành chính 2', 1);
+INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('account', '1', N'Kế toán 2', 2);
+INSERT INTO Account (Username, Password, FullName, RoleId) VALUES ('service', '1', N'Dịch vụ 2', 3);
+
 insert into area (AreaName, Location) values (N'Khu vực Block E', 'Block E')
 insert into area (AreaName, Location) values (N'Khu vực Block D', 'Block D')
 insert into area (AreaName, Location) values (N'Khu vực Gửi xe', N'Phía trước Block D')
@@ -391,17 +446,17 @@ BEGIN
     SET @FloorId = (SELECT MIN(FloorId) FROM Floor); -- ID tầng bắt đầu
     SET @MaxFloorId = (SELECT MAX(FloorId) FROM Floor); -- ID tầng kết thúc
 
-    WHILE @FloorId <= @MaxFloorId -- Lặp qua tất cả các tầng
+    WHILE @FloorId <= @MaxFloorId
     BEGIN
-        SET @ApartmentNumber = 1; -- Reset số thứ tự căn hộ
+        SET @ApartmentNumber = 1;
 
-        WHILE @ApartmentNumber <= 10 -- Mỗi tầng có 10 căn hộ
+        WHILE @ApartmentNumber <= 10
         BEGIN
             INSERT INTO Apartment (ApartmentNumber, Area, Status, FloorId)
             VALUES (
                 @ApartmentNumber, -- Số thứ tự căn hộ
-                100,              -- Diện tích căn hộ, giả sử mặc định là 100
-                N'Đã bán',         -- Trạng thái mặc định là "Trống"
+                FLOOR(50 + (RAND() * (100 - 50 + 1))), -- Diện tích căn hộ ngẫu nhiên
+                N'Đã bán',        -- Trạng thái mặc định là "Đã bán"
                 @FloorId          -- Tầng tương ứng
             );
 
@@ -413,12 +468,51 @@ BEGIN
 END;
 GO
 
--- INSERT INTO Resident (ResidentId, FullName, Gender, DateOfBirth, RelationShipWithOwner, MoveInDate, MoveOutDate, ApartmentId)
--- VALUES
--- ('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', N'Chủ hộ', '2015-01-01', NULL, 1),
--- ('123345678910', N'Nguyễn Thị B', N'Nữ', '1991-01-01', N'Vợ', '2015-01-01', NULL, 1),
--- ('123445678910', N'Nguyễn Thị B', N'Nữ', '2015-01-01', N'Con', '2015-03-01', NULL, 1),
--- ('123445678911', N'Nguyễn Văn C', N'Nam', '1960-01-01', N'Cha', '2015-03-01', '2023-01-03', 1)
+INSERT INTO Resident (ResidentId, FullName, Gender, DateOfBirth, RelationShipWithOwner, MoveInDate, MoveOutDate, ApartmentId)
+VALUES
+('123445678513', N'Nguyễn Thị E', N'Nữ', '1995-01-01', N'Con', '2015-03-01', NULL, 3),
+('123445678914', N'Nguyễn Văn F', N'Nam', '1995-01-01', N'Em', '2015-03-01', NULL, 3),
+('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', N'Chủ hộ', '2015-01-01', NULL, 1),
+('123345678910', N'Nguyễn Thị B', N'Nữ', '1991-01-01', N'Vợ', '2015-01-01', NULL, 1),
+('123445678910', N'Nguyễn Thị B', N'Nữ', '2015-01-01', N'Con', '2015-03-01', NULL, 1),
+('123445678911', N'Nguyễn Văn C', N'Nam', '1960-01-01', N'Cha', '2015-03-01', '2023-01-03', 1),
+('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', N'Chủ hộ', '2015-03-01', '2023-01-03', 3),
+('123445678913', N'Nguyễn Thị E', N'Nữ', '1995-01-01', N'Con', '2015-03-01', NULL, 3),
+('123445678944', N'Nguyễn Văn F', N'Nam', '1995-01-01', N'Em', '2015-03-01', NULL, 3),
+('105456789012', N'Nguyễn Thị X', N'Nữ', '1991-01-01', N'Chủ hộ', '2015-01-01', NULL, 2);
+UPDATE Apartment
+SET NumberOfPeople = 3
+WHERE ApartmentId = 1
+INSERT INTO Representative (RepresentativeId, FullName, Gender, DateOfBirth, Email, PhoneNumber)
+VALUES
+('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', 'nguyenvana@mail.com', '0123456789'),
+('105456789012', N'Nguyễn Thị X', N'Nữ', '1991-01-01', 'nguyenthix@mail.com', '0987123456'),
+('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', 'nguyenthid@mail.com', '0987123455')
+UPDATE Apartment
+SET RepresentativeId = '123456789012' WHERE ApartmentId = 1
+UPDATE Apartment
+SET RepresentativeId = '105456789012' WHERE ApartmentId = 2
+UPDATE Apartment
+SET RepresentativeId = '123445678912' WHERE ApartmentId = 3
+
+INSERT INTO Department (DepartmentName, NumberOfStaff, Description) 
+VALUES
+(N'Kế toán', 5, N'Phòng kế toán'),
+(N'Kỹ thuật', 10, N'Phòng kỹ thuật'),
+(N'An ninh', 15, N'Phòng an ninh'),
+(N'Vệ sinh', 20, N'Phòng vệ sinh'),
+(N'Hành chính', 25, N'Phòng hành chính')
+
+INSERT INTO Equipment (EquipmentId, EquipmentName, Discription, AreaId, Status)
+VALUES
+(1, N'Máy bơm nước Block E1', N'Dùng để bơm nước cho toàn bộ tòa nhà', 1, N'Hoạt động'),
+(2, N'Máy phát điện Block E2', N'Cung cấp điện dự phòng cho tòa nhà', 2, N'Hoạt động'),
+(3, N'Hệ thống chiếu sáng lầu 1 Block D1', N'Đèn chiếu sáng hành lang', 3, N'Hỏng'),
+(4, N'Hệ thống camera Block E2', N'Camera an ninh', 2, N'Hoạt động'),
+(5, N'Thiết bị chữa cháy Block D2', N'Bình chữa cháy', 4, N'Hoạt động'),
+(6, N'Hệ thống thoát nước Block D2', N'Ống thoát nước', 4, N'Hỏng'),
+(7, N'Thang máy Block E1', N'Thang máy block E1', 1, N'Hoạt động');
+
 
 
 -- USE [master]
