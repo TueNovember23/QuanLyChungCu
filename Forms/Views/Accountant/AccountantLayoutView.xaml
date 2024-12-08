@@ -85,13 +85,23 @@
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
+                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
+                                    Width="190" Click="ChangePassword_Click"
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="AccountCache" />
+                                    <TextBlock x:Name="YourAccountText" Text="Đổi mật khẩu" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                </StackPanel>
+                            </Button>
+                        </ListViewItem>
                         <!-- Exit Button -->
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0 85 0 0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" 
                                     BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" x:Name="btnExit" Click="btnExit_Click" Margin="10,5,0,5" HorizontalContentAlignment="Left">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="ExitToApp"/>
+                                    <materialDesign:PackIcon Kind="Logout"/>
                                     <TextBlock x:Name="ExitText" Text="Logout" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
