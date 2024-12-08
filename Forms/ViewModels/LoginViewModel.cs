@@ -52,6 +52,7 @@ namespace Forms.ViewModels
                         AdministrativeStaffLayoutView administrativeStaffLayoutView = new();
                         administrativeStaffLayoutView.User = response;
                         administrativeStaffLayoutView.Show();
+                        Username = "";
                         _loginWindow?.Close();
                     }
                     else if(response.Role == "Accountant")
@@ -59,6 +60,7 @@ namespace Forms.ViewModels
                         AccountantLayoutView f = new();
                         f.User = response;
                         f.Show();
+                        Username = "";
                         _loginWindow?.Close();
                     }
                     else if(response.Role == "ServiceSupervisor")
@@ -66,6 +68,7 @@ namespace Forms.ViewModels
                         ServiceSupervisorLayoutView f = new();
                         f.User = response;
                         f.Show();
+                        Username = "";
                         _loginWindow?.Close();
                     }
                 }

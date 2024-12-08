@@ -46,7 +46,9 @@ namespace Forms.Views.ServiceSupervisor
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            LoginView f = new();
+            f.Show();
+            this.Close();
         }
 
         private void Sidebar_MouseEnter(object sender, MouseEventArgs e)
