@@ -18,4 +18,6 @@ public partial class Violation
     public virtual Apartment Apartment { get; set; } = null!;
 
     public virtual Regulation Regulation { get; set; } = null!;
+
+    public virtual ICollection<ViolationPenalty> ViolationPenalties { get; set; } = new List<ViolationPenalty>();
 }

@@ -78,7 +78,8 @@ namespace Repositories.Repositories
                 var vehicle = await _context.Vehicles
                     .FirstOrDefaultAsync(v => v.VehicleId == vehicleNumber);
 
-                if (vehicle == null) return false;
+                if (vehicle == null) 
+                    return false;
 
                 _context.Vehicles.Remove(vehicle);
                 var result = await _context.SaveChangesAsync();
@@ -89,7 +90,7 @@ namespace Repositories.Repositories
             catch
             {
                 await transaction.RollbackAsync();
-                return false;
+                throw;
             }
         }
 
@@ -131,6 +132,63 @@ namespace Repositories.Repositories
                 .Include(a => a.Floor)
                 .Include(a => a.Representative)
                 .FirstOrDefaultAsync(a => a.ApartmentId == id);
+        }
+
+        public async Task<int> GetApartmentCountAsync()
+        {
+            return await _context.Apartments.CountAsync();
+        }
+
+        public async Task<List<ParkingConfig>> GetParkingConfigAsync()
+        {
+            return await _context.ParkingConfigs
+                .Include(p => p.Category)
+                .ToListAsync();
+        }
+
+        public async Task<List<Vehicle>> GetVehiclesByApartmentAsync(int apartmentId)
+        {
+            return await _context.Vehicles
+                .Include(v => v.VehicleCategory)
+                .Where(v => v.ApartmentId == apartmentId)
+                .ToListAsync();
+        }
+
+
+        public async Task<(int, List<ParkingConfig>, Dictionary<int, int>, List<Vehicle>)> 
+            GetParkingDataAsync(int apartmentId, CancellationToken cancellationToken)
+        {
+            // Get total apartment count
+            var totalApartments = await _context.Apartments.CountAsync(cancellationToken);
+
+            // Get parking configuration
+            var configs = await _context.ParkingConfigs
+                .Include(p => p.Category)
+                .ToListAsync(cancellationToken);
+
+            // Get vehicle counts by category
+            var usedSpaces = await _context.Vehicles
+                .GroupBy(v => v.VehicleCategoryId)
+                .ToDictionaryAsync(
+                    g => g.Key,
+                    g => g.Count(),
+                    cancellationToken
+                );
+
+            // Get apartment vehicles
+            var apartmentVehicles = await _context.Vehicles
+                .Where(v => v.ApartmentId == apartmentId)
+                .ToListAsync(cancellationToken);
+
+            return (totalApartments, configs, usedSpaces, apartmentVehicles);
+        }
+
+        public async Task<Vehicle?> FindAsync(Func<Vehicle, bool> predicate)
+        {
+            return await Task.Run(() => _context.Vehicles
+                .Include(v => v.VehicleCategory)
+                .Include(v => v.Apartment)
+                .FirstOrDefault(predicate));
         }
     }
 }
