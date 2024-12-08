@@ -242,6 +242,10 @@ create table CommunityRoomBooking (
     StartTime time,
     EndTime time,
     NumberOfPeople int DEFAULT 1 Not NULL,
+    Reason nvarchar(255),
+    Priority int, -- 1: Cao, 2: Trung bình, 3: Thấp
+    CanUseWithOtherPeople bit DEFAULT 0 NOT NULL, -- 0: Không, 1: Có
+    Status nvarchar(20) DEFAULT N'Đã đăng ký', -- Đã đăng ký, Chờ duyệt, Đã hủy
     ApartmentId int not null,
     CommunityRoomId int not null,
     constraint FK_CommunityRoomBooking_Apartment foreign key (ApartmentId) references Apartment(ApartmentId),
@@ -305,6 +309,16 @@ CREATE TABLE ParkingConfig (
     MaxPerApartment INT NOT NULL,
     TotalSpacePercent INT NOT NULL,
     FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
+);
+
+CREATE TABLE HouseholdMovement (
+    MovementId INT PRIMARY KEY IDENTITY(1,1),
+    ApartmentId INT NOT NULL,
+    ResidentId char(12) NOT NULL,
+    MovementDate DATE NOT NULL,
+    MovementType NVARCHAR(50) NOT NULL DEFAULT N'Chuyển vào',
+    CONSTRAINT FK_HouseholdMovement_Apartment FOREIGN KEY (ApartmentId) REFERENCES Apartment(ApartmentId),
+    CONSTRAINT FK_HouseholdMovement_Resident FOREIGN KEY (ResidentId) REFERENCES Resident(ResidentId)
 );
 GO
 
@@ -507,8 +521,8 @@ VALUES
 (6, N'Hệ thống thoát nước', N'Ống thoát nước', 4, N'Hỏng'),
 (7, N'Thang máy', N'Thang máy block E', 1, N'Hoạt động');
 
--- GO
--- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROFLLBACK IMMEDIATE
+GO
+-- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE
 -- GO
 -- USE [master]
 -- GO
