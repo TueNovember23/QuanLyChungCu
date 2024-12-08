@@ -455,7 +455,6 @@ BEGIN
 END;
 GO
 
-
 INSERT INTO Resident (ResidentId, FullName, Gender, DateOfBirth, RelationShipWithOwner, MoveInDate, MoveOutDate, ApartmentId)
 VALUES
 ('123445678513', N'Nguyễn Thị E', N'Nữ', '1995-01-01', N'Con', '2015-03-01', NULL, 3),
@@ -476,7 +475,6 @@ VALUES
 ('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', 'nguyenvana@mail.com', '0123456789'),
 ('105456789012', N'Nguyễn Thị X', N'Nữ', '1991-01-01', 'nguyenthix@mail.com', '0987123456'),
 ('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', 'nguyenthid@mail.com', '0987123455')
-
 UPDATE Apartment
 SET RepresentativeId = '123456789012' WHERE ApartmentId = 1
 UPDATE Apartment

@@ -25,13 +25,19 @@ namespace Forms.Views.AdministrativeStaff
 
         public async Task InitializeAsync(string apartmentCode)
         {
-            _apartment = await _apartmentService.GetApartmentByCode(apartmentCode)
-                         ?? throw new BusinessException($"Căn hộ {apartmentCode} không tồn tại");
+            try
+            {
+                _apartment = await _apartmentService.GetApartmentByCode(apartmentCode)
+                             ?? throw new BusinessException($"Căn hộ {apartmentCode} không tồn tại");
 
-            ApartmentCodeTxt.Text = $"Căn hộ {apartmentCode}";
-            ApartmentCodeInput.Text = apartmentCode;
-            _residents = await _apartmentService.GetResidentsOfApartment(apartmentCode);
-            ResidentsDataGrid.ItemsSource = _residents;
+                ApartmentCodeTxt.Text = $"Căn hộ {apartmentCode}";
+                ApartmentCodeInput.Text = apartmentCode;
+                _residents = await _apartmentService.GetResidentsOfApartment(apartmentCode);
+                ResidentsDataGrid.ItemsSource = _residents;
+            } catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private void EditResident_Click(object sender, RoutedEventArgs e)

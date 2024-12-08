@@ -1,8 +1,12 @@
-﻿using Forms.Views.AdministrativeStaff;
+﻿using Core;
+using Forms.Views.AdministrativeStaff;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic.ApplicationServices;
 using Repositories.Repositories.Entities;
 using Services.DTOs.AccountDTO;
 using Services.DTOs.LoginDTO;
+using Services.Interfaces.AdministrativeStaffServices;
+using Services.Services.AdministrativeStaffServices;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -99,6 +103,7 @@ namespace Forms.Views.AdministrativeStaff
             CalendarText.Visibility = Visibility.Visible;
             ManageAccountText.Visibility = Visibility.Visible;
             MaintenanceText.Visibility = Visibility.Visible;
+            YourAccountText.Visibility = Visibility.Visible;
             ExitText.Visibility = Visibility.Visible;
         }
 
@@ -110,6 +115,7 @@ namespace Forms.Views.AdministrativeStaff
             CalendarText.Visibility = Visibility.Collapsed;
             ManageAccountText.Visibility = Visibility.Collapsed;
             MaintenanceText.Visibility = Visibility.Collapsed;
+            YourAccountText.Visibility = Visibility.Collapsed;
             ExitText.Visibility = Visibility.Collapsed;
         }
 
@@ -123,6 +129,13 @@ namespace Forms.Views.AdministrativeStaff
             MaintenanceView mv = new();
             mv.User = User;
             LoadUserControl(mv);
+        }
+
+        private void ChangePassword_Click(object sender, RoutedEventArgs e)
+        {
+            IAccountService accountService = App.ServiceProvider?.GetService<IAccountService>()!;
+            UpdateAccountView mv = new(accountService, User!.Username);
+            mv.ShowDialog();
         }
     }
 }

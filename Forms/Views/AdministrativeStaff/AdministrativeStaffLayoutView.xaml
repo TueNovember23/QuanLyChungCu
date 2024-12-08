@@ -72,7 +72,7 @@
                                     Width="190" BorderBrush="{x:Null}" Background="{x:Null}"
                                     Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="DepartmentViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="People"/>
+                                    <materialDesign:PackIcon Kind="PeopleGroup"/>
                                     <TextBlock x:Name="CalendarText" Text="Quản lý bộ phận" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
@@ -83,7 +83,7 @@
                                     Width="190" Click="AccountView_Click"
                                     BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="Account" />
+                                    <materialDesign:PackIcon Kind="AccountAdd" />
                                     <TextBlock x:Name="ManageAccountText" Text="Quản lý tài khoản" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>       
@@ -101,8 +101,20 @@
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
+
+                        <!-- Button 5 -->
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
+                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
+                                    Width="190" Click="ChangePassword_Click"
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="AccountCache" />
+                                    <TextBlock x:Name="YourAccountText" Text="Đổi mật khẩu" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                </StackPanel>
+                            </Button>
+                        </ListViewItem>
                         <!-- Exit Button -->
-                        <ListViewItem HorizontalAlignment="Stretch" Margin="0 80 0 0">
+                        <ListViewItem HorizontalAlignment="Stretch" Margin="0 60 0 0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" 
                                     BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" x:Name="btnExit" Click="btnExit_Click" Margin="10,5,0,5" HorizontalContentAlignment="Left">

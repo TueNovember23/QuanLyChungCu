@@ -72,10 +72,6 @@ namespace Forms.ViewModels
                         _loginWindow?.Close();
                     }
                 }
-                else
-                {
-                    throw new Core.BusinessException("Tên đăng nhập hoặc mật khẩu không chính xác");
-                }
             }
             finally
             {
