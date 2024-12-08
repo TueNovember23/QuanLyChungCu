@@ -20,5 +20,19 @@ namespace Repositories.Interfaces
         Task<List<Apartment>> GetAllApartAsync();
         Task<List<Apartment>> SearchApartByCodeAsync(string searchText);
         Task<Apartment> GetApartByIdAsync(int id);
+
+        // ---------------  
+        Task<int> GetApartmentCountAsync();
+        Task<List<ParkingConfig>> GetParkingConfigAsync();
+        Task<List<Vehicle>> GetVehiclesByApartmentAsync(int apartmentId);
+
+        Task<(
+            int totalSpaces,
+            List<ParkingConfig> spaces,
+            Dictionary<int, int> usedSpaces,
+            List<Vehicle> apartmentVehicles
+        )> GetParkingDataAsync(int apartmentId, CancellationToken cancellationToken = default);
+
+        Task<Vehicle?> FindAsync(Func<Vehicle, bool> predicate);
     }
 }

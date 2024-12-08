@@ -15,5 +15,11 @@ namespace Repositories.Interfaces
         Task AddViolatAsync(Violation violation);
         void UpdateViolat(Violation violation);
         Task DeleteViolatAsync(int id);
+
+        Task<IEnumerable<ViolationPenalty>> GetPenaltiesByViolationIdAsync(int violationId);
+        Task<ViolationPenalty?> GetPenaltyByIdAsync(int penaltyId);
+        Task AddPenaltyAsync(ViolationPenalty penalty);
+        Task UpdatePenaltyAsync(ViolationPenalty penalty); 
+        Task<IEnumerable<Violation>> GetViolationsByRegulationId(int regulationId);
     }
 }

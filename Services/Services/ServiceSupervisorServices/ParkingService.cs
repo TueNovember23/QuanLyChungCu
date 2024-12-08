@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Core;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
 using Repositories.Repositories.Entities;
@@ -37,13 +38,28 @@ namespace Services.Services.ServiceSupervisorServices
 
         public async Task<bool> DeleteVehicleAsync(string vehicleNumber)
         {
-            var success = await _vehicleRepository.DeleteAsync(vehicleNumber);
-            if (success)
+            try
             {
-                await _vehicleRepository.SaveChangesAsync();
-                return true;
+                var vehicle = await _vehicleRepository.GetByNumberAsync(vehicleNumber);
+                if (vehicle == null)
+                    return false;
+
+                if (vehicle.Status != "Huỷ gửi")
+                {
+                    throw new BusinessException("Chỉ có thể xoá xe đã huỷ gửi!");
+                }
+
+                var success = await _vehicleRepository.DeleteAsync(vehicleNumber);
+                return success;
             }
-            return false;
+            catch (BusinessException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Lỗi khi xoá xe: {ex.Message}");
+            }
         }
 
         public async Task<VehicleStatisticsDTO> GetVehicleStatisticsAsync()
@@ -67,7 +83,7 @@ namespace Services.Services.ServiceSupervisorServices
                 VehicleType = vehicle.VehicleCategory?.CategoryName ?? "Chưa xác định",
                 VehicleOwner = vehicle.VehicleOwner ?? "Chưa có chủ xe",
                 ApartmentCode = vehicle.Apartment?.ApartmentCode ?? "Chưa có mã căn hộ",
-                Status = vehicle.Status ?? "Đang gửi", // Default to "Đang gửi"
+                Status = vehicle.Status ?? "Đang gửi", 
                 MonthlyFee = (float)(vehicle.VehicleCategory?.MonthlyFee ?? 0),
                 ApartmentId = vehicle.ApartmentId
             };
@@ -82,7 +98,7 @@ namespace Services.Services.ServiceSupervisorServices
 
                 vehicle.VehicleOwner = updatedVehicle.VehicleOwner;
                 vehicle.VehicleCategoryId = GetCategoryId(updatedVehicle.VehicleType);
-                vehicle.Status = updatedVehicle.Status; // Update status
+                vehicle.Status = updatedVehicle.Status; 
 
                 var result = await _vehicleRepository.SaveChangesAsync();
                 return result > 0;
@@ -104,6 +120,73 @@ namespace Services.Services.ServiceSupervisorServices
                 "Ô tô điện" => 5,
                 _ => throw new ArgumentException("Loại xe không hợp lệ!")
             };
+        }
+
+        // Add new implementations
+        public async Task<List<ParkingSpaceDTO>> GetParkingSpacesAsync()
+        {
+            var totalApartments = await _vehicleRepository.GetApartmentCountAsync();
+            var config = await _vehicleRepository.GetParkingConfigAsync();
+            var vehicles = await _vehicleRepository.GetAllAsync();
+
+            return config.Select(c => new ParkingSpaceDTO
+            {
+                VehicleType = c.Category.CategoryName,
+                MaxPerApartment = c.MaxPerApartment,
+                TotalSpaces = (int)(totalApartments * c.TotalSpacePercent / 100.0),
+                UsedSpaces = vehicles.Count(v => v.VehicleCategoryId == c.CategoryId)
+            }).ToList();
+        }
+
+        public async Task<VehicleLimitDTO> GetVehicleLimitsByApartmentAsync(int apartmentId)
+        {
+            var vehicles = await _vehicleRepository.GetVehiclesByApartmentAsync(apartmentId);
+            
+            return new VehicleLimitDTO
+            {
+                CurrentBicycles = vehicles.Count(v => v.VehicleCategory?.CategoryName == "Xe đạp"),
+                CurrentMotorcycles = vehicles.Count(v => 
+                    v.VehicleCategory?.CategoryName == "Xe máy" || 
+                    v.VehicleCategory?.CategoryName == "Xe máy điện"),
+                CurrentCars = vehicles.Count(v => 
+                    v.VehicleCategory?.CategoryName == "Ô tô" ||
+                    v.VehicleCategory?.CategoryName == "Ô tô điện")
+            };
+        }
+
+        public async Task<bool> ValidateVehicleRegistrationAsync(string vehicleType, int apartmentId)
+        {
+            var limits = await GetVehicleLimitsByApartmentAsync(apartmentId);
+            var spaces = await GetParkingSpacesAsync();
+
+            var spaceInfo = spaces.FirstOrDefault(s => s.VehicleType == vehicleType);
+            if (spaceInfo == null || spaceInfo.AvailableSpaces <= 0)
+                return false;
+
+            return vehicleType switch
+            {
+                "Xe đạp" => limits.CurrentBicycles < limits.MaxBicycles,
+                "Xe máy" or "Xe máy điện" => limits.CurrentMotorcycles < limits.MaxMotorcycles,
+                "Ô tô" or "Ô tô điện" => limits.CurrentCars < limits.MaxCars,
+                _ => false
+            };
+        }
+
+        public async Task<(List<ParkingSpaceDTO> spaces, VehicleLimitDTO limits)> GetParkingDataAsync(
+            int apartmentId,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var spaces = await GetParkingSpacesAsync();
+                var limits = await GetVehicleLimitsByApartmentAsync(apartmentId);
+
+                return (spaces, limits);
+            }
+            catch (Exception ex) 
+            {
+                throw new BusinessException("Vui lòng chọn 1 căn hộ để đăng ký xe!");
+            }
         }
     }
 }

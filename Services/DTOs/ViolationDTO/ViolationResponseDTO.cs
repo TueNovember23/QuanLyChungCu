@@ -13,6 +13,7 @@ namespace Services.DTOs.ViolationDTO
         public string RegulationTitle { get; set; } = null!;
         public DateTime CreatedDate { get; set; }
         public string? Detail { get; set; }
+        public string? LatestProcessingStatus { get; set; }
     }
 
 }

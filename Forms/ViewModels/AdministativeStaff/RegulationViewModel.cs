@@ -5,6 +5,7 @@ using Repositories.Repositories.Entities;
 using Services.DTOs.ApartmentDTO;
 using Services.DTOs.RegulationDTO;
 using Services.DTOs.ViolationDTO;
+using Services.Interfaces.AccountantServices;
 using Services.Interfaces.AdministrativeStaffServices;
 using Services.Services.SharedServices;
 using System;
@@ -20,6 +21,7 @@ namespace Forms.ViewModels.AdministativeStaff
     public partial class RegulationViewModel : ObservableObject
     {
         private readonly IRegulationService _regulationService;
+        private readonly IViolationService _violationService; 
 
         [ObservableProperty]
         private ObservableCollection<RegulationResponseDTO> _regulations = new();
@@ -42,9 +44,12 @@ namespace Forms.ViewModels.AdministativeStaff
         [ObservableProperty]
         private ObservableCollection<string> _priorityLevels = new();
 
-        public RegulationViewModel(IRegulationService regulationService)
+        public RegulationViewModel(
+            IRegulationService regulationService,
+            IViolationService violationService) 
         {
             _regulationService = regulationService;
+            _violationService = violationService; 
             InitializeAsync();
         }
 
@@ -70,7 +75,7 @@ namespace Forms.ViewModels.AdministativeStaff
         [RelayCommand]
         private async Task LoadRegulationsAsync()
         {
-            if (IsLoading) return; // Prevent multiple concurrent loads
+            if (IsLoading) return;
             
             try
             {
@@ -163,6 +168,17 @@ namespace Forms.ViewModels.AdministativeStaff
                 }
                 else // Update
                 {
+                    if (SelectedRegulation.IsActive == false)
+                    {
+                        var hasViolations = await _violationService.HasActiveViolationsForRegulation(SelectedRegulation.RegulationId);
+                        if (hasViolations)
+                        {
+                            MessageBox.Show("Không thể hủy áp dụng nội quy này vì đang có vi phạm đang xử lý!",
+                                "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            SelectedRegulation.IsActive = true;
+                            return;
+                        }
+                    }
                     var result = await _regulationService.UpdateAsync(SelectedRegulation);
                     var index = Regulations.IndexOf(Regulations.First(x => x.RegulationId == result.RegulationId));
                     Regulations[index] = result;
@@ -186,7 +202,6 @@ namespace Forms.ViewModels.AdministativeStaff
         partial void OnSelectedCategoryChanged(string? value)
         {
             if (value == null) return;
-            // Gọi async method một cách an toàn
             _ = Task.Run(async () => 
             {
                 await Application.Current.Dispatcher.InvokeAsync(async () =>

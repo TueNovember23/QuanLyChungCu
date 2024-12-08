@@ -24,6 +24,8 @@ namespace Repositories.Repositories
             return await _context.Violations
                 .Include(v => v.Apartment)
                 .Include(v => v.Regulation)
+                .Include(v => v.ViolationPenalties)
+                .OrderByDescending(v => v.CreatedDate)
                 .ToListAsync();
         }
 
@@ -32,18 +34,34 @@ namespace Repositories.Repositories
             return await _context.Violations
                 .Include(v => v.Apartment)
                 .Include(v => v.Regulation)
+                .Include(v => v.ViolationPenalties)
                 .FirstOrDefaultAsync(v => v.ViolationId == id);
         }
 
         public async Task<IEnumerable<Violation>> SearchViolatAsync(string searchText)
         {
-            return await _context.Violations
+            using var context = new ApplicationDbContext();
+            
+            if (string.IsNullOrWhiteSpace(searchText))
+                return await GetViolatAllAsync();
+
+            var normalizedSearch = searchText.Trim().ToLower();
+            
+            return await context.Violations
                 .Include(v => v.Apartment)
                 .Include(v => v.Regulation)
+                .Include(v => v.ViolationPenalties)
                 .Where(v =>
-                    v.Apartment.ApartmentCode.Contains(searchText) ||
-                    v.Regulation.Title.Contains(searchText) ||
-                    v.Detail.Contains(searchText))
+                    v.Apartment.ApartmentCode.ToLower().Contains(normalizedSearch) ||
+                    v.Regulation.Title.ToLower().Contains(normalizedSearch) ||
+                    (v.Detail != null && v.Detail.ToLower().Contains(normalizedSearch)) ||
+                    v.ViolationPenalties.Any(p => 
+                        (p.PenaltyMethod != null && p.PenaltyMethod.ToLower().Contains(normalizedSearch)) ||
+                        (p.ProcessingStatus != null && p.ProcessingStatus.ToLower().Contains(normalizedSearch))
+                    )
+                )
+                .OrderByDescending(v => v.CreatedDate)
+                .AsNoTracking() 
                 .ToListAsync();
         }
 
@@ -64,6 +82,38 @@ namespace Repositories.Repositories
             {
                 _context.Violations.Remove(violation);
             }
+        }
+
+        public async Task<IEnumerable<ViolationPenalty>> GetPenaltiesByViolationIdAsync(int violationId)
+        {
+            return await _context.ViolationPenalties
+                .Where(p => p.ViolationId == violationId)
+                .OrderByDescending(p => p.ProcessedDate)
+                .ToListAsync();
+        }
+
+        public async Task AddPenaltyAsync(ViolationPenalty penalty)
+        {
+            await _context.ViolationPenalties.AddAsync(penalty);
+        }
+
+        public async Task UpdatePenaltyAsync(ViolationPenalty penalty)
+        {
+            _context.ViolationPenalties.Update(penalty);
+        }
+
+        public async Task<ViolationPenalty?> GetPenaltyByIdAsync(int penaltyId)
+        {
+            return await _context.ViolationPenalties
+                .FirstOrDefaultAsync(p => p.PenaltyId == penaltyId);
+        }
+
+        public async Task<IEnumerable<Violation>> GetViolationsByRegulationId(int regulationId)
+        {
+            return await _context.Violations
+                .Include(v => v.ViolationPenalties)
+                .Where(v => v.RegulationId == regulationId)
+                .ToListAsync();
         }
     }
 }
