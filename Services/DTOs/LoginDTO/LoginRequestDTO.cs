@@ -11,12 +11,12 @@ namespace Services.DTOs.LoginDTO
         {
             if (string.IsNullOrWhiteSpace(Username))
             {
-                throw new BusinessException("Username is required");
+                throw new BusinessException("Tên đăng nhập không được để trống");
             }
 
             if (string.IsNullOrWhiteSpace(Password))
             {
-                throw new ArgumentException("Password is required");
+                throw new ArgumentException("Mật khẩu không được để trống");
             }
         }
     }

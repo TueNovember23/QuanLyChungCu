@@ -14,11 +14,5 @@ namespace Forms.Views.ServiceSupervisor
             InitializeComponent();
             DataContext = App.ServiceProvider?.GetService<ParkingViewModel>();
         }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            RenderHeader.Children.Clear();
-            RenderHeader.Children.Add(new Header());
-        }
     }
 }

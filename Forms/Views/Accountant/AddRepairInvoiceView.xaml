@@ -1,0 +1,106 @@
+﻿<Window x:Class="Forms.Views.Accountant.AddRepairInvoiceView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Lập hóa đơn sửa chữa" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen" WindowStyle="None"
+        AllowsTransparency="True" Background="Transparent">
+    <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
+       
+        <Grid Margin="10">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+    
+
+            <!-- Danh sách thiết bị gặp sự cố -->
+            <StackPanel Grid.Column="0" Grid.Row="1" Margin="10">
+                <TextBlock Text="Danh sách thiết bị gặp sự cố" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" />
+
+                <!--<StackPanel Orientation="Horizontal" Margin="10">
+                    --><!--<TextBox x:Name="SearchMalfunctionEquipmentInput" 
+             materialDesign:HintAssist.Hint="Tìm kiếm thiết bị"
+             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+             Style="{StaticResource MaterialDesignOutlinedTextBox}" Width="301" />
+                    <Button Content="Tìm kiếm" 
+            Command="{Binding OnSearchButtonClick}" 
+            Margin="5,0,0,0" />--><!--
+                </StackPanel>-->
+                <!-- DataGrid hiển thị danh sách thiết bị -->
+                <DataGrid x:Name="MalfunctionEquipmentDataGrid" 
+          ItemsSource="{Binding AvailableEquipments}"
+          AutoGenerateColumns="False" 
+          IsReadOnly="True" 
+          VerticalScrollBarVisibility="Auto"
+          HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Tên thiết bị" Binding="{Binding EquipmentName}" Width="*" />
+                        <DataGridTextColumn Header="Lý do hư" Binding="{Binding Description}" Width="*" />
+                        <DataGridTemplateColumn Header="Hành động" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Thêm" 
+                            Command="{Binding DataContext.AddEquipmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                            CommandParameter="{Binding .}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+
+            </StackPanel>
+
+            <!-- Khung điền thông tin hóa đơn sửa chữa -->
+            <StackPanel Grid.Column="1" Grid.Row="1" Margin="10">
+                <TextBlock Text="Thông tin hóa đơn sửa chữa" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" />
+
+                <TextBox x:Name="InvoiceCodeInput" 
+                 Text="{Binding RepairInvoiceCode}" 
+                 IsReadOnly="True" 
+                 materialDesign:HintAssist.Hint="Mã hóa đơn" 
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                 Margin="0,0,0,10" />
+
+                <!-- Nội dung hóa đơn -->
+                <TextBox x:Name="InvoiceContentInput" 
+                 materialDesign:HintAssist.Hint="Nội dung hóa đơn" 
+                 Text="{Binding InvoiceContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                 Margin="0,0,0,10" />
+                <!-- Nút lưu -->
+                <Button Content="Lưu hóa đơn" Width="200" HorizontalAlignment="Right" 
+                        Style="{StaticResource MaterialDesignRaisedButton}" Click="SaveInvoice_Click" />
+
+                <!-- Danh sách thiết bị được thêm -->
+                <TextBlock Text="Thiết bị đã chọn" FontSize="16" FontWeight="Bold" Margin="0,20,0,10" />
+                <DataGrid x:Name="SelectedMalfunctionEquipmentDataGrid" 
+              ItemsSource="{Binding SelectedEquipments}"
+              AutoGenerateColumns="False" IsReadOnly="True"
+                  HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Tên thiết bị" Binding="{Binding EquipmentName}" Width="*" />
+                        <DataGridTextColumn Header="Chi phí sửa chữa" Binding="{Binding RepairPrice}" Width="*" />
+                        <DataGridTemplateColumn Header="Hành động" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Xóa" 
+                                    Command="{Binding DataContext.RemoveEquipmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                    CommandParameter="{Binding}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

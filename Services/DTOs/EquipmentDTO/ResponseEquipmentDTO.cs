@@ -16,5 +16,8 @@ namespace Services.DTOs.EquipmentDTO
         public DateTime? LastMaintenanceDate { get; set; }
         public string? Notes { get; set; }
         public DateTime? LastCheckDate { get; set; }
+        public double RepairPrice { get; set; }
+        public string Description { get; set; }
+        public string SolvingMethod { get; set; }
     }
 }

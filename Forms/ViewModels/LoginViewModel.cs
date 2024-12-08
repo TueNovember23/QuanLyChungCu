@@ -48,6 +48,7 @@ namespace Forms.ViewModels
                     if (response.Role == "Administrator")
                     {
                         AdministrativeStaffLayoutView administrativeStaffLayoutView = new();
+                        administrativeStaffLayoutView.User = response;
                         administrativeStaffLayoutView.Show();
                         _loginWindow?.Close();
                     }
@@ -58,7 +59,7 @@ namespace Forms.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("Login failed");
+                    throw new Core.BusinessException("Tên đăng nhập hoặc mật khẩu không chính xác");
                 }
             }
             finally

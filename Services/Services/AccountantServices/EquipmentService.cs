@@ -4,11 +4,7 @@ using Repositories.Interfaces;
 using Repositories.Repositories.Entities;
 using Services.DTOs.EquipmentDTO;
 using Services.Interfaces.AccountantServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Services.Services.AccountantServices
 {
@@ -152,5 +148,7 @@ namespace Services.Services.AccountantServices
             repository.Update(equipment);
             await _unitOfWork.SaveAsync();
         }
+
+      
     }
 }

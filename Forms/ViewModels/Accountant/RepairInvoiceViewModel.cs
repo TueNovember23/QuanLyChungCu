@@ -5,12 +5,16 @@ using Services.Interfaces.AccountantServices;
 using System.Collections.ObjectModel;
 using Services.DTOs.RepairInvoiceDTO;
 using System.Windows;
+using Services.DTOs.EquipmentDTO;
+using Services.Services.AccountantServices;
+using Forms.Views.Accountant;
 
 namespace Forms.ViewModels.Accountant
 {
     public partial class RepairInvoiceViewModel : ObservableObject
     {
         private readonly IRepairInvoiceService _repairInvoiceService;
+        private readonly IEquipmentService _equipmentService;
 
         [ObservableProperty]
         private ObservableCollection<ResponseRepairInvoiceDTO> repairInvoices = [];
@@ -36,18 +40,29 @@ namespace Forms.ViewModels.Accountant
         [ObservableProperty]
         private double totalRepairCost;
 
+        [ObservableProperty]
+        private ObservableCollection<Equipment> malfunctionEquipments = new();
+
+        [ObservableProperty]
+        private ObservableCollection<MalfunctionEquipmentDTO> selectedMalfunctions = new();
+
 
         public RepairInvoiceViewModel(IRepairInvoiceService repairInvoiceService)
         {
             _repairInvoiceService = repairInvoiceService;
             _ = LoadRepairInvoicesAsync();
+
         }
+
+   
 
         private async Task LoadRepairInvoicesAsync()
         {
             var invoiceList = await _repairInvoiceService.GetAllRepairInvoicesAsync();
             FilteredRepairInvoices = RepairInvoices = new ObservableCollection<ResponseRepairInvoiceDTO>(invoiceList);
         }
+
+     
 
         [RelayCommand]
         private void Refresh()
@@ -70,21 +85,7 @@ namespace Forms.ViewModels.Accountant
             }
         }
 
-        [RelayCommand]
-        private void AddBrokenEquipmentToInvoice(Equipment equipment)
-        {
-            var malfuntionEquipment = new MalfuntionEquipmentDTO
-            {
-                EquipmentId = equipment.EquipmentId,
-                EquipmentName = equipment.EquipmentName,
-                Description = "Mô tả hư hỏng",
-                SolvingMethod = "Phương pháp sửa chữa",
-                RepairPrice = 0
-            };
 
-            SelectedEquipments.Add(malfuntionEquipment);
-            CalculateTotalRepairCost();
-        }
 
         private void CalculateTotalRepairCost()
         {
@@ -94,35 +95,15 @@ namespace Forms.ViewModels.Accountant
 
 
         [RelayCommand]
-        private async Task CreateInvoiceAsync()
+        private void AddEquipmentToInvoice(Equipment equipment)
         {
-            // Tạo hóa đơn mới
-            var invoice = new RepairInvoice
-            {
-                InvoiceContent = "Nội dung hóa đơn",
-                TotalAmount = TotalRepairCost,
-                Status = "Chưa thanh toán",
-                //CreatedBy = CurrentUserId ?? throw new InvalidOperationException("User ID is not set.")
-            };
-
-            // Chuẩn bị danh sách thiết bị hỏng
-            var malfunctionEquipments = SelectedEquipments.Select(equipment => new MalfuntionEquipment
+            var dto = new MalfunctionEquipmentDTO
             {
                 EquipmentId = equipment.EquipmentId,
-                Description = equipment.Description,
-                SolvingMethod = equipment.SolvingMethod,
-                RepairPrice = equipment.RepairPrice
-            }).ToList();
-
-            // Gửi tới Service để xử lý
-            await _repairInvoiceService.AddRepairInvoiceWithDetailsAsync(invoice, malfunctionEquipments);
-
-            // Làm mới giao diện
-            SelectedEquipments.Clear();
-            CalculateTotalRepairCost();
-            await LoadRepairInvoicesAsync();
+                EquipmentName = equipment.EquipmentName
+            };
+            SelectedMalfunctions.Add(dto);
         }
-
 
 
 
@@ -132,7 +113,6 @@ namespace Forms.ViewModels.Accountant
             var invoice = await _repairInvoiceService.GetRepairInvoiceByIdAsync(invoiceId);
             if (invoice != null)
             {
-                // Hiển thị chi tiết hóa đơn
                 MessageBox.Show(
                     $"Mã hóa đơn: {invoice.InvoiceId}\n" +
                     $"Nội dung: {invoice.InvoiceContent}\n" +
@@ -148,6 +128,15 @@ namespace Forms.ViewModels.Accountant
             {
                 MessageBox.Show("Không tìm thấy hóa đơn!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        [RelayCommand]
+        private async Task OpenAddRepairInvoiceView()
+        {
+            int nextInvoiceCode = await _repairInvoiceService.GenerateNewRepairInvoiceCodeAsync();
+
+            var addRepairInvoiceView = new AddRepairInvoiceView(_repairInvoiceService);
+            addRepairInvoiceView.ShowDialog();
         }
 
 

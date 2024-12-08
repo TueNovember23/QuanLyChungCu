@@ -1,6 +1,5 @@
 ﻿using Core;
-using Forms.Views.ServiceSupervisor;
-using MaterialDesignThemes.Wpf;
+using Forms.Views.AdministrativeStaff;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Interfaces.ServiceSupervisorServices;
 using System.Configuration;
@@ -21,15 +20,14 @@ namespace Forms
         {
             ConfigureServices();
             InitializeComponent();
-            //RegisterCommunityRoomView f = new(App.ServiceProvider.GetService<ICommunityRoomService>());
-            //this.DispatcherUnhandledException += OnDispatcherUnhandledException;
         }
 
         private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             if (e.Exception is BusinessException businessException)
             {
-                MessageBox.Show(businessException.Message, "Lỗi nghiệp vụ", MessageBoxButton.OK, MessageBoxImage.Warning);
+                BusinessErrorView f = new(businessException.Message);
+                f.ShowDialog();
                 e.Handled = true;
             }
             else

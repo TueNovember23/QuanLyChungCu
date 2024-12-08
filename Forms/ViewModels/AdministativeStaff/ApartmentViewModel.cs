@@ -57,25 +57,19 @@ namespace Forms.ViewModels.AdministrativeStaff
 
 
         [RelayCommand]
-        private void ViewResidents(string apartmentCode)
+        private async Task ViewResidents(string apartmentCode)
         {
             var residentsView = new ResidentsOfApartmentView(_apartmentService, apartmentCode);
             residentsView.ShowDialog();
-        }
-
-
-        [RelayCommand]
-        private void EditApartment(int apartmentId)
-        {
-            System.Diagnostics.Debug.WriteLine($"EditApartment called for ApartmentId: {apartmentId}");
+            await LoadApartmentsAsync();
         }
 
         [RelayCommand]
-        private void ViewRepresentative(string apartmentCode)
+        private async Task ViewRepresentative(string apartmentCode)
         {
             var f = new UpdateRepresentativeView(_apartmentService, apartmentCode);
             f.ShowDialog();
+            await LoadApartmentsAsync();
         }
-
     }
 }

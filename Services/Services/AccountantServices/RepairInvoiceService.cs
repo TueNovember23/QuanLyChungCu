@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
 using Repositories.Repositories.Entities;
+using Services.DTOs.EquipmentDTO;
 using Services.DTOs.RepairInvoiceDTO;
 using Services.Interfaces.AccountantServices;
 using System;
@@ -34,6 +35,37 @@ namespace Services.Services.AccountantServices
 
             return invoices;
         }
+
+        public async Task<List<ResponseEquipmentDTO>> GetAvailableEquipmentsAsync()
+        {
+            var equipments = await _unitOfWork.GetRepository<Equipment>().Entities
+                .Where(e => e.Status == "Hỏng" && !e.IsDeleted)
+                .Select(e => new ResponseEquipmentDTO
+                {
+                    EquipmentId = e.EquipmentId,
+                    EquipmentName = e.EquipmentName,
+                    Description = e.MalfuntionEquipments.FirstOrDefault().Description,  // Giả sử mỗi thiết bị chỉ có 1 MalfuntionEquipment
+                    SolvingMethod = e.MalfuntionEquipments.FirstOrDefault().SolvingMethod  // Giả sử mỗi thiết bị chỉ có 1 MalfuntionEquipment
+                }).ToListAsync();
+
+            return equipments;
+        }
+
+
+
+        public async Task<int> GenerateNewRepairInvoiceCodeAsync()
+        {
+            try
+            {
+                var totalInvoices = await _unitOfWork.GetRepository<RepairInvoice>().Entities.CountAsync();
+                return totalInvoices + 1; 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error generating new invoice code: " + ex.Message);
+            }
+        }
+
 
         public async Task<List<ResponseRepairInvoiceDTO>> SearchRepairInvoicesAsync(string searchText)
         {
@@ -76,33 +108,62 @@ namespace Services.Services.AccountantServices
             };
         }
 
-        public async Task<List<Equipment>> GetBrokenEquipmentsAsync()
+
+        public async Task<MalfuntionEquipmentDTO?> GetMalfunctionEquipmentByIdAsync(int equipmentId)
         {
-            return await _unitOfWork.GetRepository<Equipment>().Entities
-                .Where(e => e.Status == "Hỏng")
-                .ToListAsync();
+            var malfunctionEquipment = await _unitOfWork.GetRepository<MalfuntionEquipment>().Entities
+                .Include(me => me.Equipment) 
+                .Where(me => me.EquipmentId == equipmentId)
+                .Select(me => new MalfuntionEquipmentDTO
+                {
+                    EquipmentId = me.EquipmentId,
+                    EquipmentName = me.Equipment != null ? me.Equipment.EquipmentName : null,
+                    RepairPrice = me.RepairPrice,
+                  
+                })
+                .FirstOrDefaultAsync();
+
+            return malfunctionEquipment;
         }
 
-        public async Task AddRepairInvoiceWithDetailsAsync(RepairInvoice invoice, List<MalfuntionEquipment> malfunctions)
+
+        public async Task AddRepairInvoiceAsync(CreateRepairInvoiceDTO invoiceDto)
         {
-            // Thêm hóa đơn
+            var invoice = new RepairInvoice
+            {
+                InvoiceId = invoiceDto.InvoiceId,
+                InvoiceContent = invoiceDto.InvoiceContent,
+                TotalAmount = invoiceDto.TotalAmount,
+                //CreatedBy = invoiceDto.CreatedBy,
+                MalfuntionEquipments = invoiceDto.MalfunctionEquipments.Select(me => new MalfuntionEquipment
+                {
+                    EquipmentId = me.EquipmentId,
+                    Description = me.Description,
+                    SolvingMethod = me.SolvingMethod,
+                    RepairPrice = me.RepairPrice
+                }).ToList()
+            };
+
             await _unitOfWork.GetRepository<RepairInvoice>().InsertAsync(invoice);
             await _unitOfWork.SaveAsync();
+        }
 
-            // Thêm chi tiết thiết bị hỏng
-            foreach (var malfunction in malfunctions)
+
+        public async Task AddRepairInvoiceWithDetailsAsync(RepairInvoice invoice, List<MalfunctionEquipmentDTO> malfunctionEquipments)
+        {
+            if (invoice == null || malfunctionEquipments == null || !malfunctionEquipments.Any())
             {
-                malfunction.RepairInvoiceId = invoice.InvoiceId;
-                await _unitOfWork.GetRepository<MalfuntionEquipment>().InsertAsync(malfunction);
+                throw new ArgumentException("Invoice and malfunction equipment list must not be null or empty.");
             }
 
-            await _unitOfWork.SaveAsync();
-        }
-
-
-        public async Task AddRepairInvoiceAsync(RepairInvoice invoice)
-        {
             await _unitOfWork.GetRepository<RepairInvoice>().InsertAsync(invoice);
+
+            foreach (var malfunction in malfunctionEquipments)
+            {
+                malfunction.RepairInvoiceId = invoice.InvoiceId;
+                await _unitOfWork.GetRepository<MalfunctionEquipmentDTO>().InsertAsync(malfunction);
+            }
+
             await _unitOfWork.SaveAsync();
         }
 
@@ -111,5 +172,8 @@ namespace Services.Services.AccountantServices
             await _unitOfWork.GetRepository<RepairInvoice>().DeleteAsync(id);
             await _unitOfWork.SaveAsync();
         }
+
+        
+
     }
 }

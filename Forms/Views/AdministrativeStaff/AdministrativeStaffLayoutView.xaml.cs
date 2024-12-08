@@ -1,4 +1,8 @@
 ﻿using Forms.Views.AdministrativeStaff;
+using Microsoft.VisualBasic.ApplicationServices;
+using Repositories.Repositories.Entities;
+using Services.DTOs.AccountDTO;
+using Services.DTOs.LoginDTO;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +19,7 @@ namespace Forms.Views.AdministrativeStaff
         private bool isMaximized = false;
         private const double SIDEBAR_COLLAPSED_WIDTH = 60;
         private const double SIDEBAR_EXPANDED_WIDTH = 200;
+        public LoginResponseDTO? User { get; set; }
 
         public AdministrativeStaffLayoutView()
         {
@@ -90,8 +95,8 @@ namespace Forms.Views.AdministrativeStaff
             RegulationText.Visibility = Visibility.Visible;
             GeneralInfoText.Visibility = Visibility.Visible;
             CalendarText.Visibility = Visibility.Visible;
-            EqualizerText.Visibility = Visibility.Visible;
-            ChatText.Visibility = Visibility.Visible;
+            ManageAccountText.Visibility = Visibility.Visible;
+            MaintenanceText.Visibility = Visibility.Visible;
             ExitText.Visibility = Visibility.Visible;
         }
 
@@ -101,11 +106,21 @@ namespace Forms.Views.AdministrativeStaff
             RegulationText.Visibility = Visibility.Collapsed;
             GeneralInfoText.Visibility = Visibility.Collapsed;
             CalendarText.Visibility = Visibility.Collapsed;
-            EqualizerText.Visibility = Visibility.Collapsed;
-            ChatText.Visibility = Visibility.Collapsed;
+            ManageAccountText.Visibility = Visibility.Collapsed;
+            MaintenanceText.Visibility = Visibility.Collapsed;
             ExitText.Visibility = Visibility.Collapsed;
         }
 
+        private void AccountView_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new AccountView());
+        }
 
+        private void MaintanceView_Click(object sender, RoutedEventArgs e)
+        {
+            MaintenanceView mv = new();
+            mv.User = User;
+            LoadUserControl(mv);
+        }
     }
 }

@@ -8,6 +8,7 @@
         mc:Ignorable="d"
         Height="850" Width="1200" WindowStartupLocation="CenterScreen"
         WindowStyle="None" ResizeMode="NoResize" Background="{x:Null}" AllowsTransparency="True" Loaded="Window_Loaded"
+        WindowState="Maximized"
         StateChanged="Window_StateChanged">
     <Window.Resources>
         <Storyboard x:Key="ExpandSidebar">
@@ -39,8 +40,7 @@
                                     Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="ApartmentViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="HomeVariant"/>
-                                    <TextBlock x:Name="ApartmentText" Text="Quản lý căn hộ" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
-
+                                    <TextBlock x:Name="ApartmentText" Text="Quản lý nhân khẩu" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
@@ -69,8 +69,8 @@
                         <!-- Button 3 -->
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                                    Width="190" 
-                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="DepartmentViewButton_Click">
+                                    Width="190" BorderBrush="{x:Null}" Background="{x:Null}"
+                                    Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="DepartmentViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="People"/>
                                     <TextBlock x:Name="CalendarText" Text="Quản lý bộ phận" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
@@ -80,22 +80,24 @@
                         <!-- Button 4 -->
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                                    Width="190" 
+                                    Width="190" Click="AccountView_Click"
                                     BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="EqualiserVertical"/>
-                                    <TextBlock x:Name="EqualizerText" Text="Equalizer" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <materialDesign:PackIcon Kind="Account" />
+                                    <TextBlock x:Name="ManageAccountText" Text="Quản lý tài khoản" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
-                            </Button>
+                            </Button>       
                         </ListViewItem>
                         <!-- Button 5 -->
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                                    Width="190" 
+                                    Width="190" Click="MaintanceView_Click"
                                     BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="ChatOutline"/>
-                                    <TextBlock x:Name="ChatText" Text="Chat" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <!-- Biểu tượng lịch bảo trì -->
+                                    <materialDesign:PackIcon Kind="CalendarAdd" />
+                                    <!-- Nội dung hiển thị -->
+                                    <TextBlock x:Name="MaintenanceText" Text="Lịch bảo trì" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>

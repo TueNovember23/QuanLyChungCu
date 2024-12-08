@@ -11,5 +11,7 @@ namespace Services.DTOs.VehicleDTO
         public int BicycleCount { get; set; }
         public int MotorcycleCount { get; set; }
         public int CarCount { get; set; }
+        public int ElectricMotorcycleCount { get; set; }
+        public int ElectricCarCount { get; set; }
     }
 }
