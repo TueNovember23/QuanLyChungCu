@@ -388,8 +388,6 @@ namespace Forms.ViewModels.ServiceSupervisor
             SearchText = string.Empty;
             VehicleNumber = string.Empty;
             VehicleOwner = string.Empty;
-            SelectedApartment = null;
-            SelectedApartmentCode = string.Empty;
             IsLicensePlateRequired = true;
         }
 
