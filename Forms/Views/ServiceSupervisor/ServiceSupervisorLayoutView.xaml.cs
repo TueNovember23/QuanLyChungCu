@@ -1,5 +1,8 @@
 using Forms.Views.Accountant;
+using Forms.Views.AdministrativeStaff;
+using Microsoft.Extensions.DependencyInjection;
 using Services.DTOs.LoginDTO;
+using Services.Interfaces.AdministrativeStaffServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -67,6 +70,7 @@ namespace Forms.Views.ServiceSupervisor
             CalendarText.Visibility = Visibility.Visible;
             EqualizerText.Visibility = Visibility.Visible;
             ChatText.Visibility = Visibility.Visible;
+            YourAccountText.Visibility = Visibility.Visible;
             ExitText.Visibility = Visibility.Visible;
         }
 
@@ -80,7 +84,15 @@ namespace Forms.Views.ServiceSupervisor
             CalendarText.Visibility = Visibility.Collapsed;
             EqualizerText.Visibility = Visibility.Collapsed;
             ChatText.Visibility = Visibility.Collapsed;
+            YourAccountText.Visibility = Visibility.Collapsed;
             ExitText.Visibility = Visibility.Collapsed;
+        }
+
+        private void ChangePassword_Click(object sender, RoutedEventArgs e)
+        {
+            IAccountService accountService = App.ServiceProvider?.GetService<IAccountService>()!;
+            UpdateAccountView mv = new(accountService, User!.Username);
+            mv.ShowDialog();
         }
     }
 }
