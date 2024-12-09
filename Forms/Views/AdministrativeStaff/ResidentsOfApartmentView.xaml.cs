@@ -117,5 +117,10 @@ namespace Forms.Views.AdministrativeStaff
         {
             this.Close();
         }
+
+        private void ViewHouseholdMovement_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }

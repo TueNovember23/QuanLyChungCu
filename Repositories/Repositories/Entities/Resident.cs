@@ -22,4 +22,6 @@ public partial class Resident
     public int ApartmentId { get; set; }
 
     public virtual Apartment Apartment { get; set; } = null!;
+
+    public virtual ICollection<HouseholdMovement> HouseholdMovements { get; set; } = new List<HouseholdMovement>();
 }
