@@ -17,6 +17,8 @@ public partial class Account
 
     public bool IsDeleted { get; set; }
 
+    public virtual ICollection<CommunityRoomBooking> CommunityRoomBookings { get; set; } = new List<CommunityRoomBooking>();
+
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<Maintenance> Maintenances { get; set; } = new List<Maintenance>();
