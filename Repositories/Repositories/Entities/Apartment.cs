@@ -25,6 +25,8 @@ public partial class Apartment
 
     public virtual Floor Floor { get; set; } = null!;
 
+    public virtual ICollection<HouseholdMovement> HouseholdMovements { get; set; } = new List<HouseholdMovement>();
+
     public virtual ICollection<ManagementFeeInvoice> ManagementFeeInvoices { get; set; } = new List<ManagementFeeInvoice>();
 
     public virtual Representative? Representative { get; set; }

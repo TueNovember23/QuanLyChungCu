@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Repositories.Repositories.Entities;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Repositories.Repositories.Entities;
 
 namespace Repositories.Repositories.Base;
 
@@ -32,6 +34,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Equipment> Equipment { get; set; }
 
     public virtual DbSet<Floor> Floors { get; set; }
+
+    public virtual DbSet<HouseholdMovement> HouseholdMovements { get; set; }
 
     public virtual DbSet<Invoice> Invoices { get; set; }
 
@@ -237,6 +241,31 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(d => d.BlockId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Floor_Block");
+        });
+
+        modelBuilder.Entity<HouseholdMovement>(entity =>
+        {
+            entity.HasKey(e => e.MovementId).HasName("PK__Househol__D1822446AE7E589A");
+
+            entity.ToTable("HouseholdMovement");
+
+            entity.Property(e => e.MovementType)
+                .HasMaxLength(50)
+                .HasDefaultValue("Chuyển vào");
+            entity.Property(e => e.ResidentId)
+                .HasMaxLength(12)
+                .IsUnicode(false)
+                .IsFixedLength();
+
+            entity.HasOne(d => d.Apartment).WithMany(p => p.HouseholdMovements)
+                .HasForeignKey(d => d.ApartmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_HouseholdMovement_Apartment");
+
+            entity.HasOne(d => d.Resident).WithMany(p => p.HouseholdMovements)
+                .HasForeignKey(d => d.ResidentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_HouseholdMovement_Resident");
         });
 
         modelBuilder.Entity<Invoice>(entity =>
