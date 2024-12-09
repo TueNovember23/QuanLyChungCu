@@ -37,11 +37,12 @@
                              Width="100" Margin="0,0,16,0"
                              ItemsSource="{Binding Years}"
                              SelectedItem="{Binding SelectedYear}"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Căn hộ"
+                              Width="150" Margin="0,0,16,0"
+                              ItemsSource="{Binding Apartments}"
+                              SelectedItem="{Binding SelectedApartment}"
+                              DisplayMemberPath="ApartmentCode"/>
 
-                    <ComboBox materialDesign:HintAssist.Hint="Khu vực"
-                             Width="150" Margin="0,0,16,0"
-                             ItemsSource="{Binding Areas}"
-                             SelectedItem="{Binding SelectedArea}"/>
                 </StackPanel>
 
                 <!-- Center - Status -->
@@ -64,23 +65,15 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MaterialDesignRaisedButton}"
-                            Command="{Binding GenerateDetailedInvoicesCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="FileMultiple" Margin="0,0,8,0"/>
-                            <TextBlock Text="Tạo hóa đơn chi tiết"/>
-                        </StackPanel>
-                    </Button>
+                   
                 </StackPanel>
             </Grid>
         </materialDesign:Card>
 
-        <!-- Invoice Tabs -->
         <TabControl Grid.Row="2" 
                     Style="{StaticResource MaterialDesignTabControl}"
                     TabStripPlacement="Left"
                     Margin="16">
-            <!-- Tổng hợp -->
             <TabItem>
                 <TabItem.Header>
                     <StackPanel>
@@ -93,6 +86,7 @@
                           IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
+                        <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
                         <DataGridTextColumn Header="Tổng tiền" Binding="{Binding TotalAmount}"/>
                         <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
                     </DataGrid.Columns>
@@ -107,19 +101,37 @@
                         <TextBlock Text="Hóa đơn nước"/>
                     </StackPanel>
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding WaterInvoices}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
-                        <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
-                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
-                        <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Nhập liệu tạo hóa đơn -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,16">
+                        <TextBox materialDesign:HintAssist.Hint="Chỉ số đầu" Width="150" Margin="0,0,16,0" 
+                     Text="{Binding StartIndex, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox materialDesign:HintAssist.Hint="Chỉ số cuối" Width="150" Margin="0,0,16,0" 
+                     Text="{Binding EndIndex, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox materialDesign:HintAssist.Hint="Số người" Width="100" Margin="0,0,16,0" 
+                     Text="{Binding NumberOfPeople, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Content="Tạo hóa đơn" Command="{Binding CreateWaterInvoiceCommand}" Width="150"/>
+                    </StackPanel>
+
+                    <!-- Danh sách hóa đơn nước -->
+                    <DataGrid ItemsSource="{Binding WaterInvoices}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
+                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                            <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
+                            <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
 
-            <!-- Gửi xe -->
+
+        <!--xe-->
             <TabItem>
                 <TabItem.Header>
                     <StackPanel>
@@ -127,17 +139,31 @@
                         <TextBlock Text="Hóa đơn xe"/>
                     </StackPanel>
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding VehicleInvoices}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
-                        <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
-                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
-                        <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,16">
+                        <ComboBox materialDesign:HintAssist.Hint="Chọn xe" Width="150" Margin="0,0,16,0" 
+                      ItemsSource="{Binding Vehicles}" SelectedItem="{Binding SelectedVehicle}"/>
+                        <Button Content="Thêm xe" Command="{Binding AddVehicleToInvoiceCommand}" Width="150" Margin="0,0,16,0"/>
+                        <Button Content="Tạo hóa đơn" Command="{Binding CreateVehicleInvoiceCommand}" Width="150"/>
+                    </StackPanel>
+
+                    <DataGrid ItemsSource="{Binding VehicleInvoices}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
+                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                            <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
+                            <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
+
+
 
             <!-- Phí quản lý -->
             <TabItem>
@@ -147,17 +173,35 @@
                         <TextBlock Text="Phí quản lý"/>
                     </StackPanel>
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding ManagementInvoices}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
-                        <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
-                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
-                        <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Form nhập liệu -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,16">
+                        <TextBox materialDesign:HintAssist.Hint="Diện tích (m²)" Width="150" Margin="0,0,16,0" 
+                     Text="{Binding ApartmentArea, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox materialDesign:HintAssist.Hint="Đơn giá (VNĐ/m²)" Width="150" Margin="0,0,16,0" 
+                     Text="{Binding ManagementFeePrice, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Content="Tạo hóa đơn" Command="{Binding CreateManagementFeeInvoiceCommand}" Width="150"/>
+                    </StackPanel>
+
+                    <!-- Danh sách hóa đơn phí quản lý -->
+                    <DataGrid ItemsSource="{Binding ManagementInvoices}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
+                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                            <DataGridTextColumn Header="Diện tích (m²)" Binding="{Binding ApartmentArea}"/>
+                            <DataGridTextColumn Header="Đơn giá (VNĐ/m²)" Binding="{Binding Price}"/>
+                            <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
+                            <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
+
         </TabControl>
     </Grid>
 </UserControl>

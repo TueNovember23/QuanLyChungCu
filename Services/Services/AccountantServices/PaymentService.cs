@@ -25,6 +25,12 @@ namespace Services.Services.AccountantServices
             throw new NotImplementedException();
         }
 
+        public async Task<List<Apartment>> GetApartmentsAsync()
+        {
+            return await _unitOfWork.GetRepository<Apartment>().Entities.ToListAsync();
+        }
+
+
         public Task<List<PaymentHistoryDTO>> GetPaymentHistory(int invoiceId)
         {
             throw new NotImplementedException();
@@ -36,7 +42,6 @@ namespace Services.Services.AccountantServices
                 .Include(i => i.WaterInvoices).ThenInclude(wi => wi.Apartment)
                 .Include(i => i.ManagementFeeInvoices)
                 .Include(i => i.VechicleInvoices)
-
                 .Where(i => i.Month == month && i.Year == year).ToList();
 
             if (status != "Tất cả")
@@ -44,25 +49,29 @@ namespace Services.Services.AccountantServices
                 query = query.Where(i => i.Status == status).ToList();
             }
 
-
             return query.Select(invoice => new ResponsePaymentDTO
             {
                 InvoiceId = invoice.InvoiceId,
                 InvoiceCode = $"INV{invoice.InvoiceId:D6}",
-                ApartmentCode = invoice.WaterInvoices.FirstOrDefault()!.Apartment.ApartmentCode!,
+                ApartmentCode = invoice.WaterInvoices.FirstOrDefault()?.Apartment?.ApartmentCode ?? "Không có",
                 TotalAmount = (decimal)(invoice.TotalAmount ?? 0),
                 PaidAmount = 0,
                 RemainingAmount = (decimal)(invoice.TotalAmount ?? 0),
                 DueDate = invoice.CreatedDate.HasValue
-                ? invoice.CreatedDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(15)
-                : DateTime.MinValue,
+              ? invoice.CreatedDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(15)
+              : DateTime.MinValue,
                 Status = invoice.Status
             }).ToList();
         }
 
-        public Task ProcessPayment(ProcessPaymentDTO payment)
+        public async Task UpdateInvoiceStatus(int invoiceId, string status)
         {
-            throw new NotImplementedException();
+            var invoice = await _unitOfWork.GetRepository<Invoice>().FindAsync(i => i.InvoiceId == invoiceId);
+            if (invoice != null)
+            {
+                invoice.Status = status;
+                await _unitOfWork.SaveAsync(); // Lưu thay đổi vào cơ sở dữ liệu
+            }
         }
 
         public async Task<List<ResponsePaymentDTO>> SearchPayments(string searchText, int month, int year, string status)
@@ -97,6 +106,5 @@ namespace Services.Services.AccountantServices
             }).ToList();
         }
 
-        // Implement other interface methods...
     }
 }

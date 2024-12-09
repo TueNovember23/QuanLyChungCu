@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Repositories.Repositories.Entities;
+using Services.DTOs.InvoiceDTO;
 using Services.DTOs.PaymentDTO;
 using Services.Interfaces.AccountantServices;
+using Services.Services.AccountantServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +17,10 @@ namespace Forms.ViewModels.Accountant
     public partial class PaymentViewModel : ObservableObject
     {
         private readonly IPaymentService _paymentService;
+        private readonly IInvoiceService _invoiceService;
+
+        [ObservableProperty]
+        private ObservableCollection<ResponseInvoiceDTO> totalInvoices = [];
 
         [ObservableProperty]
         private ObservableCollection<ResponsePaymentDTO> payments = [];
@@ -43,70 +50,86 @@ namespace Forms.ViewModels.Accountant
         private string paymentNote = "";
 
         [ObservableProperty]
+        private string selectedPaymentStatus = "";
+
+        [ObservableProperty]
+        private ObservableCollection<string> apartments = new();
+
+        [ObservableProperty]
+        private string selectedApartment; 
+
+        [ObservableProperty]
         private ObservableCollection<PaymentHistoryDTO> paymentHistory = [];
 
         public ObservableCollection<int> Months { get; } = new(Enumerable.Range(1, 12));
         public ObservableCollection<int> Years { get; } = new(Enumerable.Range(2020, 10));
-        public ObservableCollection<string> PaymentStatuses { get; } = ["Tất cả", "Chưa thanh toán", "Đã thanh toán một phần", "Đã thanh toán"];
-        public ObservableCollection<string> PaymentMethods { get; } = ["Tiền mặt", "Chuyển khoản"];
+        public ObservableCollection<string> PaymentStatuses { get; } = ["Tất cả", "Chưa thanh toán", "Đã thanh toán"];
 
-        public PaymentViewModel(IPaymentService paymentService)
+        public PaymentViewModel(IInvoiceService invoiceService)
         {
-            _paymentService = paymentService;
+            _invoiceService = invoiceService;
             selectedMonth = DateTime.Now.Month;
             selectedYear = DateTime.Now.Year;
             selectedStatus = PaymentStatuses[0];
-            _ = LoadPaymentsAsync();
+            selectedPaymentStatus = "Chưa thanh toán";
+            _ = LoadInvoicesAsync();
+            _ = LoadApartmentsAsync();
         }
 
-        private async Task LoadPaymentsAsync()
+
+        private async Task LoadInvoicesAsync()
         {
-            var paymentList = await _paymentService.GetPayments(selectedMonth, selectedYear, selectedStatus);
-            Payments = new ObservableCollection<ResponsePaymentDTO>(paymentList);
+            var invoiceGroup = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
+            var invoices = invoiceGroup.TotalInvoices;
+            TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices);
+        }
+
+        private async Task LoadApartmentsAsync()
+        {
+            var apartmentsList = await _invoiceService.GetApartmentsAsync(); 
+            Apartments = new ObservableCollection<string>(apartmentsList.Select(a => a.ApartmentCode));
         }
 
         [RelayCommand]
         private async Task Refresh()
         {
             SearchText = string.Empty;
-            await LoadPaymentsAsync();
+            await LoadInvoicesAsync();
         }
 
         [RelayCommand]
-        private async Task Search()
+        private async Task SearchInvoices()
         {
-            if (string.IsNullOrWhiteSpace(SearchText))
+            var invoiceGroup = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
+            var invoices = invoiceGroup.TotalInvoices; // Lấy danh sách hóa đơn từ InvoiceGroupDTO
+
+            // Lọc theo trạng thái
+            if (!string.IsNullOrWhiteSpace(SelectedStatus) && SelectedStatus != "Tất cả")
             {
-                await LoadPaymentsAsync();
+                invoices = invoices.Where(i => i.Status == SelectedStatus).ToList();
             }
-            else
+
+            // Lọc theo căn hộ
+            if (!string.IsNullOrWhiteSpace(SelectedApartment))
             {
-                var result = await _paymentService.SearchPayments(SearchText, selectedMonth, selectedYear, selectedStatus);
-                Payments = new ObservableCollection<ResponsePaymentDTO>(result);
+                invoices = invoices.Where(i => i.ApartmentCode == SelectedApartment).ToList();
             }
+
+
+            TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices);
         }
 
         [RelayCommand]
-        private async Task ProcessPayment()
+        private async Task UpdateInvoiceStatus(ResponseInvoiceDTO invoice)
         {
-            if (SelectedPayment == null || PaymentAmount <= 0 || string.IsNullOrEmpty(SelectedPaymentMethod))
-            {
-                // Show error message
-                return;
-            }
+            if (invoice == null) return;
 
-            var paymentRequest = new ProcessPaymentDTO
-            {
-                InvoiceId = SelectedPayment.InvoiceId,
-                Amount = PaymentAmount,
-                PaymentMethod = SelectedPaymentMethod,
-                Note = PaymentNote
-            };
-
-            await _paymentService.ProcessPayment(paymentRequest);
-            await LoadPaymentsAsync();
-            await LoadPaymentHistory(SelectedPayment.InvoiceId);
+            // Chuyển trạng thái hóa đơn
+            invoice.Status = invoice.Status == "Chưa thanh toán" ? "Đã thanh toán" : "Chưa thanh toán";
+            await _invoiceService.UpdateInvoiceStatus(invoice.InvoiceId, invoice.Status);
+            await LoadInvoicesAsync(); // Tải lại danh sách hóa đơn
         }
+
 
         [RelayCommand]
         private async Task PrintReceipt()

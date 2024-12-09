@@ -11,7 +11,7 @@ namespace Services.Interfaces.AccountantServices
     {
         Task<List<ResponsePaymentDTO>> GetPayments(int month, int year, string status);
         Task<List<ResponsePaymentDTO>> SearchPayments(string searchText, int month, int year, string status);
-        Task ProcessPayment(ProcessPaymentDTO payment);
+       
         Task<List<PaymentHistoryDTO>> GetPaymentHistory(int invoiceId);
         Task GenerateReceipt(int invoiceId);
     }

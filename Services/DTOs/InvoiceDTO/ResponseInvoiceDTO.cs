@@ -19,5 +19,8 @@ namespace Services.DTOs.InvoiceDTO
         public double TotalAmount { get; set; }
         public string Status { get; set; } = null!;
         public DateOnly? CreatedDate { get; set; }
+        public List<ResponseWaterInvoiceDTO> WaterInvoices { get; set; } = new List<ResponseWaterInvoiceDTO>();
+        public List<ResponseManagementFeeInvoiceDTO> ManagementFeeInvoices { get; set; } = new List<ResponseManagementFeeInvoiceDTO>();
+        public List<ResponseVehicleInvoiceDTO> VechicleInvoices { get; set; } = new List<ResponseVehicleInvoiceDTO>();
     }
 }
