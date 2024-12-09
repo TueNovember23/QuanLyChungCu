@@ -72,10 +72,14 @@ namespace Forms.ViewModels.Accountant
             selectedYear = DateTime.Now.Year;
             selectedStatus = PaymentStatuses[0];
             selectedPaymentStatus = "Chưa thanh toán";
-            _ = LoadInvoicesAsync();
-            _ = LoadApartmentsAsync();
+            _ = LoadLoadLoad();
         }
 
+        private async Task LoadLoadLoad()
+        {
+            await LoadInvoicesAsync();
+            await LoadApartmentsAsync();
+        }
 
         private async Task LoadInvoicesAsync()
         {

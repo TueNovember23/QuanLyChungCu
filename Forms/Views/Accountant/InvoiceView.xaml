@@ -45,28 +45,6 @@
 
                 </StackPanel>
 
-                <!-- Center - Status -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="16,0">
-                    <materialDesign:PackIcon Kind="Information" 
-                                           Margin="0,0,8,0"
-                                           VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding StatusMessage}"
-                             VerticalAlignment="Center"/>
-                </StackPanel>
-
-                <!-- Right side - Actions -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Style="{StaticResource MaterialDesignOutlinedButton}"
-                            Command="{Binding GenerateInvoicesCommand}"
-                            Margin="0,0,8,0">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="FileDocument" Margin="0,0,8,0"/>
-                            <TextBlock Text="Tạo hóa đơn tổng"/>
-                        </StackPanel>
-                    </Button>
-
-                   
-                </StackPanel>
             </Grid>
         </materialDesign:Card>
 

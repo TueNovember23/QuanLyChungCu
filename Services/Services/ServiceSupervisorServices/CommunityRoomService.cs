@@ -122,7 +122,7 @@ namespace Services.Services.ServiceSupervisorServices
 
 
         public async Task<bool> CreateBooking(int communityRoomId, int apartmentId, DateOnly bookingDate,
-            TimeOnly startTime, TimeOnly endTime, int numberOfPeople)
+    TimeOnly startTime, TimeOnly endTime, int numberOfPeople, string reason, int priority, bool canUseWithOtherPeople)
         {
             try
             {
@@ -140,7 +140,10 @@ namespace Services.Services.ServiceSupervisorServices
                     BookingDate = bookingDate,
                     StartTime = startTime,
                     EndTime = endTime,
-                    NumberOfPeople = numberOfPeople
+                    NumberOfPeople = numberOfPeople,
+                    Reason = reason,
+                    Priority = priority,
+                    CanUseWithOtherPeople = canUseWithOtherPeople
                 };
 
                 await _unitOfWork.GetRepository<CommunityRoomBooking>().InsertAsync(booking);

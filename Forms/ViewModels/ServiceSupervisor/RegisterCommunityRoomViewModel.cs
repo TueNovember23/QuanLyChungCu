@@ -7,9 +7,11 @@ using Services.Interfaces.ServiceSupervisorServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Forms.ViewModels.ServiceSupervisor
 {
@@ -55,6 +57,21 @@ namespace Forms.ViewModels.ServiceSupervisor
 
         [ObservableProperty]
         private DateTime? searchBookingDate;
+
+        [ObservableProperty]
+        private string? reason; 
+
+        [ObservableProperty]
+        private int selectedPriority; 
+
+        [ObservableProperty]
+        private bool canUseWithOtherPeople;
+
+        [ObservableProperty]
+        private List<int> priorityOptions = new List<int> { 1 , 2, 3 };
+
+        [ObservableProperty]
+        private List<string> statusOptions = new List<string> { "Đã đăng ký", "Chờ duyệt", "Đã hủy" };
 
 
         private DateOnly BookingDate => DateOnly.FromDateTime(SelectedDate ?? DateTime.Today);
@@ -185,7 +202,10 @@ namespace Forms.ViewModels.ServiceSupervisor
                     BookingDate,
                     StartTime,
                     EndTime,
-                    NumberOfPeople
+                    NumberOfPeople,
+                    Reason,
+                    SelectedPriority, 
+                    CanUseWithOtherPeople 
                 );
 
                 if (success)

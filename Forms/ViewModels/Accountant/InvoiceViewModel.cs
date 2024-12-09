@@ -68,8 +68,13 @@ namespace Forms.ViewModels.Accountant
         {
             _invoiceService = invoiceService;
             InitializeFilters();
-            LoadInvoicesAsync();
-            LoadComboBoxData();
+            _ = LoadLoadLoad();
+        }
+
+        private async Task LoadLoadLoad()
+        {
+            await LoadInvoicesAsync();
+            await LoadComboBoxData();
         }
 
         private async Task LoadComboBoxData()
