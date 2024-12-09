@@ -120,7 +120,8 @@ namespace Forms.Views.AdministrativeStaff
 
         private void ViewHouseholdMovement_Click(object sender, RoutedEventArgs e)
         {
-            
+            HouseholdMovementView f = new(_apartmentService, _apartment!.ApartmentCode!);
+            f.ShowDialog();
         }
     }
 }

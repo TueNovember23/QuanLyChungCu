@@ -9,74 +9,55 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         AllowsTransparency="True" WindowStyle="None"
-        Title="HouseholdMovementView" Height="700" Width="1200"
+        Title="HouseholdMovementView" Height="650" Width="700"
         Background="Transparent">
     <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
         <StackPanel Orientation="Vertical">
             <Button x:Name="CloseButton" Content="X" Style="{StaticResource MaterialDesignFloatingActionButton}" Width="30" Height="30"
                 HorizontalAlignment="Right" Margin="0,10,10,0" Click="CloseButton_Click"/>
             <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3.9*" />
-                    <ColumnDefinition Width="1*" />
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock x:Name="ApartmentCodeTxt" Text="Danh sách cư dân" FontSize="24" FontWeight="Bold"
+                <TextBlock Grid.Row="0" x:Name="ApartmentCodeTxt" Text="Lịch sử cư trú căn hộ" FontSize="24" FontWeight="Bold"
                    HorizontalAlignment="Left" VerticalAlignment="Top"
                    Margin="15" />
-                </StackPanel>
+
+                <materialDesign:Card Grid.Row="1" Margin="10, 10, 10,10" UniformCornerRadius="8">
+                    <StackPanel Orientation="Horizontal" Margin="10">
+                        <TextBox x:Name="SearchTxt"
+                                 Width="300" Height="40" Padding="10 10"
+                                 VerticalAlignment="Center"
+                                 materialDesign:HintAssist.Hint="Tìm kiếm"
+                                 materialDesign:TextFieldAssist.DecorationVisibility="Visible"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Content="Tìm kiếm"
+                                Width="120" Height="40" Margin="10 0"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="Search_Click" />
+                        <Button Content="Làm mới"
+                                Width="120" Height="40" Margin="10,0,0,0"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="Refresh_Click" />                  
+                    </StackPanel>
+                    
+                </materialDesign:Card>
                 <!-- DataGrid -->
-                <DataGrid x:Name="ResidentsDataGrid" Grid.Column="0" AutoGenerateColumns="False" Margin="5, 60, 10, 10"
-                  IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False" Height="500"
+                <DataGrid x:Name="ResidentsDataGrid" Grid.Row="2" AutoGenerateColumns="False" Margin="5, 10, 10, 10"
+                  IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False" Height="430"
                   Style="{StaticResource MaterialDesignDataGrid}">
                     <DataGrid.Columns>
+                        <DataGridTextColumn Header="Ngày" Binding="{Binding MovementDate}" Width="auto"/>
                         <DataGridTextColumn Header="CCCD" Binding="{Binding ResidentId}" Width="auto"/>
-                        <DataGridTextColumn Header="Họ tên" Binding="{Binding FullName}" Width="auto"/>
-                        <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender}" Width="80"/>
-                        <DataGridTextColumn Header="Ngày sinh" Binding="{Binding DateOfBirth}" Width="auto"/>
-                        <DataGridTextColumn Header="Quan hệ với chủ hộ" Binding="{Binding RelationShipWithOwner}" Width="auto"/>
-                        <DataGridTextColumn Header="Ngày chuyển vào" Binding="{Binding MoveInDate}" Width="auto"/>
-                        <DataGridTextColumn Header="Ngày chuyển đi" Binding="{Binding MoveOutDate}" Width="auto"/>
-                        <DataGridTemplateColumn Header="Hành động" Width="Auto">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="Chỉnh sửa" Width="auto" Height="30"
-                                    Style="{StaticResource MaterialDesignFlatButton}"
-                                    Click="EditResident_Click" CommandParameter="{Binding ResidentId}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Họ tên" Binding="{Binding ResidentName}" Width="auto"/>
+                        <DataGridTextColumn Header="Chuyển" Binding="{Binding MovementType}" Width="auto"/>
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <!-- Form Đăng ký Cư dân -->
-                <StackPanel Grid.Column="1" Margin="10">
-                    <TextBlock Text="Đăng ký cư dân mới" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-
-                    <!-- ResidentId -->
-                    <TextBox x:Name="ResidentIdInput" materialDesign:HintAssist.Hint="CCCD" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5"/>
-
-                    <!-- FullName -->
-                    <TextBox x:Name="FullNameInput"  materialDesign:HintAssist.Hint="Họ và tên" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5"/>
-
-                    <!-- Gender -->
-                    <ComboBox x:Name="GenderInput"  materialDesign:HintAssist.Hint="Giới tính" Style="{StaticResource MaterialDesignOutlinedComboBox}" Margin="0,5">
-                        <ComboBoxItem Content="Nam" />
-                        <ComboBoxItem Content="Nữ" />
-                    </ComboBox>
-
-                    <!-- DateOfBirth -->
-                    <DatePicker x:Name="DateOfBirthInput"  materialDesign:HintAssist.Hint="Ngày sinh" Style="{StaticResource MaterialDesignDatePicker}" Margin="0,5"/>
-
-                    <!-- RelationShipWithOwner -->
-                    <TextBox x:Name="RelationShipInput"  materialDesign:HintAssist.Hint="Quan hệ với chủ hộ" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5"/>
-
-                    <!-- ApartmentCode (Hiển thị mã căn hộ, không cho chỉnh sửa) -->
-                    <TextBox x:Name="ApartmentCodeInput"  materialDesign:HintAssist.Hint="Mã căn hộ" IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5"/>
-
-                    
-                </StackPanel>
             </Grid>
         </StackPanel>
     </Border>

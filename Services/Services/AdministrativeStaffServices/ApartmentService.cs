@@ -8,6 +8,7 @@ using Core;
 using Services.DTOs.ResidentDTO;
 using Azure.Core;
 using Services.DTOs.Representative;
+using Services.DTOs.HouseholdMovementDTO;
 
 namespace Services.Services.AdministrativeStaffServices
 {
@@ -250,6 +251,59 @@ namespace Services.Services.AdministrativeStaffServices
             {
                 throw new BusinessException($"Error getting apartments: {ex.Message}");
             }
+        }
+
+        public async Task<List<ResponseHouseholdMovementDTO>> GetMovementByApartmentCode(string apartmentCode)
+        {
+            List<ResponseHouseholdMovementDTO> list = await _unitOfWork.GetRepository<HouseholdMovement>().Entities
+                .Where(movement => movement.Apartment.ApartmentCode == apartmentCode)
+                .Select(movement => new ResponseHouseholdMovementDTO
+                {
+                    MovementDate = movement.MovementDate,
+                    ResidentId = movement.ResidentId,
+                    ResidentName = movement.Resident.FullName,
+                    MovementType = movement.MovementType
+                }).OrderByDescending(_ => _.MovementDate).ToListAsync();
+            return list;
+        }
+
+        public async Task<List<ResponseHouseholdMovementDTO>> GetMovementByApartmentCode(
+    string apartmentCode,
+    string searchText = "")
+        {
+            var query = _unitOfWork.GetRepository<HouseholdMovement>().Entities
+                .Where(movement => movement.Apartment.ApartmentCode == apartmentCode);
+
+            // Lọc dựa trên searchText
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                searchText = searchText.ToLower().Trim();
+
+                if (DateOnly.TryParse(searchText, out var searchDate))
+                {
+                    query = query.Where(movement => movement.MovementDate == searchDate);
+                }
+                else
+                {
+                    query = query.Where(movement =>
+                        movement.Resident.FullName.Contains(searchText) ||
+                        movement.Resident.ResidentId.Contains(searchText) ||
+                        movement.MovementType.Contains(searchText));
+                }
+            }
+
+            List<ResponseHouseholdMovementDTO> list = await query
+                .Select(movement => new ResponseHouseholdMovementDTO
+                {
+                    MovementDate = movement.MovementDate,
+                    ResidentId = movement.ResidentId,
+                    ResidentName = movement.Resident.FullName,
+                    MovementType = movement.MovementType
+                })
+                .OrderByDescending(m => m.MovementDate)
+                .ToListAsync();
+
+            return list;
         }
     }
 }

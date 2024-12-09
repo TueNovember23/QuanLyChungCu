@@ -476,18 +476,31 @@ VALUES
 ('123345678910', N'Nguyễn Thị B', N'Nữ', '1991-01-01', N'Vợ', '2015-01-01', NULL, 1),
 ('123445678910', N'Nguyễn Thị B', N'Nữ', '2015-01-01', N'Con', '2015-03-01', NULL, 1),
 ('123445678911', N'Nguyễn Văn C', N'Nam', '1960-01-01', N'Cha', '2015-03-01', '2023-01-03', 1),
-('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', N'Chủ hộ', '2015-03-01', '2023-01-03', 3),
+('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', N'Chủ hộ', '2015-03-01', NULL, 3),
 ('123445678913', N'Nguyễn Thị E', N'Nữ', '1995-01-01', N'Con', '2015-03-01', NULL, 3),
 ('123445678944', N'Nguyễn Văn F', N'Nam', '1995-01-01', N'Em', '2015-03-01', NULL, 3),
 ('105456789012', N'Nguyễn Thị X', N'Nữ', '1991-01-01', N'Chủ hộ', '2015-01-01', NULL, 2);
 UPDATE Apartment
 SET NumberOfPeople = 3
-WHERE ApartmentId = 1
+WHERE ApartmentId = 1;
+INSERT INTO HouseholdMovement (ApartmentId, ResidentId, MovementDate, MovementType) VALUES
+(1, '123456789012', '2015-01-01', N'Chuyển vào'),
+(1, '123345678910', '2015-01-01', N'Chuyển vào'),
+(1, '123445678911', '2015-03-01', N'Chuyển vào'),
+(1, '123445678910', '2015-03-01', N'Chuyển vào'),
+(1, '123445678911', '2023-01-03', N'Chuyển ra'),
+(2, '105456789012', '2015-01-01', N'Chuyển vào'),
+(3, '123445678513', '2015-03-01', N'Chuyển vào'),
+(3, '123445678912', '2015-03-01', N'Chuyển vào'),
+(3, '123445678913', '2015-03-01', N'Chuyển vào'),
+(3, '123445678914', '2015-03-01', N'Chuyển vào'),
+(3, '123445678944', '2015-03-01', N'Chuyển vào');
+
 INSERT INTO Representative (RepresentativeId, FullName, Gender, DateOfBirth, Email, PhoneNumber)
 VALUES
 ('123456789012', N'Nguyễn Văn A', N'Nam', '1990-01-01', 'nguyenvana@mail.com', '0123456789'),
 ('105456789012', N'Nguyễn Thị X', N'Nữ', '1991-01-01', 'nguyenthix@mail.com', '0987123456'),
-('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', 'nguyenthid@mail.com', '0987123455')
+('123445678912', N'Nguyễn Thị D', N'Nữ', '1965-01-01', 'nguyenthid@mail.com', '0987123455');
 UPDATE Apartment
 SET RepresentativeId = '123456789012' WHERE ApartmentId = 1
 UPDATE Apartment
