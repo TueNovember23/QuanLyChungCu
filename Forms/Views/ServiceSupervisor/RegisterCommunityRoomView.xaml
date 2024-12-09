@@ -56,60 +56,70 @@
 
             <!-- Danh sách đặt phòng -->
             <materialDesign:Card Grid.Column="0" Margin="10" UniformCornerRadius="15">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <DataGrid Grid.Row="1" 
-                  ItemsSource="{Binding Bookings}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  Margin="16"
-                   Width="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Danh sách đặt phòng" 
+                             FontSize="20" 
+                             FontWeight="Medium"
+                             Margin="16"/>
+
+                    <DataGrid Grid.Row="1"
+          ItemsSource="{Binding Bookings}"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          Margin="16"
+          HorizontalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Mã căn hộ" 
-                      Binding="{Binding ApartmentCode}" 
-                      Width="*"/>
-                            <!-- Use * for proportional width -->
+                            Binding="{Binding ApartmentCode}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Tên phòng" 
-                      Binding="{Binding RoomName}" 
-                      Width="*"/>
+                            Binding="{Binding RoomName}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Ngày đặt" 
-                      Binding="{Binding BookingDate}" 
-                      Width="*"/>
+                            Binding="{Binding BookingDate}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Giờ bắt đầu" 
-                      Binding="{Binding StartTime}" 
-                      Width="*"/>
+                            Binding="{Binding StartTime}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Giờ kết thúc" 
-                      Binding="{Binding EndTime}" 
-                      Width="*"/>
+                            Binding="{Binding EndTime}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Số người" 
-                      Binding="{Binding NumberOfPeople}" 
-                      Width="*"/>
+                            Binding="{Binding NumberOfPeople}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Lý do" 
-                      Binding="{Binding Reason}" 
-                      Width="*"/>
+                            Binding="{Binding Reason}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Ưu tiên" 
-                      Binding="{Binding Priority}" 
-                      Width="*"/>
+                            Binding="{Binding Priority}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Có thể sử dụng với người khác" 
-                      Binding="{Binding CanUseWithOtherPeople}" 
-                      Width="*"/>
+                            Binding="{Binding CanUseWithOtherPeople}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Trạng thái" 
-                      Binding="{Binding Status}" 
-                      Width="*"/>
-                            <DataGridTemplateColumn Header="Thao tác" Width="*">
+                            Binding="{Binding Status}" 
+                            Width="200"/>
+                            <DataGridTemplateColumn Header="Thao tác" Width="200">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Content="Xóa"
-                        Command="{Binding DataContext.DeleteBookingCommand, 
-                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        CommandParameter="{Binding BookingId}"
-                        Style="{StaticResource MaterialDesignOutlinedButton}"
-                        Margin="5"/>
+                            Command="{Binding DataContext.DeleteBookingCommand, 
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding BookingId}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Margin="5"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                </ScrollViewer>
+
+                </Grid>
             </materialDesign:Card>
 
             <!-- Form đăng ký -->
@@ -183,6 +193,11 @@
               Text="{Binding NumberOfPeople}"
               Style="{StaticResource MaterialDesignOutlinedTextBox}"
               Margin="0 8"/>
+
+                        <Button Content="Kiểm tra thời gian trống"
+                Command="{Binding CheckAvailableTimeSlotsCommand}"
+                Style="{StaticResource MaterialDesignRaisedButton}"
+                Margin="0 8"/>
 
                         <TextBlock Text="{Binding ErrorMessage}"
                Foreground="Red"

@@ -20,5 +20,6 @@ namespace Services.Interfaces.ServiceSupervisorServices
         Task<bool> DeleteBooking(int bookingId);
         Task<List<ApartmentDTO>> GetApartments();
         Task<bool> IsRoomAvailable(int communityRoomId, DateOnly bookingDate, TimeOnly startTime, TimeOnly endTime, int numberOfPeople);
+        Task<List<(TimeOnly startTime, TimeOnly endTime)>> GetAvailableTimeSlots(int communityRoomId, DateOnly bookingDate);
     }
 }

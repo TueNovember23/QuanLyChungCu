@@ -16,7 +16,7 @@ namespace Services.DTOs.CommunityRoomBookingDTO
         public int NumberOfPeople { get; set; }
         public string RoomName { get; set; } = null!;
         public string? Reason { get; set; } 
-        public int Priority { get; set; } 
+        public int? Priority { get; set; } 
         public bool CanUseWithOtherPeople { get; set; } 
         public string Status { get; set; } = null!;
     }
