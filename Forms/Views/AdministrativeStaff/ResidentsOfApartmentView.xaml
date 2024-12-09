@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         AllowsTransparency="True" WindowStyle="None"
-        Title="Căn hộ - Danh sách cư dân" Height="700" Width="1200"
+        Title="Căn hộ - Danh sách cư dân" Height="700" Width="1230"
         Background="Transparent">
     <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
         <StackPanel Orientation="Vertical">
@@ -74,7 +74,30 @@
                     <DatePicker x:Name="DateOfBirthInput"  materialDesign:HintAssist.Hint="Ngày sinh" Style="{StaticResource MaterialDesignDatePicker}" Margin="0,5"/>
 
                     <!-- RelationShipWithOwner -->
-                    <TextBox x:Name="RelationShipInput"  materialDesign:HintAssist.Hint="Quan hệ với chủ hộ" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5"/>
+                    
+
+                    <ComboBox x:Name="RelationshipInput" materialDesign:HintAssist.Hint="Mối quan hệ với chủ hộ"
+                              Margin="0,10" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                              IsEditable="True">    
+                        <ComboBoxItem>Chủ hộ</ComboBoxItem>
+                        <ComboBoxItem>Con</ComboBoxItem>
+                        <ComboBoxItem>Vợ</ComboBoxItem>
+                        <ComboBoxItem>Chồng</ComboBoxItem>
+                        <ComboBoxItem>Cô</ComboBoxItem>
+                        <ComboBoxItem>Chú</ComboBoxItem>
+                        <ComboBoxItem>Bác</ComboBoxItem>
+                        <ComboBoxItem>Anh</ComboBoxItem>
+                        <ComboBoxItem>Chị</ComboBoxItem>
+                        <ComboBoxItem>Em</ComboBoxItem>
+                        <ComboBoxItem>Anh em họ</ComboBoxItem>
+                        <ComboBoxItem>Ông</ComboBoxItem>
+                        <ComboBoxItem>Bà</ComboBoxItem>
+                        <ComboBoxItem>Thím</ComboBoxItem>
+                        <ComboBoxItem>Cậu</ComboBoxItem>
+                        <ComboBoxItem>Mợ</ComboBoxItem>
+                        <ComboBoxItem>Dượng</ComboBoxItem>
+                        <ComboBoxItem>Dì</ComboBoxItem>
+                    </ComboBox>
 
                     <!-- ApartmentCode (Hiển thị mã căn hộ, không cho chỉnh sửa) -->
                     <TextBox x:Name="ApartmentCodeInput"  materialDesign:HintAssist.Hint="Mã căn hộ" IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5"/>

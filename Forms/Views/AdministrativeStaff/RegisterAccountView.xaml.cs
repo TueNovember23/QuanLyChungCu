@@ -21,6 +21,7 @@ namespace Forms.Views.AdministrativeStaff
         private async void InitializeAsync()
         {
             RoleInput.ItemsSource = (await _service.GetAllRole()).Select(_ => _.RoleName);
+            PasswordInput.Password = "123456";
         }
 
         private void RegisterAccount_Click(object sender, RoutedEventArgs e)

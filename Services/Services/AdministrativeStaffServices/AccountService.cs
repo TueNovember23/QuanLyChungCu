@@ -71,6 +71,10 @@ namespace Services.Services.AdministrativeStaffServices
             }
             Role role = await _unitOfWork.GetRepository<Role>().Entities.FirstOrDefaultAsync(_ => _.RoleName == dto.Role)
                 ?? throw new BusinessException($"Không tìm thấy role {dto.Role}");
+            if(dto.Password.Length < 6)
+            {
+                throw new BusinessException($"Mật khẩu không được ít hơn 6 ký tự");
+            }
             Account newAccount = new Account
             {
                 Username = dto.Username,
@@ -89,6 +93,10 @@ namespace Services.Services.AdministrativeStaffServices
             if(string.IsNullOrWhiteSpace(dto.Password) || string.IsNullOrWhiteSpace(dto.ComfirmPassword))
             {
                 throw new BusinessException("Vui lòng điền đầy đủ thông tin");
+            }
+            if(dto.Password.Length < 6)
+            {
+                throw new BusinessException($"Mật khẩu không được ít hơn 6 ký tự");
             }
             if (dto.Password != dto.ComfirmPassword)
             {

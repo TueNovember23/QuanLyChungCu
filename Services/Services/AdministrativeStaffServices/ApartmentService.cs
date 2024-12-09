@@ -98,6 +98,7 @@ namespace Services.Services.AdministrativeStaffServices
             {
                 throw new BusinessException("Thông tin đăng ký không hợp lệ");
             }
+
             createDTO.Validate();
             Apartment apartment = _unitOfWork.GetRepository<Apartment>().Entities
                 .Where(a => a.ApartmentCode == createDTO.ApartmentCode)
@@ -122,17 +123,23 @@ namespace Services.Services.AdministrativeStaffServices
                 MoveInDate = DateOnly.FromDateTime(DateTime.Now),
                 MoveOutDate = null,
                 ApartmentId = apartment.ApartmentId,
-                Apartment = apartment
             };
-
+            HouseholdMovement newMovement = new()
+            {
+                ResidentId = newResident.ResidentId,
+                MovementType = "Chuyển vào",
+                MovementDate = DateOnly.FromDateTime(DateTime.Now),
+                ApartmentId = newResident.ApartmentId
+            };
             await _unitOfWork.GetRepository<Resident>().InsertAsync(newResident);
+            await _unitOfWork.GetRepository<HouseholdMovement>().InsertAsync(newMovement);
             await _unitOfWork.SaveAsync();
         }
 
         public async Task<Resident> GetResidentById(string id)
         {
             return await _unitOfWork.GetRepository<Resident>().Entities.Where(_ => _.ResidentId == id).FirstOrDefaultAsync()
-                ?? throw new BusinessException($"Không tìm thấy người dùng có số căn cước {id}"); 
+                ?? throw new BusinessException($"Không tìm thấy người dùng có số căn cước {id}");
         }
 
         public async Task UpdateResident(string id, UpdateResidentDTO dto)
@@ -143,11 +150,11 @@ namespace Services.Services.AdministrativeStaffServices
             resident.FullName = dto.FullName;
             resident.DateOfBirth = dto.DateOfBirth;
             resident.Gender = dto.Gender;
-            if(dto.RelationShipWithOwner.Trim() == "Chủ hộ")
+            if (dto.RelationShipWithOwner.Trim() == "Chủ hộ")
             {
                 bool existed = await _unitOfWork.GetRepository<Resident>().Entities
                     .AnyAsync(r => r.ResidentId != resident.ResidentId && r.ApartmentId == resident.ApartmentId && r.RelationShipWithOwner == "Chủ hộ");
-                if(existed) { throw new BusinessException("Căn hộ đã có chủ hộ"); }
+                if (existed) { throw new BusinessException("Căn hộ đã có chủ hộ"); }
             }
             resident.RelationShipWithOwner = dto.RelationShipWithOwner;
             await _unitOfWork.SaveAsync();
@@ -155,14 +162,22 @@ namespace Services.Services.AdministrativeStaffServices
 
         public async Task MoveResidentOut(string residentId)
         {
-            Resident resident = await _unitOfWork.GetRepository<Resident>().GetByIdAsync(residentId)
+            Resident resident = await _unitOfWork.GetRepository<Resident>().Entities.Include(_ => _.Apartment).FirstOrDefaultAsync(_ => _.ResidentId == residentId)
                 ?? throw new BusinessException($"Không tìm thấy cư dân có mã số căn cước {residentId}");
-            if(resident.MoveOutDate != null)
+            if (resident.MoveOutDate != null)
             {
                 throw new BusinessException($"Cư dân {resident.FullName} hiện không ở trong căn hộ {resident.Apartment.ApartmentCode}");
             }
             resident.MoveOutDate = DateOnly.FromDateTime(DateTime.Now);
             resident.Apartment.NumberOfPeople -= 1;
+            HouseholdMovement newMovement = new()
+            {
+                ResidentId = resident.ResidentId,
+                MovementType = "Chuyển ra",
+                MovementDate = DateOnly.FromDateTime(DateTime.Now),
+                ApartmentId = resident.ApartmentId
+            };
+            await _unitOfWork.GetRepository<HouseholdMovement>().InsertAsync(newMovement);
             await _unitOfWork.SaveAsync();
         }
 
@@ -177,13 +192,21 @@ namespace Services.Services.AdministrativeStaffServices
             resident.MoveOutDate = null;
             resident.MoveInDate = DateOnly.FromDateTime(DateTime.Now);
             resident.Apartment.NumberOfPeople += 1;
+            HouseholdMovement newMovement = new()
+            {
+                ResidentId = resident.ResidentId,
+                MovementType = "Chuyển vào",
+                MovementDate = DateOnly.FromDateTime(DateTime.Now),
+                ApartmentId = resident.ApartmentId
+            };
+            await _unitOfWork.GetRepository<HouseholdMovement>().InsertAsync(newMovement);
             await _unitOfWork.SaveAsync();
         }
 
         public async Task<List<Representative>> GetAllRepresentative()
         {
             return await _unitOfWork.GetRepository<Representative>().Entities.ToListAsync();
-        } 
+        }
 
         public async Task<Representative?> GetPreresentativeByApartmentCode(string apartmentCode)
         {
@@ -256,20 +279,19 @@ namespace Services.Services.AdministrativeStaffServices
         public async Task<List<ResponseHouseholdMovementDTO>> GetMovementByApartmentCode(string apartmentCode)
         {
             List<ResponseHouseholdMovementDTO> list = await _unitOfWork.GetRepository<HouseholdMovement>().Entities
-                .Where(movement => movement.Apartment.ApartmentCode == apartmentCode)
-                .Select(movement => new ResponseHouseholdMovementDTO
-                {
-                    MovementDate = movement.MovementDate,
-                    ResidentId = movement.ResidentId,
-                    ResidentName = movement.Resident.FullName,
-                    MovementType = movement.MovementType
-                }).OrderByDescending(_ => _.MovementDate).ToListAsync();
+            .Where(movement => movement.Apartment.ApartmentCode == apartmentCode)
+            .Select(movement => new ResponseHouseholdMovementDTO
+            {
+                Id = movement.MovementId,
+                MovementDate = movement.MovementDate,
+                ResidentId = movement.ResidentId,
+                ResidentName = movement.Resident.FullName,
+                MovementType = movement.MovementType
+            }).OrderByDescending(_ => _.MovementDate).ThenByDescending(_ => _.Id).ToListAsync();
             return list;
         }
 
-        public async Task<List<ResponseHouseholdMovementDTO>> GetMovementByApartmentCode(
-    string apartmentCode,
-    string searchText = "")
+        public async Task<List<ResponseHouseholdMovementDTO>> GetMovementByApartmentCode(string apartmentCode, string searchText = "")
         {
             var query = _unitOfWork.GetRepository<HouseholdMovement>().Entities
                 .Where(movement => movement.Apartment.ApartmentCode == apartmentCode);
@@ -300,7 +322,7 @@ namespace Services.Services.AdministrativeStaffServices
                     ResidentName = movement.Resident.FullName,
                     MovementType = movement.MovementType
                 })
-                .OrderByDescending(m => m.MovementDate)
+                .OrderByDescending(m => m.MovementDate).ThenByDescending(_ => _.Id)
                 .ToListAsync();
 
             return list;

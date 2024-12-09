@@ -39,12 +39,12 @@
             </StackPanel>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Chuyển đi" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
-                    Background="Red" Foreground="White" Click="DeleteResident_Click"/>
-                <Button Content="Chuyển vào" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
-                    Background="Blue" Foreground="White" Click="MoveIn_Click"/>
-                <Button Content="Cập nhật" Width="120" Style="{StaticResource MaterialDesignRaisedButton}" 
-                    Background="Green" Foreground="White" Click="UpdateResident_Click"/>
+                <Button Content="Chuyển đi" Width="110" Style="{StaticResource MaterialDesignRaisedButton}" 
+                        Click="DeleteResident_Click" Margin="5, 0"/>
+                <Button Content="Chuyển vào" Width="110" Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Click="MoveIn_Click" Margin="5, 0"/>
+                <Button Content="Cập nhật" Width="110" Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Click="UpdateResident_Click" Margin="5, 0"/>
             </StackPanel>
         </Grid>
     </Border>

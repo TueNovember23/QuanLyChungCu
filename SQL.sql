@@ -281,15 +281,6 @@ CREATE TABLE ParkingConfig (
     FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
 );
 
--- Dữ liệu bảng ParkingConfig
--- Dữ liệu mặc định tính tỷ lệ slot để xe theo căn hộ, chia slot đổ xe cho căn hộ theo tỉ lệ đã set mặc định. Không được sửa vì sẽ lỗi.
-INSERT INTO ParkingConfig (CategoryId, MaxPerApartment, TotalSpacePercent) VALUES
-(1, 1, 20),   -- Xe đạp: 1/căn, 20% tổng số căn hộ
-(2, 3, 160),  -- Xe máy: 3/căn, 160% tổng số căn hộ  
-(3, 1, 50),   -- Ô tô: 1/căn, 50% tổng số căn hộ
-(4, 3, 160),  -- Xe máy điện: theo giới hạn xe máy (3/căn)
-(5, 1, 50);   -- Ô tô điện: theo giới hạn ô tô (1/căn)
-
 CREATE TABLE ViolationPenalty (
     PenaltyId int IDENTITY(1, 1) PRIMARY KEY,
     ViolationId int NOT NULL,
@@ -301,14 +292,6 @@ CREATE TABLE ViolationPenalty (
     Note nvarchar(255),
     CONSTRAINT FK_ViolationPenalty_Violation FOREIGN KEY (ViolationId) REFERENCES Violation(ViolationId)
 )
-
-CREATE TABLE ParkingConfig (
-    ConfigId INT PRIMARY KEY IDENTITY(1,1),
-    CategoryId INT,
-    MaxPerApartment INT NOT NULL,
-    TotalSpacePercent INT NOT NULL,
-    FOREIGN KEY (CategoryId) REFERENCES VehicleCategory(VehicleCategoryId)
-);
 
 CREATE TABLE HouseholdMovement (
     MovementId INT PRIMARY KEY IDENTITY(1,1),
@@ -442,12 +425,15 @@ BEGIN
     DECLARE @FloorId INT;
     DECLARE @MaxFloorId INT;
     DECLARE @ApartmentNumber INT;
+    DECLARE @FloorArea INT;
 
     SET @FloorId = (SELECT MIN(FloorId) FROM Floor); -- ID tầng bắt đầu
     SET @MaxFloorId = (SELECT MAX(FloorId) FROM Floor); -- ID tầng kết thúc
 
     WHILE @FloorId <= @MaxFloorId
     BEGIN
+        SET @FloorArea = (FLOOR((50 + (RAND() * (100 - 50))) / 5) * 5);
+
         SET @ApartmentNumber = 1;
 
         WHILE @ApartmentNumber <= 10
@@ -455,7 +441,7 @@ BEGIN
             INSERT INTO Apartment (ApartmentNumber, Area, Status, FloorId)
             VALUES (
                 @ApartmentNumber, -- Số thứ tự căn hộ
-                FLOOR(50 + (RAND() * (100 - 50 + 1))), -- Diện tích căn hộ ngẫu nhiên
+                @FloorArea,       -- Diện tích cố định của tầng
                 N'Đã bán',        -- Trạng thái mặc định là "Đã bán"
                 @FloorId          -- Tầng tương ứng
             );
@@ -526,8 +512,6 @@ VALUES
 (6, N'Hệ thống thoát nước Block D2', N'Ống thoát nước', 4, N'Hỏng'),
 (7, N'Thang máy Block E1', N'Thang máy block E1', 1, N'Hoạt động');
 
-
-
 -- USE [master]
 -- GO
 -- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE
@@ -538,7 +522,3 @@ VALUES
 -- GO
 -- EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'QuanLyChungCu'
 -- GO
-
-
-
-
