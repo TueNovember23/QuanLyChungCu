@@ -122,9 +122,9 @@ namespace Services.Services.ServiceSupervisorServices
             {
                 "Xe đạp" => 50000f,
                 "Xe máy" => 100000f,
-                "Ô tô" => 1200000f,
-                "Xe máy điện" => 80000f,
-                "Ô tô điện" => 1000000f,
+                "Ô tô" => 1000000f,
+                "Xe máy điện" => 120000f,
+                "Ô tô điện" => 1200000f,
                 _ => 0f
             };
         }

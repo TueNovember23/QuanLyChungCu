@@ -512,6 +512,154 @@ VALUES
 (6, N'Hệ thống thoát nước Block D2', N'Ống thoát nước', 4, N'Hỏng'),
 (7, N'Thang máy Block E1', N'Thang máy block E1', 1, N'Hoạt động');
 
+-- Dữ liệu bảng VehicleCategory (Cố định không được đổi)
+INSERT INTO VehicleCategory (CategoryName, MonthlyFee) VALUES
+(N'Xe đạp', 50000),
+(N'Xe máy', 100000), 
+(N'Ô tô', 1000000),
+(N'Xe máy điện', 120000),
+(N'Ô tô điện', 1200000);
+
+-- Dữ liệu bảng ParkingConfig
+-- Dữ liệu mặc định tính tỷ lệ slot để xe theo căn hộ, chia slot đổ xe cho căn hộ theo tỉ lệ đã set mặc định. Không được sửa vì sẽ lỗi.
+INSERT INTO ParkingConfig (CategoryId, MaxPerApartment, TotalSpacePercent) VALUES
+(1, 1, 20),   -- Xe đạp: 1/căn, 20% tổng số căn hộ
+(2, 3, 160),  -- Xe máy: 3/căn, 160% tổng số căn hộ  
+(3, 1, 50),   -- Ô tô: 1/căn, 50% tổng số căn hộ
+(4, 3, 160),  -- Xe máy điện: theo giới hạn xe máy (3/căn)
+(5, 1, 50);   -- Ô tô điện: theo giới hạn ô tô (1/căn)
+
+-- Dữ liệu bảng Vehicle
+INSERT INTO Vehicle (VehicleId, VehicleOwner, Status, ApartmentId, VehicleCategoryId) VALUES
+-- Xe đạp (không cần biển số cụ thể)
+('1_Xedap', N'Nguyễn Văn An', N'Đang gửi', 1, 1),
+('2_Xedap', N'Trần Thị Bình', N'Đang gửi', 2, 1),
+('3_Xedap', N'Phạm Văn Cường', N'Đang gửi', 3, 1),
+
+-- Xe máy (biển số theo format: 2 số - 1-2 chữ - 4-6 số)
+('59-P1-12345', N'Lê Thị Dung', N'Đang gửi', 1, 2),
+('59-P2-23456', N'Hoàng Văn Em', N'Đang gửi', 2, 2),
+('59-PA-34567', N'Vũ Thị Phương', N'Đang gửi', 3, 2),
+('59-PB-45678', N'Đặng Văn Giám', N'Huỷ gửi', 4, 2),
+
+-- Xe máy điện
+('59-M1-56789', N'Bùi Thị Hoa', N'Đang gửi', 5, 4),
+('59-M2-67890', N'Ngô Văn Inh', N'Đang gửi', 6, 4),
+('59-MA-78901', N'Dương Thị Kim', N'Đang gửi', 7, 4),
+('59-MB-89012', N'Lý Văn Long', N'Huỷ gửi', 8, 4),
+
+-- Ô tô
+('51-A1-23456', N'Trần Văn Minh', N'Đang gửi', 9, 3),
+('51-A2-34567', N'Phạm Thị Nga', N'Đang gửi', 10, 3),
+('51-B1-45678', N'Hoàng Văn Oanh', N'Đang gửi', 11, 3),
+('51-B2-56789', N'Vũ Thị Phương', N'Huỷ gửi', 12, 3),
+
+-- Ô tô điện
+('51-E1-67890', N'Đặng Văn Quang', N'Đang gửi', 13, 5),
+('51-E2-78901', N'Bùi Thị Rơi', N'Đang gửi', 14, 5),
+('51-F1-89012', N'Ngô Văn Sơn', N'Đang gửi', 15, 5),
+('51-F2-90123', N'Dương Thị Tâm', N'Huỷ gửi', 16, 5);
+
+-- Dữ liệu bảng Regulation
+INSERT INTO Regulation (Title, Content, CreatedDate, Category, Priority, IsActive) VALUES
+/* An ninh */
+(N'Quy định về ra vào chung cư', N'Cư dân phải sử dụng thẻ từ khi ra vào. Khách phải đăng ký với bảo vệ.', '2023-01-01', N'An ninh', N'Cao', 1),
+(N'Quy định về đăng ký tạm trú', N'Cư dân phải đăng ký tạm trú cho người ở cùng trong vòng 24h.', '2023-01-02', N'An ninh', N'Cao', 1),
+(N'Quy định về camera an ninh', N'Nghiêm cấm che chắn, làm hỏng camera an ninh trong khu vực chung.', '2023-01-03', N'An ninh', N'Cao', 1),
+(N'Quy định về bảo vệ tài sản', N'Cư dân có trách nhiệm bảo vệ tài sản cá nhân và tài sản chung.', '2023-01-04', N'An ninh', N'Trung bình', 1),
+
+/* Vệ sinh */
+(N'Quy định về xử lý rác thải', N'Rác phải được phân loại và bỏ đúng giờ quy định từ 18h-20h hàng ngày.', '2023-02-01', N'Vệ sinh', N'Cao', 1),
+(N'Quy định về vệ sinh hành lang', N'Không để đồ đạc cá nhân tại hành lang, cầu thang.', '2023-02-02', N'Vệ sinh', N'Trung bình', 1),
+(N'Quy định về nuôi thú cưng', N'Thú cưng phải được đeo rọ mõm khi ra nơi công cộng.', '2023-02-03', N'Vệ sinh', N'Trung bình', 1),
+(N'Quy định về xả rác', N'Nghiêm cấm xả rác từ trên cao xuống.', '2023-02-04', N'Vệ sinh', N'Cao', 1),
+
+/* Phòng cháy */
+(N'Quy định về PCCC', N'Mọi căn hộ phải trang bị bình chữa cháy theo quy định.', '2023-03-01', N'Phòng cháy', N'Cao', 1),
+(N'Quy định về lối thoát hiểm', N'Không được để đồ chắn lối thoát hiểm.', '2023-03-02', N'Phòng cháy', N'Cao', 1),
+(N'Quy định về thiết bị điện', N'Không sử dụng thiết bị điện quá tải, không tự ý sửa chữa điện.', '2023-03-03', N'Phòng cháy', N'Cao', 1),
+(N'Quy định về gas', N'Sử dụng gas đúng quy cách, kiểm tra rò rỉ định kỳ.', '2023-03-04', N'Phòng cháy', N'Cao', 1),
+
+/* Sinh hoạt */
+(N'Quy định về tiếng ồn', N'Không gây ồn ào sau 22h và trước 6h sáng.', '2023-04-01', N'Sinh hoạt', N'Trung bình', 1),
+(N'Quy định về sử dụng thang máy', N'Không để trẻ em dưới 12 tuổi đi thang máy một mình.', '2023-04-02', N'Sinh hoạt', N'Trung bình', 1),
+(N'Quy định về đỗ xe', N'Xe phải đỗ đúng vị trí được phân配.', '2023-04-03', N'Sinh hoạt', N'Trung bình', 1),
+(N'Quy định về sử dụng nước', N'Sử dụng nước tiết kiệm, thông báo khi có sự cố.', '2023-04-04', N'Sinh hoạt', N'Thấp', 1),
+
+/* Khác */
+(N'Quy định về sửa chữa căn hộ', N'Chỉ được sửa chữa trong giờ hành chính, phải đăng ký trước.', '2023-05-01', N'Khác', N'Trung bình', 1),
+(N'Quy định về quảng cáo', N'Không được dán quảng cáo trong khu vực chung.', '2023-05-02', N'Khác', N'Thấp', 1),
+(N'Quy định về họp cư dân', N'Tham gia đầy đủ các cuộc họp cư dân định kỳ.', '2023-05-03', N'Khác', N'Thấp', 1),
+(N'Quy định về phí quản lý', N'Đóng phí quản lý đúng hạn trước ngày 10 hàng tháng.', '2023-05-04', N'Khác', N'Cao', 1);
+
+
+-- Dữ liệu bảng Violation
+INSERT INTO Violation (ApartmentId, RegulationId, CreatedDate, Detail) VALUES
+-- Vi phạm an ninh
+(1, 1, '2024-01-15', N'Không sử dụng thẻ từ khi ra vào, để người lạ đi theo vào chung cư'),
+(2, 2, '2024-01-20', N'Không đăng ký tạm trú cho khách ở lại qua đêm sau 3 ngày'),
+(5, 3, '2024-01-25', N'Che camera an ninh tại hành lang tầng 5'),
+(8, 4, '2024-02-01', N'Để xe đạp tại hành lang gây cản trở lối đi chung'),
+
+-- Vi phạm vệ sinh
+(3, 5, '2024-02-05', N'Xả rác không đúng giờ và không phân loại rác thải'),
+(10, 6, '2024-02-10', N'Để đồ cá nhân tại hành lang gây mất mỹ quan'),
+(12, 7, '2024-02-15', N'Thả rông chó không rọ mõm trong khu vực công cộng'),
+(15, 8, '2024-02-20', N'Xả rác từ ban công xuống khu vực công cộng'),
+
+-- Vi phạm phòng cháy
+(4, 9, '2024-03-01', N'Không trang bị bình chữa cháy theo quy định'),
+(7, 10, '2024-03-05', N'Để xe đẩy chắn lối thoát hiểm'),
+(9, 11, '2024-03-10', N'Tự ý sửa chữa hệ thống điện gây nguy hiểm'),
+(11, 12, '2024-03-15', N'Để bình gas không đúng quy cách, có dấu hiệu rò rỉ'),
+
+-- Vi phạm sinh hoạt
+(6, 13, '2024-03-20', N'Gây tiếng ồn lớn (hát karaoke) sau 23h'),
+(13, 14, '2024-03-25', N'Để trẻ em 8 tuổi đi thang máy một mình'),
+(14, 15, '2024-04-01', N'Đỗ xe không đúng vị trí quy định'),
+(16, 16, '2024-04-05', N'Để nước tràn gây ngập nhà hàng xóm'),
+
+-- Vi phạm khác
+(17, 17, '2024-04-10', N'Sửa chữa căn hộ gây ồn vào cuối tuần không đăng ký'),
+(18, 18, '2024-04-15', N'Dán quảng cáo cho thuê nhà tại thang máy'),
+(19, 19, '2024-04-20', N'Nhiều lần vắng mặt không lý do trong các cuộc họp cư dân'),
+(20, 20, '2024-04-25', N'Chậm đóng phí quản lý 3 tháng liên tiếp');
+
+-- Thêm dữ liệu cho bảng ViolationPenalty
+INSERT INTO ViolationPenalty (ViolationId, PenaltyLevel, Fine, PenaltyMethod, ProcessingStatus, ProcessedDate, Note) VALUES
+(1, N'Nhẹ', 500000, N'Nhắc nhở và phạt tiền', N'Đã xử lý', '2024-01-16 10:00:00', N'Đã chấp hành nộp phạt'),
+(2, N'Trung bình', 1000000, N'Yêu cầu đăng ký tạm trú và phạt tiền', N'Đã xử lý', '2024-01-21 14:30:00', N'Đã đăng ký tạm trú'),
+(3, N'Nặng', 2000000, N'Phạt tiền và cảnh cáo', N'Đang xử lý', '2024-01-26 09:15:00', N'Đang chờ nộp phạt'),
+(4, N'Nhẹ', 500000, N'Nhắc nhở và yêu cầu di dời', N'Đã xử lý', '2024-02-02 11:00:00', N'Đã di dời đồ đạc'),
+(5, N'Trung bình', 1000000, N'Phạt tiền và yêu cầu tuân thủ', N'Chờ xử lý', NULL, NULL);
+
+-- Xử phạt cho các vi phạm vệ sinh
+INSERT INTO ViolationPenalty (ViolationId, PenaltyLevel, Fine, PenaltyMethod, ProcessingStatus, ProcessedDate, Note) VALUES
+(6, N'Trung bình', 1000000, N'Phạt tiền và yêu cầu dọn dẹp', N'Đã xử lý', '2024-02-11 09:00:00', N'Đã dọn dẹp hành lang'),
+(7, N'Trung bình', 1000000, N'Yêu cầu đeo rọ mõm và phạt tiền', N'Đang xử lý', '2024-02-16 14:00:00', N'Đang chờ thực hiện'),
+(8, N'Nặng', 2000000, N'Phạt tiền và cảnh cáo nghiêm khắc', N'Đã xử lý', '2024-02-21 10:30:00', N'Đã cam kết không tái phạm');
+
+-- Xử phạt cho các vi phạm phòng cháy
+INSERT INTO ViolationPenalty (ViolationId, PenaltyLevel, Fine, PenaltyMethod, ProcessingStatus, ProcessedDate, Note) VALUES
+(9, N'Nặng', 2000000, N'Yêu cầu lắp đặt bình chữa cháy và phạt tiền', N'Đang xử lý', '2024-03-02 11:00:00', N'Đang chờ lắp đặt'),
+(10, N'Nặng', 2000000, N'Phạt tiền và yêu cầu di dời ngay lập tức', N'Đã xử lý', '2024-03-06 08:45:00', N'Đã di dời khỏi lối thoát hiểm'),
+(11, N'Nặng', 2000000, N'Phạt tiền và yêu cầu khắc phục hệ thống điện', N'Đã xử lý', '2024-03-11 15:20:00', N'Đã sửa chữa đúng quy định'),
+(12, N'Nặng', 2000000, N'Phạt tiền và yêu cầu thay thế thiết bị gas', N'Đang xử lý', '2024-03-16 13:00:00', N'Đang chờ thay thiết bị mới');
+
+-- Xử phạt cho các vi phạm sinh hoạt
+INSERT INTO ViolationPenalty (ViolationId, PenaltyLevel, Fine, PenaltyMethod, ProcessingStatus, ProcessedDate, Note) VALUES
+(13, N'Trung bình', 1000000, N'Phạt tiền và nhắc nhở', N'Đã xử lý', '2024-03-21 09:30:00', N'Đã cam kết không tái phạm'),
+(14, N'Trung bình', 1000000, N'Phạt tiền và cảnh báo', N'Đã xử lý', '2024-03-26 10:45:00', N'Đã nhận thức được nguy hiểm'),
+(15, N'Nhẹ', 500000, N'Nhắc nhở và yêu cầu di chuyển xe', N'Đã xử lý', '2024-04-02 14:15:00', N'Đã đỗ xe đúng vị trí'),
+(16, N'Trung bình', 1000000, N'Phạt tiền và yêu cầu khắc phục thiệt hại', N'Đang xử lý', '2024-04-06 11:30:00', N'Đang sửa chữa hư hỏng');
+
+-- Xử phạt cho các vi phạm khác
+INSERT INTO ViolationPenalty (ViolationId, PenaltyLevel, Fine, PenaltyMethod, ProcessingStatus, ProcessedDate, Note) VALUES
+(17, N'Trung bình', 1000000, N'Phạt tiền và yêu cầu đăng ký trước', N'Đã xử lý', '2024-04-11 08:00:00', N'Đã đăng ký đúng quy định'),
+(18, N'Nhẹ', 500000, N'Nhắc nhở và yêu cầu gỡ bỏ quảng cáo', N'Đã xử lý', '2024-04-16 09:45:00', N'Đã gỡ bỏ toàn bộ quảng cáo'),
+(19, N'Nhẹ', 500000, N'Nhắc nhở và phạt tiền', N'Chờ xử lý', NULL, NULL),
+(20, N'Nặng', 2000000, N'Phạt tiền và cảnh cáo cuối', N'Đang xử lý', '2024-04-26 10:00:00', N'Đang làm thủ tục đóng phí');
+
 -- USE [master]
 -- GO
 -- ALTER DATABASE [QuanLyChungCu] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE

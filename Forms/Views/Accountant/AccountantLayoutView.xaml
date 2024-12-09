@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:Forms.Views.ServiceSupervisor"
         mc:Ignorable="d"
         Height="850" Width="1200" WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         WindowStyle="None" ResizeMode="NoResize" Background="{x:Null}" AllowsTransparency="True" Loaded="Window_Loaded">
     <Window.Resources>
         <Storyboard x:Key="ExpandSidebar">
@@ -67,10 +68,10 @@
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" 
-                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="EquipmentViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="EqualiserVertical"/>
-                                    <TextBlock x:Name="EqualizerText" Text="Equalizer" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <materialDesign:PackIcon Kind="Devices"/>
+                                    <TextBlock x:Name="EqualizerText" Text="Quản lý thiết bị" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
@@ -78,10 +79,10 @@
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" 
-                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
+                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="RepairInvoiceViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="ChatOutline"/>
-                                    <TextBlock x:Name="ChatText" Text="Chat" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                    <materialDesign:PackIcon Kind="InvoiceCheck"/>
+                                    <TextBlock x:Name="ChatText" Text="Hoá đơn thiết bị" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
                                 </StackPanel>
                             </Button>
                         </ListViewItem>

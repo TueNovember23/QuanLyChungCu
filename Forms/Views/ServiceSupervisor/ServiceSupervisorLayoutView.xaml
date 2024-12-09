@@ -57,17 +57,6 @@
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" 
-                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="EquipmentViewButton_Click">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="Devices"/>
-                                    <TextBlock x:Name="CalendarText" Text="Quản lý thiết bị" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
-                                </StackPanel>
-                            </Button>
-                        </ListViewItem>
-                        <!-- Button 4 -->
-                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
-                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                                    Width="190" 
                                     BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left" Click="RegisterCommunityRoomViewButton_Click">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="RoomService"/>
@@ -75,17 +64,7 @@
                                 </StackPanel>
                             </Button>
                         </ListViewItem>
-                        <!-- Button 5 -->
-                        <ListViewItem HorizontalAlignment="Stretch" Margin="0">
-                            <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
-                                    Width="190" 
-                                    BorderBrush="{x:Null}" Background="{x:Null}" Foreground="Black" VerticalAlignment="Center" Margin="10,5,0,5" HorizontalContentAlignment="Left">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="ChatOutline"/>
-                                    <TextBlock x:Name="ChatText" Text="Chat" Foreground="Black" Margin="10,0,0,0" Visibility="Collapsed"/>
-                                </StackPanel>
-                            </Button>
-                        </ListViewItem>
+                        <!-- Button 4 -->
                         <ListViewItem HorizontalAlignment="Stretch" Margin="0">
                             <Button Style="{StaticResource MaterialDesignFloatingActionButton}" HorizontalAlignment="Left"
                                     Width="190" Click="ChangePassword_Click"
