@@ -77,6 +77,7 @@ namespace Forms.Views.Accountant
             CalendarText.Visibility = Visibility.Visible;
             EqualizerText.Visibility = Visibility.Visible;
             ChatText.Visibility = Visibility.Visible;
+            YourAccountText.Visibility = Visibility.Visible;
             ExitText.Visibility = Visibility.Visible;
         }
 
@@ -90,6 +91,7 @@ namespace Forms.Views.Accountant
             CalendarText.Visibility = Visibility.Collapsed;
             EqualizerText.Visibility = Visibility.Collapsed;
             ChatText.Visibility = Visibility.Collapsed;
+            YourAccountText.Visibility = Visibility.Collapsed;
             ExitText.Visibility = Visibility.Collapsed;
         }
 
