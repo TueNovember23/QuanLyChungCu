@@ -73,7 +73,7 @@ namespace Forms.ViewModels.Accountant
 
         private async Task LoadLoadLoad()
         {
-            await LoadInvoicesAsync();
+            await LoadAllInvoiceTypesAsync();
             await LoadComboBoxData();
         }
 
@@ -116,22 +116,34 @@ namespace Forms.ViewModels.Accountant
             SelectedYear = DateTime.Now.Year;
         }
 
-        private async Task LoadInvoicesAsync()
+        private async Task LoadAllInvoiceTypesAsync()
         {
             IsLoading = true;
             try
             {
                 var invoices = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
-                TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices.TotalInvoices);
-                WaterInvoices = new ObservableCollection<ResponseWaterInvoiceDTO>(invoices.WaterInvoices);
-                ManagementInvoices = new ObservableCollection<ResponseManagementFeeInvoiceDTO>(invoices.ManagementInvoices);
-                VehicleInvoices = new ObservableCollection<ResponseVehicleInvoiceDTO>(invoices.VehicleInvoices);
+                TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices);
+                // Tải các loại hóa đơn song song
+                var waterTask = await _invoiceService.GetWaterInvoices(SelectedMonth, SelectedYear);
+                var vehicleTask = await _invoiceService.GetVehicleInvoices(SelectedMonth, SelectedYear);
+                var managementTask = await _invoiceService.GetManagementFeeInvoices(SelectedMonth, SelectedYear);
+
+
+                // Cập nhật dữ liệu sau khi tải xong
+                WaterInvoices = new ObservableCollection<ResponseWaterInvoiceDTO>(waterTask);
+                VehicleInvoices = new ObservableCollection<ResponseVehicleInvoiceDTO>(vehicleTask);
+                ManagementInvoices = new ObservableCollection<ResponseManagementFeeInvoiceDTO>(managementTask);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi tải hóa đơn: {ex.Message}");
             }
             finally
             {
                 IsLoading = false;
             }
         }
+
 
         [RelayCommand]
         private async Task GenerateInvoices()
@@ -141,7 +153,7 @@ namespace Forms.ViewModels.Accountant
             {
                 var invoiceInputs = new List<InvoiceInputDTO>(); 
                 await _invoiceService.GenerateInvoices(SelectedMonth, SelectedYear, invoiceInputs);
-                await LoadInvoicesAsync();
+                await LoadAllInvoiceTypesAsync();
             }
             finally
             {
@@ -156,7 +168,7 @@ namespace Forms.ViewModels.Accountant
             try
             {
                 await _invoiceService.GenerateWaterInvoices(invoiceId, new Apartment { ApartmentCode = apartmentCode }, startIndex, endIndex, numberOfPeople);
-                await LoadInvoicesAsync();
+                await LoadAllInvoiceTypesAsync();
             }
             finally
             {
@@ -171,7 +183,7 @@ namespace Forms.ViewModels.Accountant
             try
             {
                 await _invoiceService.GenerateManagementFeeInvoices(invoiceId, new Apartment { ApartmentCode = apartmentCode }, apartmentArea, managementFeePrice);
-                await LoadInvoicesAsync();
+                await LoadAllInvoiceTypesAsync();
             }
             finally
             {
@@ -186,7 +198,7 @@ namespace Forms.ViewModels.Accountant
             try
             {
                 await _invoiceService.GenerateVehicleInvoices(invoiceId, new Apartment { ApartmentCode = apartmentCode });
-                await LoadInvoicesAsync();
+                await LoadAllInvoiceTypesAsync();
             }
             finally
             {

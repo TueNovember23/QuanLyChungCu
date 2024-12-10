@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Castle.Components.DictionaryAdapter;
+using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
 using Repositories.Repositories.Entities;
 using Services.DTOs.InvoiceDTO;
@@ -27,32 +28,37 @@ namespace Services.Services.AccountantServices
         }
 
 
-        public async Task<InvoiceGroupDTO> GetAllInvoices(int month, int year)
+        public async Task<List<ResponseInvoiceDTO>> GetAllInvoices(int month, int year)
         {
-            var invoices = await _unitOfWork.GetRepository<Invoice>().Entities
-                .Include(i => i.WaterInvoices)
-                    .ThenInclude(w => w.Apartment)
-                .Include(i => i.VechicleInvoices)
-                    .ThenInclude(v => v.Apartment)
-                .Include(i => i.ManagementFeeInvoices)
-                    .ThenInclude(m => m.Apartment)
-                .Where(i => i.Month == month && i.Year == year)
-                .ToListAsync();
-            Console.WriteLine($"Số lượng hóa đơn xe: {invoices.SelectMany(i => i.VechicleInvoices).Count()}");
-            return new InvoiceGroupDTO
+            var list = await _unitOfWork.GetRepository<Invoice>().Entities
+                .Where(_ => _.Month == month && _.Year == year).ToListAsync();
+            var listI = list.Select(_ => new ResponseInvoiceDTO()
             {
-                TotalInvoices = invoices.Select(i => new ResponseInvoiceDTO
+                InvoiceId = _.InvoiceId,
+                ApartmentCode = _.WaterInvoices.FirstOrDefault()?.Apartment?.ApartmentCode,
+                Month = _.Month,
+                Year = _.Year,
+                TotalAmount = _.TotalAmount,
+                CreatedDate = _.CreatedDate,
+                Status = _.Status
+            }).ToList();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var waterInvoice = _unitOfWork.GetRepository<WaterInvoice>().Entities.Where(_ => _.InvoiceId == list[i].InvoiceId).FirstOrDefault();
+                if(waterInvoice != null)
                 {
-                    InvoiceId = i.InvoiceId,
-                    ApartmentCode = i.VechicleInvoices.FirstOrDefault()?.Apartment.ApartmentCode,
-                    Month = i.Month ?? 0,
-                    Year = i.Year ?? 0,
-                    TotalAmount = i.TotalAmount ?? 0,
-                    Status = i.Status ?? "Pending",
-                    CreatedDate = i.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now)
-                }).ToList(),
+                    listI[i].ApartmentCode = waterInvoice.Apartment.ApartmentCode;
+                }
+            }
+            return listI;
+        }
 
-                WaterInvoices = invoices.SelectMany(i => i.WaterInvoices.Select(w => new ResponseWaterInvoiceDTO
+        public async Task<List<ResponseWaterInvoiceDTO>> GetWaterInvoices(int month, int year)
+        {
+            var waterInvoices = await _unitOfWork.GetRepository<WaterInvoice>().Entities
+                .Include(w => w.Apartment)
+                .Where(w => w.Invoice.Month == month && w.Invoice.Year == year)
+                .Select(w => new ResponseWaterInvoiceDTO
                 {
                     WaterInvoiceId = w.WaterInvoiceId,
                     ApartmentCode = w.Apartment.ApartmentCode,
@@ -60,30 +66,52 @@ namespace Services.Services.AccountantServices
                     EndIndex = w.EndIndex,
                     NumberOfPeople = w.NumberOfPeople,
                     TotalAmount = w.TotalAmount ?? 0,
-                    CreatedDate = i.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
-                    InvoiceId = i.InvoiceId
-                })).ToList(),
+                    InvoiceId = w.InvoiceId
+                })
+                .ToListAsync();
 
-                ManagementInvoices = invoices.SelectMany(i => i.ManagementFeeInvoices.Select(m => new ResponseManagementFeeInvoiceDTO
+            return waterInvoices;
+        }
+
+        public async Task<List<ResponseVehicleInvoiceDTO>> GetVehicleInvoices(int month, int year)
+        {
+            var vehicleInvoices = await _unitOfWork.GetRepository<VechicleInvoice>().Entities
+                .Include(v => v.Apartment)
+                .Where(v => v.Invoice.Month == month && v.Invoice.Year == year)
+                .Select(v => new ResponseVehicleInvoiceDTO
+                {
+                    VehicleInvoiceId = v.VechicleInvoiceId,
+                    ApartmentCode = v.Apartment.ApartmentCode,
+                    TotalAmount = v.TotalAmount ?? 0,
+                    //CreatedDate = v.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
+                    InvoiceId = v.InvoiceId
+                })
+                .ToListAsync();
+
+            return vehicleInvoices;
+        }
+
+        public async Task<List<ResponseManagementFeeInvoiceDTO>> GetManagementFeeInvoices(int month, int year)
+        {
+            var managementInvoices = await _unitOfWork.GetRepository<ManagementFeeInvoice>().Entities
+                .Include(m => m.Apartment)
+                .Where(m => m.Invoice.Month == month && m.Invoice.Year == year)
+                .Select(m => new ResponseManagementFeeInvoiceDTO
                 {
                     ManagementFeeInvoiceId = m.ManagementFeeInvoiceId,
                     ApartmentCode = m.Apartment.ApartmentCode,
                     Price = m.Price,
                     TotalAmount = m.TotalAmount ?? 0,
-                    CreatedDate = i.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
-                    InvoiceId = i.InvoiceId
-                })).ToList(),
+                    //CreatedDate = m.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
+                    InvoiceId = m.InvoiceId
+                })
+                .ToListAsync();
 
-                VehicleInvoices = invoices.SelectMany(i => i.VechicleInvoices.Select(v => new ResponseVehicleInvoiceDTO
-                {
-                    VehicleInvoiceId = v.VechicleInvoiceId,
-                    ApartmentCode = v.Apartment.ApartmentCode,
-                    TotalAmount = v.TotalAmount ?? 0,
-                    CreatedDate = i.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
-                    InvoiceId = i.InvoiceId
-                })).ToList()
-            };
+            return managementInvoices;
         }
+
+
+
 
         public async Task GenerateInvoices(int month, int year, List<InvoiceInputDTO> invoiceInputs)
         {

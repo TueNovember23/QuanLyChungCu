@@ -79,9 +79,10 @@ namespace Services.Services.ServiceSupervisorServices
                 EndTime = booking.EndTime,
                 NumberOfPeople = booking.NumberOfPeople,
                 RoomName = booking.CommunityRoom.RoomName,
-                Reason = booking.Reason, // Lấy lý do đặt phòng
-                Priority = booking.Priority, // Lấy mức độ ưu tiên
-                CanUseWithOtherPeople = booking.CanUseWithOtherPeople
+                Reason = booking.Reason,
+                Priority = booking.Priority, 
+                CanUseWithOtherPeople = booking.CanUseWithOtherPeople,
+                Status = booking.Status
             }).ToListAsync();
 
             return bookings;
@@ -150,7 +151,6 @@ namespace Services.Services.ServiceSupervisorServices
                     NumberOfPeople = numberOfPeople,
                     Reason = reason,
                     Priority = priority,
-                  
                     CanUseWithOtherPeople = canUseWithOtherPeople
                 };
 

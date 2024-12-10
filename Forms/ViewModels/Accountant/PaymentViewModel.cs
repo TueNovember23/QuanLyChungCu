@@ -84,7 +84,7 @@ namespace Forms.ViewModels.Accountant
         private async Task LoadInvoicesAsync()
         {
             var invoiceGroup = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
-            var invoices = invoiceGroup.TotalInvoices;
+            var invoices = invoiceGroup;
             TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices);
         }
 
@@ -105,8 +105,7 @@ namespace Forms.ViewModels.Accountant
         private async Task SearchInvoices()
         {
             var invoiceGroup = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
-            var invoices = invoiceGroup.TotalInvoices; // Lấy danh sách hóa đơn từ InvoiceGroupDTO
-
+            var invoices = invoiceGroup;
             // Lọc theo trạng thái
             if (!string.IsNullOrWhiteSpace(SelectedStatus) && SelectedStatus != "Tất cả")
             {

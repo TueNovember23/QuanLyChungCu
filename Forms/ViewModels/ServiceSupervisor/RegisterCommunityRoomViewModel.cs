@@ -162,6 +162,13 @@ namespace Forms.ViewModels.ServiceSupervisor
                     return;
                 }
 
+                if (BookingDate == today)
+                {
+                    ErrorMessage = "Vui lòng đặt phòng ít nhất 1 ngày trước ngày hiện tại";
+                    ShowErrorMessage = true;
+                    return;
+                }
+
                 if (SelectedStartTime == null || SelectedEndTime == null)
                 {
                     ErrorMessage = "Vui lòng chọn thời gian đặt phòng";
@@ -202,7 +209,7 @@ namespace Forms.ViewModels.ServiceSupervisor
 
                 if (!availableSlots.Any(slot => StartTime >= slot.startTime && EndTime <= slot.endTime))
                 {
-                    ErrorMessage = "Khung thời gian đã chọn không khả dụng.";
+                    ErrorMessage = "Chỉ được đăng ký trong thời gian từ 7 giờ sáng tới 22 giờ tối";
                     ShowErrorMessage = true;
                     return;
                 }

@@ -37,7 +37,7 @@ namespace Forms.ViewModels.Accountant
         private string? selectedArea;
 
         [ObservableProperty]
-        private ObservableCollection<string> statusList = new() { "Hoạt động", "Hỏng", "Bảo trì" };
+        private ObservableCollection<string> statusList = new() {"", "Hoạt động", "Hỏng", "Bảo trì" };
 
         [ObservableProperty]
         private string? selectedStatus;

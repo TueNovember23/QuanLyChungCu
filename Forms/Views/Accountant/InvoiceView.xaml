@@ -45,6 +45,13 @@
 
                 </StackPanel>
 
+                <!-- Header and other controls -->
+                <StackPanel  Grid.Column="1" Orientation="Horizontal" Margin="16">
+                    <Button Content="Manage Fees" Command="{Binding ShowFeeManagementViewCommand}" Width="150"/>
+                </StackPanel>
+
+                <!-- Content Control to display FeeManagementView -->
+                <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
             </Grid>
         </materialDesign:Card>
 

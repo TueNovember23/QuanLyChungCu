@@ -39,5 +39,10 @@ namespace Forms.Views.Accountant
                 viewModel.SaveInvoiceCommand.Execute(null); 
             }
         }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }
