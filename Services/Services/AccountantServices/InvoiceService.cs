@@ -49,6 +49,7 @@ namespace Services.Services.AccountantServices
                 {
                     listI[i].ApartmentCode = waterInvoice.Apartment.ApartmentCode;
                 }
+                continue;
             }
             return listI;
         }

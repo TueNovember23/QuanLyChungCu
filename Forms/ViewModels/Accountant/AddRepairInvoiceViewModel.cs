@@ -101,7 +101,6 @@ namespace Forms.ViewModels.Accountant
                     EquipmentId = malfunctionEquipment.EquipmentId ?? 0,
                     EquipmentName = malfunctionEquipment.EquipmentName,
                     RepairPrice = malfunctionEquipment.RepairPrice
-                    
                 };
 
                 SelectedEquipments.Add(malfunction);
