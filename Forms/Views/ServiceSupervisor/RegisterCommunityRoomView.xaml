@@ -8,6 +8,7 @@
              xmlns:header="clr-namespace:Forms.Views"
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1100">
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -66,117 +67,155 @@
                              FontWeight="Medium"
                              Margin="16"/>
 
-                    <DataGrid Grid.Row="1" 
-                             ItemsSource="{Binding Bookings}"
-                             AutoGenerateColumns="False"
-                             IsReadOnly="True"
-                             Margin="16">
+                    <DataGrid Grid.Row="1"
+          ItemsSource="{Binding Bookings}"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          Margin="16"
+          HorizontalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Mã căn hộ" 
-                                              Binding="{Binding ApartmentCode}" 
-                                              Width="Auto"/>
+                            Binding="{Binding ApartmentCode}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Tên phòng" 
-                                              Binding="{Binding RoomName}" 
-                                              Width="Auto"/>
+                            Binding="{Binding RoomName}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Ngày đặt" 
-                                              Binding="{Binding BookingDate}" 
-                                              Width="Auto"/>
+                            Binding="{Binding BookingDate}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Giờ bắt đầu" 
-                                              Binding="{Binding StartTime}" 
-                                              Width="*"/>
+                            Binding="{Binding StartTime}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Giờ kết thúc" 
-                                              Binding="{Binding EndTime}" 
-                                              Width="*"/>
+                            Binding="{Binding EndTime}" 
+                            Width="200"/>
                             <DataGridTextColumn Header="Số người" 
-                                              Binding="{Binding NumberOfPeople}" 
-                                              Width="*"/>
-
-                            <DataGridTemplateColumn Header="Thao tác" Width="*">
+                            Binding="{Binding NumberOfPeople}" 
+                            Width="200"/>
+                            <DataGridTextColumn Header="Lý do" 
+                            Binding="{Binding Reason}" 
+                            Width="200"/>
+                            <DataGridTextColumn Header="Ưu tiên" 
+                            Binding="{Binding Priority}" 
+                            Width="200"/>
+                            <DataGridTextColumn Header="Có thể sử dụng với người khác" 
+                            Binding="{Binding CanUseWithOtherPeople}" 
+                            Width="200"/>
+                            <DataGridTextColumn Header="Trạng thái" 
+                            Binding="{Binding Status}" 
+                            Width="200"/>
+                            <DataGridTemplateColumn Header="Thao tác" Width="200">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Content="Xóa"
-                                                Command="{Binding DataContext.DeleteBookingCommand, 
-                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding BookingId}"
-                                                Style="{StaticResource MaterialDesignOutlinedButton}"
-                                                Margin="5"/>
+                            Command="{Binding DataContext.DeleteBookingCommand, 
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding BookingId}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Margin="5"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+
                 </Grid>
             </materialDesign:Card>
 
             <!-- Form đăng ký -->
             <materialDesign:Card Grid.Column="1" Margin="10" UniformCornerRadius="15">
-                <StackPanel Margin="16">
-                    <TextBlock Text="Đăng ký phòng sinh hoạt chung" 
-                             FontSize="20" 
-                             FontWeight="Medium"
-                             Margin="0 0 0 16"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Đăng ký phòng sinh hoạt chung" 
+               FontSize="20" 
+               FontWeight="Medium"
+               Margin="0 0 0 16"/>
 
-                    <ComboBox materialDesign:HintAssist.Hint="Chọn phòng"
-                             ItemsSource="{Binding Rooms}"
-                             SelectedItem="{Binding SelectedRoom}"
-                             DisplayMemberPath="RoomName"
-                             Margin="0 8"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Chọn phòng"
+               ItemsSource="{Binding Rooms}"
+               SelectedItem="{Binding SelectedRoom}"
+               DisplayMemberPath="RoomName"
+               Margin="0 8"/>
 
-                    <ComboBox materialDesign:HintAssist.Hint="Chọn căn hộ"
-                      ItemsSource="{Binding Apartments}"
-                      SelectedItem="{Binding SelectedApartment}"
-                      DisplayMemberPath="ApartmentCode"
-                      Margin="0 8"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Chọn căn hộ"
+               ItemsSource="{Binding Apartments}"
+               SelectedItem="{Binding SelectedApartment}"
+               DisplayMemberPath="ApartmentCode"
+               Margin="0 8"/>
 
+                        <DatePicker 
+        materialDesign:HintAssist.Hint="Ngày đặt phòng"
+        SelectedDate="{Binding SelectedDate}"
+        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+        Margin="0 8"/>
 
-                    <DatePicker 
-                            materialDesign:HintAssist.Hint="Ngày đặt phòng"
-                            SelectedDate="{Binding SelectedDate}"
-                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                            Margin="0 8"/>
+                        <TextBox materialDesign:HintAssist.Hint="Lý do"
+              Text="{Binding Reason}"
+              Style="{StaticResource MaterialDesignOutlinedTextBox}"
+              Margin="0 8"/>
 
-                    <Grid Margin="0 8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                        <ComboBox materialDesign:HintAssist.Hint="Ưu tiên"
+               SelectedItem="{Binding SelectedPriority}"
+               ItemsSource="{Binding PriorityOptions}" 
+               Margin="0 8"/>
 
-                        <materialDesign:TimePicker 
-                            Grid.Column="0"
-                            materialDesign:HintAssist.Hint="Giờ bắt đầu"
-                            SelectedTime="{Binding SelectedStartTime}"
-                            Style="{StaticResource MaterialDesignOutlinedTimePicker}"
-                            Margin="0 0 4 0"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Trạng thái"
+               SelectedItem="{Binding Status}"
+               ItemsSource="{Binding StatusOptions}" 
+               Margin="0 8"/>
 
-                        <materialDesign:TimePicker 
-                            Grid.Column="1"
-                            materialDesign:HintAssist.Hint="Giờ kết thúc" 
-                            SelectedTime="{Binding SelectedEndTime}"
-                            Style="{StaticResource MaterialDesignOutlinedTimePicker}"
-                            Margin="4 0 0 0"/>
-                    </Grid>
+                        <CheckBox Content="Có thể sử dụng với người khác"
+              IsChecked="{Binding CanUseWithOtherPeople}"
+              Margin="0 8"/>
 
-                    <TextBox materialDesign:HintAssist.Hint="Số người tham gia"
-                            Text="{Binding NumberOfPeople}"
-                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                            Margin="0 8"/>
+                        <Grid Margin="0 8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="Red"
-                       Visibility="{Binding ShowErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}"
-                       TextWrapping="Wrap"
-                       Margin="0 8"/>
+                            <materialDesign:TimePicker 
+            Grid.Column="0"
+            materialDesign:HintAssist.Hint="Giờ bắt đầu"
+            SelectedTime="{Binding SelectedStartTime}"
+            Style="{StaticResource MaterialDesignOutlinedTimePicker}"
+            Margin="0 0 4 0"/>
 
-                    <TextBlock Text="{Binding SelectedRoom.AvailableCapacityText}"
-                       Foreground="Gray"
-                       FontStyle="Italic"
-                       Margin="0 8"/>
+                            <materialDesign:TimePicker 
+            Grid.Column="1"
+            materialDesign:HintAssist.Hint="Giờ kết thúc" 
+            SelectedTime="{Binding SelectedEndTime}"
+            Style="{StaticResource MaterialDesignOutlinedTimePicker}"
+            Margin="4 0 0 0"/>
+                        </Grid>
 
-                    <Button Content="Đăng ký"
-                    Command="{Binding RegisterCommand}"
-                    Style="{StaticResource MaterialDesignRaisedButton}"
-                    Margin="0 16 0 0"/>
-                </StackPanel>
+                        <TextBox materialDesign:HintAssist.Hint="Số người tham gia"
+              Text="{Binding NumberOfPeople}"
+              Style="{StaticResource MaterialDesignOutlinedTextBox}"
+              Margin="0 8"/>
+
+                        <Button Content="Kiểm tra thời gian trống"
+                Command="{Binding CheckAvailableTimeSlotsCommand}"
+                Style="{StaticResource MaterialDesignRaisedButton}"
+                Margin="0 8"/>
+
+                        <TextBlock Text="{Binding ErrorMessage}"
+               Foreground="Red"
+               Visibility="{Binding ShowErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}"
+               TextWrapping="Wrap"
+               Margin="0 8"/>
+
+                        <TextBlock Text="{Binding SelectedRoom.AvailableCapacityText}"
+               Foreground="Gray"
+               FontStyle="Italic"
+               Margin="0 8"/>
+
+                        <Button Content="Đăng ký"
+            Command="{Binding RegisterCommand}"
+            Style="{StaticResource MaterialDesignRaisedButton}"
+            Margin="0 16 0 0"/>
+                    </StackPanel>
+                </ScrollViewer>
             </materialDesign:Card>
         </Grid>
     </Grid>

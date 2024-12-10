@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="Forms.Views.Accountant.InvoiceDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Grid>
+        <TabControl>
+            <!-- Hóa đơn nước -->
+            <TabItem Header="Hóa đơn nước">
+                <Grid>
+                    <DataGrid ItemsSource="{Binding WaterInvoices}" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding WaterInvoiceId}"/>
+                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                            <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
+                            <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button Content="Thêm" Command="{Binding AddWaterInvoiceCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                </Grid>
+            </TabItem>
+
+            <!-- Hóa đơn phí quản lý -->
+            <TabItem Header="Hóa đơn phí quản lý">
+                <Grid>
+                    <DataGrid ItemsSource="{Binding ManagementInvoices}" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding ManagementFeeInvoiceId}"/>
+                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                            <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
+                            <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button Content="Thêm" Command="{Binding AddManagementInvoiceCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                </Grid>
+            </TabItem>
+
+            <!-- Hóa đơn xe -->
+            <TabItem Header="Hóa đơn xe">
+                <Grid>
+                    <DataGrid ItemsSource="{Binding VehicleInvoices}" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding VehicleInvoiceId}"/>
+                            <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                            <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
+                            <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button Content="Thêm" Command="{Binding AddVehicleInvoiceCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

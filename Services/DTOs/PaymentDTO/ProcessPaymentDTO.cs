@@ -12,5 +12,6 @@ namespace Services.DTOs.PaymentDTO
         public decimal Amount { get; set; }
         public string PaymentMethod { get; set; } = null!;
         public string? Note { get; set; }
+        public string Status { get; set; } = null!;
     }
 }

@@ -12,6 +12,10 @@ namespace Services.Services.ServiceSupervisorServices
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        private static readonly TimeOnly AllowedStartTime = new TimeOnly(7, 0);
+        private static readonly TimeOnly AllowedEndTime = new TimeOnly(22, 0); 
+
+
         public CommunityRoomService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -74,7 +78,11 @@ namespace Services.Services.ServiceSupervisorServices
                 StartTime = booking.StartTime,
                 EndTime = booking.EndTime,
                 NumberOfPeople = booking.NumberOfPeople,
-                RoomName = booking.CommunityRoom.RoomName
+                RoomName = booking.CommunityRoom.RoomName,
+                Reason = booking.Reason,
+                Priority = booking.Priority, 
+                CanUseWithOtherPeople = booking.CanUseWithOtherPeople,
+                Status = booking.Status
             }).ToListAsync();
 
             return bookings;
@@ -122,7 +130,7 @@ namespace Services.Services.ServiceSupervisorServices
 
 
         public async Task<bool> CreateBooking(int communityRoomId, int apartmentId, DateOnly bookingDate,
-            TimeOnly startTime, TimeOnly endTime, int numberOfPeople)
+    TimeOnly startTime, TimeOnly endTime, int numberOfPeople, string reason, int priority, bool canUseWithOtherPeople)
         {
             try
             {
@@ -140,7 +148,10 @@ namespace Services.Services.ServiceSupervisorServices
                     BookingDate = bookingDate,
                     StartTime = startTime,
                     EndTime = endTime,
-                    NumberOfPeople = numberOfPeople
+                    NumberOfPeople = numberOfPeople,
+                    Reason = reason,
+                    Priority = priority,
+                    CanUseWithOtherPeople = canUseWithOtherPeople
                 };
 
                 await _unitOfWork.GetRepository<CommunityRoomBooking>().InsertAsync(booking);
@@ -166,5 +177,39 @@ namespace Services.Services.ServiceSupervisorServices
                 return false;
             }
         }
+
+        public async Task<List<(TimeOnly startTime, TimeOnly endTime)>> GetAvailableTimeSlots(int communityRoomId, DateOnly bookingDate)
+        {
+            var bookings = await _unitOfWork.GetRepository<CommunityRoomBooking>()
+                .Entities
+                .Where(b => b.CommunityRoomId == communityRoomId && b.BookingDate == bookingDate)
+                .OrderBy(b => b.StartTime)
+                .ToListAsync();
+
+            var availableSlots = new List<(TimeOnly startTime, TimeOnly endTime)>();
+
+            var currentStart = AllowedStartTime;
+
+            foreach (var booking in bookings)
+            {
+                if (currentStart < (booking.StartTime ?? AllowedStartTime))
+                {
+                    availableSlots.Add((currentStart, booking.StartTime ?? AllowedEndTime));
+                }
+
+                currentStart = booking.EndTime.HasValue && booking.EndTime > currentStart
+              ? booking.EndTime.Value
+              : currentStart;
+            }
+
+            if (currentStart < AllowedEndTime)
+            {
+                availableSlots.Add((currentStart, AllowedEndTime));
+            }
+
+            return availableSlots;
+        }
+
+
     }
 }

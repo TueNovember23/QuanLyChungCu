@@ -7,9 +7,11 @@ using Services.Interfaces.ServiceSupervisorServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Forms.ViewModels.ServiceSupervisor
 {
@@ -56,11 +58,30 @@ namespace Forms.ViewModels.ServiceSupervisor
         [ObservableProperty]
         private DateTime? searchBookingDate;
 
+        [ObservableProperty]
+        private string? reason; 
+
+        [ObservableProperty]
+        private int selectedPriority;
+
+    
+
+        [ObservableProperty]
+        private bool canUseWithOtherPeople;
+
+        [ObservableProperty]
+        private List<int> priorityOptions = new List<int> { 1 , 2, 3 };
+
+        [ObservableProperty]
+        private List<string> statusOptions = new List<string> { "Đã đăng ký", "Chờ duyệt", "Đã hủy" };
+
 
         private DateOnly BookingDate => DateOnly.FromDateTime(SelectedDate ?? DateTime.Today);
         private TimeOnly StartTime => TimeOnly.FromDateTime(SelectedStartTime ?? DateTime.Now); 
         private TimeOnly EndTime => TimeOnly.FromDateTime(SelectedEndTime ?? DateTime.Now);
-        
+
+ 
+
         public string AvailableCapacityText =>
             $"Số người còn lại có thể đăng ký: {SelectedRoom.RoomSize - SelectedRoom.CurrentBookings}";
 
@@ -82,7 +103,8 @@ namespace Forms.ViewModels.ServiceSupervisor
 
             var apartmentList = await _communityRoomService.GetApartments();
             Apartments = new ObservableCollection<ApartmentDTO>(apartmentList);
-        }
+        } 
+
 
         [RelayCommand]
         private async Task Search()
@@ -140,6 +162,13 @@ namespace Forms.ViewModels.ServiceSupervisor
                     return;
                 }
 
+                if (BookingDate == today)
+                {
+                    ErrorMessage = "Vui lòng đặt phòng ít nhất 1 ngày trước ngày hiện tại";
+                    ShowErrorMessage = true;
+                    return;
+                }
+
                 if (SelectedStartTime == null || SelectedEndTime == null)
                 {
                     ErrorMessage = "Vui lòng chọn thời gian đặt phòng";
@@ -176,17 +205,30 @@ namespace Forms.ViewModels.ServiceSupervisor
                     return;
                 }
 
+                var availableSlots = await _communityRoomService.GetAvailableTimeSlots(SelectedRoom.CommunityRoomId, BookingDate);
+
+                if (!availableSlots.Any(slot => StartTime >= slot.startTime && EndTime <= slot.endTime))
+                {
+                    ErrorMessage = "Chỉ được đăng ký trong thời gian từ 7 giờ sáng tới 22 giờ tối";
+                    ShowErrorMessage = true;
+                    return;
+                }
+
+
                 var currentApartmentId = SelectedApartment?.ApartmentId ?? 1;
 
 
                 var success = await _communityRoomService.CreateBooking(
-                    SelectedRoom.CommunityRoomId,
-                    currentApartmentId,
-                    BookingDate,
-                    StartTime,
-                    EndTime,
-                    NumberOfPeople
-                );
+                     SelectedRoom.CommunityRoomId,
+                     currentApartmentId,
+                     BookingDate,
+                     StartTime,
+                     EndTime,
+                     NumberOfPeople,
+                     Reason,
+                     SelectedPriority,
+                     CanUseWithOtherPeople
+                 );
 
                 if (success)
                 {
@@ -228,5 +270,41 @@ namespace Forms.ViewModels.ServiceSupervisor
                 ShowErrorMessage = true;
             }
         }
+
+        [RelayCommand]
+        private async Task CheckAvailableTimeSlots()
+        {
+            if (SelectedRoom == null || SelectedDate == null)
+            {
+                ErrorMessage = "Vui lòng chọn phòng và ngày để kiểm tra.";
+                ShowErrorMessage = true;
+                return;
+            }
+
+            try
+            {
+                var availableSlots = await _communityRoomService.GetAvailableTimeSlots(SelectedRoom.CommunityRoomId, BookingDate);
+
+                if (availableSlots.Any())
+                {
+                    var message = "Các khoảng thời gian khả dụng:\n" +
+                        string.Join("\n", availableSlots.Select(slot => $"{slot.startTime} - {slot.endTime}"));
+                    ErrorMessage = message;
+                }
+                else
+                {
+                    ErrorMessage = "Không có khoảng thời gian nào khả dụng.";
+                }
+
+                ShowErrorMessage = true;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Có lỗi xảy ra: {ex.Message}";
+                ShowErrorMessage = true;
+            }
+        }
+
+
     }
 }
