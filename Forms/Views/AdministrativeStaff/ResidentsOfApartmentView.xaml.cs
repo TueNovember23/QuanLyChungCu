@@ -84,14 +84,9 @@ namespace Forms.Views.AdministrativeStaff
                 FullName = FullNameInput.Text.Trim(),
                 Gender = (GenderInput.SelectedItem as ComboBoxItem)?.Content.ToString(),
                 DateOfBirth = DateOfBirthInput.SelectedDate.HasValue ? DateOnly.FromDateTime(DateOfBirthInput.SelectedDate.Value) : null,
-                RelationShipWithOwner = RelationShipInput.Text.Trim(),
+                RelationShipWithOwner = (RelationshipInput.SelectedItem as ComboBoxItem)?.Content.ToString(),
                 ApartmentCode = ApartmentCodeInput.Text.Trim()
             };
-
-            if (string.IsNullOrEmpty(createResidentDto.ResidentId) || string.IsNullOrEmpty(createResidentDto.FullName) || string.IsNullOrEmpty(createResidentDto.ApartmentCode))
-            {
-                throw new BusinessException("Vui lòng điền đầy đủ thông tin!");
-            }
 
             await _apartmentService.RegisterResident(createResidentDto);
 
@@ -110,7 +105,7 @@ namespace Forms.Views.AdministrativeStaff
             FullNameInput.Text = string.Empty;
             GenderInput.SelectedIndex = -1;
             DateOfBirthInput.SelectedDate = null;
-            RelationShipInput.Text = string.Empty;
+            //RelationShipInput.Text = string.Empty;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -120,7 +115,8 @@ namespace Forms.Views.AdministrativeStaff
 
         private void ViewHouseholdMovement_Click(object sender, RoutedEventArgs e)
         {
-            
+            HouseholdMovementView f = new(_apartmentService, _apartment!.ApartmentCode!);
+            f.ShowDialog();
         }
     }
 }

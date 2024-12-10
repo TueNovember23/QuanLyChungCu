@@ -121,9 +121,9 @@ namespace Services.Services.ServiceSupervisorServices
             {
                 "Xe đạp" => 50000,
                 "Xe máy" => 100000,
-                "Ô tô" => 200000,
+                "Ô tô" => 1000000,
                 "Xe máy điện" => 120000,
-                "Ô tô điện" => 250000,
+                "Ô tô điện" => 1200000,
                 _ => throw new ArgumentException("Loại xe không hợp lệ!")
             };
         }

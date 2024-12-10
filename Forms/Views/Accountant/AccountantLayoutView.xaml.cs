@@ -53,6 +53,16 @@ namespace Forms.Views.Accountant
             LoadUserControl(new InvoiceView());
         }
 
+        private void EquipmentViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new EquipmentView());
+        }
+
+        private void RepairInvoiceViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new RepairInvoiceView());
+        }
+
         private void LoadUserControl(UserControl userControl)
         {
             RenderPages.Children.Clear();

@@ -1,4 +1,3 @@
-using Forms.Views.Accountant;
 using Forms.Views.AdministrativeStaff;
 using Microsoft.Extensions.DependencyInjection;
 using Services.DTOs.LoginDTO;
@@ -34,12 +33,6 @@ namespace Forms.Views.ServiceSupervisor
             LoadUserControl(new RegisterParkingView());
         }
 
-        private void EquipmentViewButton_Click(object sender, RoutedEventArgs e)
-        {
-
-            LoadUserControl(new EquipmentView());
-        }
-
         private void RegisterCommunityRoomViewButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -67,9 +60,7 @@ namespace Forms.Views.ServiceSupervisor
 
             ResistorText.Visibility = Visibility.Visible;
             CircleSliceText.Visibility = Visibility.Visible;
-            CalendarText.Visibility = Visibility.Visible;
             EqualizerText.Visibility = Visibility.Visible;
-            ChatText.Visibility = Visibility.Visible;
             YourAccountText.Visibility = Visibility.Visible;
             ExitText.Visibility = Visibility.Visible;
         }
@@ -81,9 +72,7 @@ namespace Forms.Views.ServiceSupervisor
 
             ResistorText.Visibility = Visibility.Collapsed;
             CircleSliceText.Visibility = Visibility.Collapsed;
-            CalendarText.Visibility = Visibility.Collapsed;
             EqualizerText.Visibility = Visibility.Collapsed;
-            ChatText.Visibility = Visibility.Collapsed;
             YourAccountText.Visibility = Visibility.Collapsed;
             ExitText.Visibility = Visibility.Collapsed;
         }

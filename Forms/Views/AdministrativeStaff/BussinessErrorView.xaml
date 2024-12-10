@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Thông báo lỗi"
-        Height="200"
+        Height="245"
         Width="350"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"

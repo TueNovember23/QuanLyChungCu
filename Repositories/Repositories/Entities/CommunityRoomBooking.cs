@@ -25,9 +25,13 @@ public partial class CommunityRoomBooking
 
     public int ApartmentId { get; set; }
 
+    public int CreatedBy { get; set; }
+
     public int CommunityRoomId { get; set; }
 
     public virtual Apartment Apartment { get; set; } = null!;
 
     public virtual CommunityRoom CommunityRoom { get; set; } = null!;
+
+    public virtual Account CreatedByNavigation { get; set; } = null!;
 }
