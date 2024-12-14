@@ -8,8 +8,9 @@ namespace Services.DTOs.PaymentDTO
 {
     public class PaymentHistoryDTO
     {
-        public DateTime Date { get; set; }
+        public int PaymentId { get; set; }
         public decimal Amount { get; set; }
-        public string Method { get; set; } = null!;
+        public DateTime PaymentDate { get; set; }
+        public string PaymentMethod { get; set; }
     }
 }

@@ -1,35 +1,29 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Repositories.Repositories.Entities;
-using Services.DTOs.InvoiceDTO;
 using Services.DTOs.PaymentDTO;
 using Services.Interfaces.AccountantServices;
-using Services.Services.AccountantServices;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Forms.ViewModels.Accountant
 {
     public partial class PaymentViewModel : ObservableObject
     {
         private readonly IPaymentService _paymentService;
-        private readonly IInvoiceService _invoiceService;
 
         [ObservableProperty]
-        private ObservableCollection<ResponseInvoiceDTO> totalInvoices = [];
+        private ObservableCollection<ResponsePaymentDTO> totalInvoices = new();
 
         [ObservableProperty]
-        private ObservableCollection<ResponsePaymentDTO> payments = [];
+        private ObservableCollection<ResponsePaymentDTO> repairInvoices = new();
 
         [ObservableProperty]
-        private ResponsePaymentDTO? selectedPayment;
-
-        [ObservableProperty]
-        private string searchText = "";
+        private ResponsePaymentDTO selectedInvoice;
 
         [ObservableProperty]
         private int selectedMonth;
@@ -38,121 +32,360 @@ namespace Forms.ViewModels.Accountant
         private int selectedYear;
 
         [ObservableProperty]
-        private string selectedStatus = "";
+        private string selectedStatus = "Tất cả";
 
         [ObservableProperty]
-        private decimal paymentAmount;
+        private Apartment selectedApartment;
 
         [ObservableProperty]
-        private string selectedPaymentMethod = "";
+        private ObservableCollection<Apartment> apartments = new();
 
         [ObservableProperty]
-        private string paymentNote = "";
-
-        [ObservableProperty]
-        private string selectedPaymentStatus = "";
-
-        [ObservableProperty]
-        private ObservableCollection<string> apartments = new();
-
-        [ObservableProperty]
-        private string selectedApartment; 
-
-        [ObservableProperty]
-        private ObservableCollection<PaymentHistoryDTO> paymentHistory = [];
+        private bool isLoading;
 
         public ObservableCollection<int> Months { get; } = new(Enumerable.Range(1, 12));
         public ObservableCollection<int> Years { get; } = new(Enumerable.Range(2020, 10));
-        public ObservableCollection<string> PaymentStatuses { get; } = ["Tất cả", "Chưa thanh toán", "Đã thanh toán"];
+        public ObservableCollection<string> PaymentStatuses { get; } = new() { "Tất cả", "Chưa thanh toán", "Thanh toán một phần", "Đã thanh toán" };
 
-        public PaymentViewModel(IInvoiceService invoiceService)
+        public PaymentViewModel(IPaymentService paymentService)
         {
-            _invoiceService = invoiceService;
-            selectedMonth = DateTime.Now.Month;
-            selectedYear = DateTime.Now.Year;
-            selectedStatus = PaymentStatuses[0];
-            selectedPaymentStatus = "Chưa thanh toán";
-            _ = LoadLoadLoad();
+            _paymentService = paymentService;
+            InitializeAsync();
         }
 
-        private async Task LoadLoadLoad()
+        private async void InitializeAsync()
         {
-            await LoadInvoicesAsync();
-            await LoadApartmentsAsync();
+            try
+            {
+                selectedMonth = DateTime.Now.Month;
+                selectedYear = DateTime.Now.Year;
+                await LoadData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khởi tạo: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private async Task LoadInvoicesAsync()
+        private async Task LoadData()
         {
-            var invoiceGroup = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
-            var invoices = invoiceGroup;
-            TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices);
+            IsLoading = true;
+            try
+            {
+                await LoadApartments();
+                await LoadInvoices();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
-        private async Task LoadApartmentsAsync()
+        private async Task LoadApartments()
         {
-            var apartmentsList = await _invoiceService.GetApartmentsAsync(); 
-            Apartments = new ObservableCollection<string>(apartmentsList.Select(a => a.ApartmentCode));
+            var apartmentList = await _paymentService.GetApartmentsAsync();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Apartments.Clear();
+                foreach (var apartment in apartmentList)
+                {
+                    Apartments.Add(apartment);
+                }
+            });
         }
 
-        [RelayCommand]
-        private async Task Refresh()
+        // ... existing code ...
+
+        private async Task LoadInvoices()
         {
-            SearchText = string.Empty;
-            await LoadInvoicesAsync();
+            var invoices = await _paymentService.GetPayments(SelectedMonth, SelectedYear, SelectedStatus);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                TotalInvoices.Clear();
+                RepairInvoices.Clear();
+
+                foreach (var invoice in invoices)
+                {
+                    if (invoice.Type == "RepairInvoice")
+                    {
+                        RepairInvoices.Add(invoice);
+                    }
+                    else
+                    {
+                        TotalInvoices.Add(invoice);
+                    }
+                }
+            });
         }
 
         [RelayCommand]
         private async Task SearchInvoices()
         {
-            var invoiceGroup = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
-            var invoices = invoiceGroup;
-            // Lọc theo trạng thái
-            if (!string.IsNullOrWhiteSpace(SelectedStatus) && SelectedStatus != "Tất cả")
+            IsLoading = true;
+            try
             {
-                invoices = invoices.Where(i => i.Status == SelectedStatus).ToList();
-            }
+                var searchText = SelectedApartment?.ApartmentCode ?? string.Empty;
+                var invoices = await _paymentService.SearchPayments(searchText, SelectedMonth, SelectedYear, SelectedStatus);
 
-            // Lọc theo căn hộ
-            if (!string.IsNullOrWhiteSpace(SelectedApartment))
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    TotalInvoices.Clear();
+                    RepairInvoices.Clear();
+
+                    foreach (var invoice in invoices)
+                    {
+                        if (invoice.Type == "RepairInvoice")
+                        {
+                            RepairInvoices.Add(invoice);
+                        }
+                        else
+                        {
+                            TotalInvoices.Add(invoice);
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
             {
-                invoices = invoices.Where(i => i.ApartmentCode == SelectedApartment).ToList();
+                MessageBox.Show($"Lỗi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-
-            TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices);
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
+        // ... existing code ...
         [RelayCommand]
-        private async Task UpdateInvoiceStatus(ResponseInvoiceDTO invoice)
+        private async Task UpdatePayment(ResponsePaymentDTO invoice)
         {
             if (invoice == null) return;
 
-            // Chuyển trạng thái hóa đơn
-            invoice.Status = invoice.Status == "Chưa thanh toán" ? "Đã thanh toán" : "Chưa thanh toán";
-            await _invoiceService.UpdateInvoiceStatus(invoice.InvoiceId, invoice.Status);
-            await LoadInvoicesAsync(); // Tải lại danh sách hóa đơn
-        }
+            try
+            {
+                var inputDialog = new InputDialog("Nhập số tiền thanh toán:", "Thanh toán hóa đơn");
+                if (inputDialog.ShowDialog() == true)
+                {
+                    if (decimal.TryParse(inputDialog.ResponseText, out decimal paidAmount))
+                    {
+                        if (paidAmount <= 0)
+                        {
+                            MessageBox.Show("Số tiền thanh toán phải lớn hơn 0!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
 
+                        if (paidAmount > invoice.RemainingAmount)
+                        {
+                            MessageBox.Show("Số tiền thanh toán không được lớn hơn số tiền còn lại!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        await _paymentService.UpdatePaymentStatus(invoice.InvoiceId, paidAmount);
+
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            var updatedInvoice = TotalInvoices.FirstOrDefault(i => i.InvoiceId == invoice.InvoiceId);
+                            if (updatedInvoice != null)
+                            {
+                                updatedInvoice.PaidAmount += paidAmount;
+                                updatedInvoice.RemainingAmount -= paidAmount;
+
+                                if (updatedInvoice.RemainingAmount <= 0)
+                                {
+                                    updatedInvoice.Status = "Đã thanh toán";
+                                }
+                                else if (updatedInvoice.PaidAmount > 0)
+                                {
+                                    updatedInvoice.Status = "Thanh toán một phần";
+                                }
+
+                                var index = TotalInvoices.IndexOf(updatedInvoice);
+                                TotalInvoices.RemoveAt(index);
+                                TotalInvoices.Insert(index, updatedInvoice);
+                            }
+                        });
+
+                        MessageBox.Show("Cập nhật thanh toán thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Số tiền không hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi cập nhật thanh toán: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         [RelayCommand]
-        private async Task PrintReceipt()
+        private async Task UpdateRepairPayment(ResponsePaymentDTO invoice)
         {
-            if (SelectedPayment == null) return;
-            await _paymentService.GenerateReceipt(SelectedPayment.InvoiceId);
-        }
+            if (invoice == null) return;
 
-        private async Task LoadPaymentHistory(int invoiceId)
-        {
-            var history = await _paymentService.GetPaymentHistory(invoiceId);
-            PaymentHistory = new ObservableCollection<PaymentHistoryDTO>(history);
-        }
-
-        partial void OnSelectedPaymentChanged(ResponsePaymentDTO? value)
-        {
-            if (value != null)
+            try
             {
-                _ = LoadPaymentHistory(value.InvoiceId);
+                var inputDialog = new InputDialog("Nhập số tiền thanh toán:", "Thanh toán hóa đơn sửa chữa");
+                if (inputDialog.ShowDialog() == true)
+                {
+                    if (decimal.TryParse(inputDialog.ResponseText, out decimal paidAmount))
+                    {
+                        if (paidAmount <= 0)
+                        {
+                            MessageBox.Show("Số tiền thanh toán phải lớn hơn 0!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        if (paidAmount > invoice.RemainingAmount)
+                        {
+                            MessageBox.Show("Số tiền thanh toán không được lớn hơn số tiền còn lại!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        // Update the database
+                        await _paymentService.UpdatePaymentStatus(invoice.InvoiceId, paidAmount, "RepairInvoice");
+
+                        // Update the UI
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            // Find and update the invoice in the collection
+                            var updatedInvoice = RepairInvoices.FirstOrDefault(i => i.InvoiceId == invoice.InvoiceId);
+                            if (updatedInvoice != null)
+                            {
+                                // Update the amounts
+                                updatedInvoice.PaidAmount += paidAmount;
+                                updatedInvoice.RemainingAmount -= paidAmount;
+
+                                // Update the status
+                                if (updatedInvoice.RemainingAmount <= 0)
+                                {
+                                    updatedInvoice.Status = "Đã thanh toán";
+                                }
+                                else if (updatedInvoice.PaidAmount > 0)
+                                {
+                                    updatedInvoice.Status = "Thanh toán một phần";
+                                }
+
+                                // Force UI refresh
+                                var index = RepairInvoices.IndexOf(updatedInvoice);
+                                RepairInvoices.RemoveAt(index);
+                                RepairInvoices.Insert(index, updatedInvoice);
+                            }
+                        });
+
+                        MessageBox.Show("Cập nhật thanh toán thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Số tiền không hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi cập nhật thanh toán: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ViewInvoiceDetails(ResponsePaymentDTO invoice)
+        {
+            // TODO: Implement view invoice details
+            MessageBox.Show("Chức năng đang được phát triển", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        [RelayCommand]
+        private async Task ViewRepairInvoiceDetails(ResponsePaymentDTO invoice)
+        {
+            // TODO: Implement view repair invoice details
+            MessageBox.Show("Chức năng đang được phát triển", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        [RelayCommand]
+        private async Task Refresh()
+        {
+            try
+            {
+                SelectedApartment = null;
+                SelectedStatus = "Tất cả";
+                await LoadData();
+                MessageBox.Show("Làm mới dữ liệu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi làm mới dữ liệu: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        partial void OnSelectedMonthChanged(int value)
+        {
+            _ = LoadInvoices();
+        }
+
+        partial void OnSelectedYearChanged(int value)
+        {
+            _ = LoadInvoices();
+        }
+
+        partial void OnSelectedStatusChanged(string value)
+        {
+            _ = LoadInvoices();
+        }
+
+        partial void OnSelectedApartmentChanged(Apartment value)
+        {
+            _ = SearchInvoices();
+        }
+    }
+
+    public class InputDialog : Window
+    {
+        private TextBox textBox;
+
+        public string ResponseText
+        {
+            get { return textBox.Text; }
+            set { textBox.Text = value; }
+        }
+
+        public InputDialog(string question, string title)
+        {
+            Title = title;
+            Width = 300;
+            Height = 150;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            WindowStyle = WindowStyle.ToolWindow;
+
+            var grid = new Grid { Margin = new Thickness(10) };
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            var questionText = new TextBlock { Text = question, Margin = new Thickness(0, 0, 0, 5) };
+            grid.Children.Add(questionText);
+            Grid.SetRow(questionText, 0);
+
+            textBox = new TextBox { Margin = new Thickness(0, 0, 0, 15) };
+            grid.Children.Add(textBox);
+            Grid.SetRow(textBox, 1);
+
+            var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+            var okButton = new Button { Content = "OK", Width = 60, Margin = new Thickness(0, 0, 10, 0) };
+            okButton.Click += (s, e) => { DialogResult = true; };
+            var cancelButton = new Button { Content = "Hủy", Width = 60 };
+            cancelButton.Click += (s, e) => { DialogResult = false; };
+
+            buttonPanel.Children.Add(okButton);
+            buttonPanel.Children.Add(cancelButton);
+            grid.Children.Add(buttonPanel);
+            Grid.SetRow(buttonPanel, 2);
+
+            Content = grid;
         }
     }
 }

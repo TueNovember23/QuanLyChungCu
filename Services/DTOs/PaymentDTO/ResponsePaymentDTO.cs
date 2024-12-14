@@ -16,5 +16,6 @@ namespace Services.DTOs.PaymentDTO
         public decimal RemainingAmount { get; set; }
         public DateTime DueDate { get; set; }
         public string Status { get; set; } = null!;
+        public string Type { get; set; } = "Invoice"; 
     }
 }
