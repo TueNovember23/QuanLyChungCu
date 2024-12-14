@@ -1,5 +1,6 @@
 ﻿using Repositories.Repositories.Entities;
 using Services.DTOs.InvoiceDTO;
+using Services.Services.AccountantServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,5 +22,12 @@ namespace Services.Interfaces.AccountantServices
         Task<List<ResponseManagementFeeInvoiceDTO>> GetManagementFeeInvoices(int month, int year);
         Task UpdateInvoiceStatus(int invoiceId, string status);
         Task <VechicleInvoice> GetVehicleInvoiceById(int id);
+        public Task<List<ResponseVehicle>> GetDetailVehicleInvoiceById(int id);
+        public Task<Apartment> GetApartmentByCode(string apartmentCode);
+        public Task<int> GetLastWaterInvoiceStartIndex(string apartmentCode);
+        public Task<ManagementFee> GetCurrentManagementFee();
+        public Task<List<ResponseVehicle>> GetVehiclesByApartmentCode(string apartmentCode);
+
+
     }
 }

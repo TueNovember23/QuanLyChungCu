@@ -46,10 +46,10 @@
                 <DataGrid x:Name="VehicleDataGrid" AutoGenerateColumns="False" Margin="0,10"
                         IsReadOnly="True" SelectionMode="Single">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Biển số xe" Binding="{Binding VehicleId}" Width="auto" />
-                        <DataGridTextColumn Header="Loại xe" Binding="{Binding VehicleCategory}" Width="auto" />
-                        <DataGridTextColumn Header="Chủ sở hữu" Binding="{Binding VehicleOwner}" Width="auto" />
-                        <DataGridTextColumn Header="Giá" Binding="{Binding Price}" Width="auto" />
+                        <DataGridTextColumn Header="Biển số xe" Binding="{Binding Id}" Width="auto" />
+                        <DataGridTextColumn Header="Loại xe" Binding="{Binding Type}" Width="auto" />
+                        <DataGridTextColumn Header="Chủ sở hữu" Binding="{Binding Owner}" Width="auto" />
+                        <DataGridTextColumn Header="Giá" Binding="{Binding Fee}" Width="auto" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>

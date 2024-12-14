@@ -1,0 +1,94 @@
+﻿<Window x:Class="Forms.Views.Accountant.CreateInvoiceView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Forms.Views.Accountant"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d" AllowsTransparency="True"
+        Background="Transparent" WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" WindowStyle="None"      
+        Title="CreateInvoiceView" Height="750" Width="1000">
+    <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="CloseButton" Content="X" Style="{StaticResource MaterialDesignFloatingActionButton}" Width="30" Height="30"
+                    HorizontalAlignment="Right" Margin="0,10,10,0" Click="CloseButton_Click"/>
+            <StackPanel Grid.Row="1" Orientation="Vertical">
+                <TextBlock Text="Tạo hóa đơn" FontSize="20" Margin="10, 0, 0, 0"/>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <ComboBox materialDesign:HintAssist.Hint="Chọn căn hộ"
+                              SelectionChanged="ApartmentComboBox_SelectionChanged"
+                              Style="{StaticResource MaterialDesignComboBox}" x:Name="ApartmentComboBox" Width="200" Margin="10"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Tháng" Style="{StaticResource MaterialDesignComboBox}" x:Name="MonthCombobox" Width="100" Margin="10"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Năm" Style="{StaticResource MaterialDesignComboBox}" x:Name="YearCombobox" Width="100" Margin="10"/>
+                    <Button Content="Tính tiền" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click"/>
+                    <TextBlock Text="Thành tiền" Margin="10" FontSize="15"/>
+                    <TextBlock x:Name="TotalAmoutInput" Text="0 vnđ" Margin="10" FontSize="15"/>
+                    <Button Content="Lưu hóa đơn" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click_1"/>
+                </StackPanel>
+                <materialDesign:Card Style="{StaticResource MaterialDesignOutlinedCard}">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Hóa đơn nước" FontSize="16" Margin="20,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="10">
+                            <TextBlock Text="Chỉ số nước đầu kỳ" Margin="10" FontSize="13"/>
+                            <TextBox Text="Hãy chọn căn hộ" Margin="10, 5" FontSize="13" IsReadOnly="True"
+                                     x:Name="StartIndexInput">
+                            </TextBox>
+                            <TextBox 
+                                materialDesign:HintAssist.Hint="Nhập chỉ số nước cuối kỳ" 
+                                Margin="10, 5" 
+                                FontSize="13" 
+                                x:Name="EndIndexInput"
+                                PreviewTextInput="EndIndexInput_PreviewTextInput"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="10">
+                            <TextBlock Text="Số lượng cư dân" FontSize="13" Margin="10"/>
+                            <TextBlock x:Name="NumberOfPeopleInput" Text="0 người" FontSize="13" Margin="10"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="10">
+                            <TextBlock Text="Thành tiền" FontSize="13" Margin="10"/>
+                            <TextBlock x:Name="WaterInvoiceAmountInput" Text="0 vnđ" FontSize="13" Margin="10"/>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:Card>
+                <materialDesign:Card Margin="0, 10, 0, 0">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Hóa đơn phí quản lý" FontSize="16" Margin="20, 10"/>
+                        <StackPanel Orientation="Horizontal" Margin="10">
+                            <TextBlock Text="Diện tích" FontSize="13" Margin="10"/>
+                            <TextBlock x:Name="AreaInput" Text="0 m2" FontSize="13" Margin="10"/>
+                            <TextBlock Text="Đơn giá" FontSize="13" Margin="10"/>
+                            <TextBlock x:Name="ManageFeeInput" Text="0 vnđ" FontSize="13" Margin="10"/>
+                            <TextBlock Text="Thành tiền" FontSize="13" Margin="10"/>
+                            <TextBlock x:Name="ManageFeeInvoiceAmoutInput" Text="0 m2" FontSize="13" Margin="10"/>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:Card>
+                <materialDesign:Card Margin="0, 10, 0, 0">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Hóa đơn xe" FontSize="16" Margin="20, 10"/>
+                        <StackPanel Orientation="Horizontal" Margin="10">
+                            <TextBlock Text="Số xe đang gửi" FontSize="13" Margin="10"/>
+                            <TextBlock x:Name="NumberOfVehicleInput" Text="0 chiếc" FontSize="13" Margin="10"/>
+                            <TextBlock Text="Thành tiền" FontSize="13" Margin="10"/>
+                            <TextBlock x:Name="VehicleInvoiceAmount" Text="0 vnđ" FontSize="13" Margin="10"/>
+                        </StackPanel>
+                        <DataGrid x:Name="VehicleDataGrid" AutoGenerateColumns="False" Margin="0,10"
+                                IsReadOnly="True" SelectionMode="Single">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Biển số xe" Binding="{Binding Id}" Width="auto"/>
+                                <DataGridTextColumn Header="Loại xe" Binding="{Binding Type}" Width="auto"/>
+                                <DataGridTextColumn Header="Chủ sở hữu" Binding="{Binding Owner}" Width="auto"/>
+                                <DataGridTextColumn Header="Giá" Binding="{Binding Fee}" Width="auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

@@ -47,7 +47,7 @@
 
                 <!-- Header and other controls -->
                 <StackPanel  Grid.Column="1" Orientation="Horizontal" Margin="16">
-                    <Button Content="Manage Fees" Command="{Binding ShowFeeManagementViewCommand}" Width="150"/>
+                    <Button Content="Tạo hóa đơn" Command="{Binding CreateInvoiceCommand}" Width="150"/>
                 </StackPanel>
 
                 <!-- Content Control to display FeeManagementView -->

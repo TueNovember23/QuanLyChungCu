@@ -214,5 +214,12 @@ namespace Forms.ViewModels.Accountant
             f.ShowDialog();
         }
 
+        [RelayCommand]
+        private async void CreateInvoice()
+        {
+            CreateInvoiceView f = new CreateInvoiceView(_invoiceService);
+            f.ShowDialog();
+            await LoadLoadLoad();
+        }
     }
 }

@@ -46,7 +46,7 @@ namespace Services.Services.AccountantServices
             for (int i = 0; i < list.Count; i++)
             {
                 var waterInvoice = _unitOfWork.GetRepository<WaterInvoice>().Entities.Where(_ => _.InvoiceId == list[i].InvoiceId).FirstOrDefault();
-                if(waterInvoice != null)
+                if (waterInvoice != null)
                 {
                     listI[i].ApartmentCode = waterInvoice.Apartment.ApartmentCode!;
                     continue;
@@ -121,7 +121,7 @@ namespace Services.Services.AccountantServices
             return managementInvoices;
         }
 
-        public async Task<VechicleInvoice> GetVehicleInvoiceById(int  id)
+        public async Task<VechicleInvoice> GetVehicleInvoiceById(int id)
         {
             var invoice = await _unitOfWork.GetRepository<VechicleInvoice>().Entities
                 .FirstOrDefaultAsync(_ => _.InvoiceId == id) ?? throw new BusinessException("Không tìm thấy hóa đơn");
@@ -196,7 +196,7 @@ namespace Services.Services.AccountantServices
                 StartIndex = startIndex,
                 EndIndex = endIndex,
                 NumberOfPeople = numberOfPeople,
-                TotalAmount = (endIndex - startIndex) * 10, 
+                TotalAmount = (endIndex - startIndex) * 10,
                 CreatedDate = DateOnly.FromDateTime(DateTime.Now)
             };
 
@@ -223,7 +223,7 @@ namespace Services.Services.AccountantServices
             {
                 InvoiceId = invoiceId,
                 ApartmentCode = apartment.ApartmentCode,
-                TotalAmount = 200, 
+                TotalAmount = 200,
                 CreatedDate = DateOnly.FromDateTime(DateTime.Now)
             };
 
@@ -240,5 +240,50 @@ namespace Services.Services.AccountantServices
             }
         }
 
+        public async Task<List<ResponseVehicle>> GetDetailVehicleInvoiceById(int id)
+        {
+            List<ResponseVehicle> vehicles = await _unitOfWork.GetRepository<VechicleInvoiceDetail>().Entities.Where(_ => _.VechicleInvoiceId == id)
+                .Select(_ => new ResponseVehicle() { Id = _.VehicleId, Fee = _.Vehicle.VehicleCategory.MonthlyFee, Type = _.Vehicle.VehicleCategory.CategoryName, Owner = _.Vehicle.VehicleOwner }).ToListAsync();
+            return vehicles;
+        }
+
+        public async Task<Apartment> GetApartmentByCode(string apartmentCode)
+        {
+            var apartment = await _unitOfWork.GetRepository<Apartment>().Entities.FirstOrDefaultAsync(_ => _.ApartmentCode == apartmentCode)
+                ?? throw new BusinessException($"Không tìm thấy căn hộ có mã {apartmentCode}");
+            return apartment;
+        }
+
+        public async Task<int> GetLastWaterInvoiceStartIndex(string apartmentCode)
+        {
+            var lastInvoice = await _unitOfWork
+                .GetRepository<WaterInvoice>()
+                .Entities
+                .Where(_ => _.Apartment.ApartmentCode == apartmentCode)
+                .OrderByDescending(_ => _.Invoice.CreatedDate)
+                .FirstOrDefaultAsync();
+
+            return lastInvoice?.StartIndex ?? 0;
+        }
+        public async Task<ManagementFee> GetCurrentManagementFee()
+        {
+            ManagementFee fee = await _unitOfWork.GetRepository<ManagementFee>().Entities.FirstOrDefaultAsync(_ => _.DeletedDate == null)
+                ?? throw new BusinessException("Bảng giá phí quản lý bị lỗi");
+            return fee;
+        }
+
+        public async Task<List<ResponseVehicle>> GetVehiclesByApartmentCode(string apartmentCode)
+        {
+            List<ResponseVehicle> vehicles = await _unitOfWork.GetRepository<Vehicle>().Entities.Where(_ => _.Status == "Đang gửi" && _.Apartment.ApartmentCode == apartmentCode)
+                .Select(_ => new ResponseVehicle() {Id = _.VehicleId, Owner = _.VehicleOwner, Fee = _.VehicleCategory.MonthlyFee, Type = _.VehicleCategory.CategoryName }).ToListAsync();
+            return vehicles;
+        }
+    }
+    public class ResponseVehicle
+    {
+        public string? Id { get; set; }
+        public string? Owner { get; set; }
+        public double? Fee { get; set; }
+        public string? Type { get; set; }
     }
 }

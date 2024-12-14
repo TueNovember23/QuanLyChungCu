@@ -35,6 +35,11 @@ namespace Forms.Views.Accountant
         {
             VechicleInvoice invoice = await _invoiceService.GetVehicleInvoiceById(invoiceId);
             _invoice = invoice;
+            VehicleDataGrid.ItemsSource = await _invoiceService.GetDetailVehicleInvoiceById(invoiceId);
+            VehicleInvoiceIdInput.Text = invoice.VechicleInvoiceId.ToString();
+            TotalAmountInput.Text = invoice.TotalAmount.ToString();
+            ApartmentCodeInput.Text = invoice.Apartment.ApartmentCode;
+            CreatedDateInput.Text = invoice.Invoice.CreatedDate.ToString();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
