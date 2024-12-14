@@ -3,10 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Repositories.Repositories.Entities;
 using Services.Interfaces.AccountantServices;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -72,11 +69,14 @@ namespace Forms.ViewModels.Accountant
             IsLoading = true;
             try
             {
-                await Task.WhenAll(
-                    LoadWaterFees(),
-                    LoadManagementFees(),
-                    LoadVehicleCategories()
-                );
+                // Load tuần tự để tránh xung đột DbContext
+                await LoadWaterFees();
+                await LoadManagementFees();
+                await LoadVehicleCategories();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -100,7 +100,7 @@ namespace Forms.ViewModels.Accountant
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải giá nước: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception($"Lỗi khi tải giá nước: {ex.Message}");
             }
         }
 
@@ -120,7 +120,7 @@ namespace Forms.ViewModels.Accountant
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải phí quản lý: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception($"Lỗi khi tải phí quản lý: {ex.Message}");
             }
         }
 
@@ -140,7 +140,7 @@ namespace Forms.ViewModels.Accountant
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải loại xe: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception($"Lỗi khi tải loại xe: {ex.Message}");
             }
         }
 
