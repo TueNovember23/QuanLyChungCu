@@ -5,6 +5,7 @@
         Title="Lập hóa đơn sửa chữa" Height="700" Width="1000"
         WindowStartupLocation="CenterScreen" WindowStyle="None"
         AllowsTransparency="True" Background="Transparent">
+
     <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
         <Grid Margin="10">
             <Grid.ColumnDefinitions>
@@ -66,13 +67,21 @@
                           HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Tên thiết bị" Binding="{Binding EquipmentName}" Width="*" />
-                        <DataGridTextColumn Header="Chi phí sửa chữa" Binding="{Binding RepairPrice}" Width="*" />
+                        <DataGridTemplateColumn Header="Chi phí sửa chữa" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding RepairPrice, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                    PreviewTextInput="NumberOnly_PreviewTextInput"
+                                    PreviewKeyDown="NumberOnly_PreviewKeyDown" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Hành động" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Content="Xóa" 
-                                            Command="{Binding DataContext.RemoveEquipmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                            CommandParameter="{Binding}" />
+                        Command="{Binding DataContext.RemoveEquipmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                        CommandParameter="{Binding}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

@@ -44,8 +44,6 @@ namespace Services.Services.AccountantServices
                 {
                     EquipmentId = e.EquipmentId,
                     EquipmentName = e.EquipmentName,
-                    Description = e.MalfuntionEquipments.FirstOrDefault().Description,  // Giả sử mỗi thiết bị chỉ có 1 MalfuntionEquipment
-                    SolvingMethod = e.MalfuntionEquipments.FirstOrDefault().SolvingMethod  // Giả sử mỗi thiết bị chỉ có 1 MalfuntionEquipment
                 }).ToListAsync();
 
             return equipments;
@@ -92,7 +90,6 @@ namespace Services.Services.AccountantServices
 
             return response;
         }
-
         public async Task<ResponseRepairInvoiceDTO?> GetRepairInvoiceByIdAsync(int id)
         {
             var invoice = await _unitOfWork.GetRepository<RepairInvoice>().GetByIdAsync(id);
@@ -104,7 +101,13 @@ namespace Services.Services.AccountantServices
                 InvoiceContent = invoice.InvoiceContent,
                 TotalAmount = (decimal)invoice.TotalAmount,
                 Status = invoice.Status,
-                InvoiceDate = invoice.InvoiceDate.ToDateTime(new TimeOnly(0, 0))
+                InvoiceDate = invoice.InvoiceDate.ToDateTime(new TimeOnly(0, 0)),
+                MalfuntionEquipments = invoice.MalfuntionEquipments.Select(me => new MalfuntionEquipmentDTO
+                {
+                    EquipmentId = me.Equipment.EquipmentId,
+                    EquipmentName = me.Equipment.EquipmentName,
+                    RepairPrice = me.RepairPrice
+                }).ToList()
             };
         }
 
@@ -122,32 +125,51 @@ namespace Services.Services.AccountantServices
                   
                 })
                 .FirstOrDefaultAsync();
-
             return malfunctionEquipment;
         }
 
 
         public async Task AddRepairInvoiceAsync(CreateRepairInvoiceDTO invoiceDto)
         {
-            var invoice = new RepairInvoice
+            var existingInvoice = await _unitOfWork.GetRepository<RepairInvoice>()
+                .GetByIdAsync(invoiceDto.InvoiceId);
+
+            if (existingInvoice != null)
             {
-                InvoiceId = invoiceDto.InvoiceId,
-                InvoiceContent = invoiceDto.InvoiceContent,
-                TotalAmount = invoiceDto.TotalAmount,
-                //CreatedBy = invoiceDto.CreatedBy,
-                MalfuntionEquipments = invoiceDto.MalfunctionEquipments.Select(me => new MalfuntionEquipment
+                existingInvoice.InvoiceContent = invoiceDto.InvoiceContent;
+                existingInvoice.TotalAmount = invoiceDto.TotalAmount;
+                existingInvoice.MalfuntionEquipments = invoiceDto.MalfunctionEquipments.Select(me => new MalfuntionEquipment
                 {
                     EquipmentId = me.EquipmentId,
                     Description = me.Description,
                     SolvingMethod = me.SolvingMethod,
                     RepairPrice = me.RepairPrice
-                }).ToList()
-            };
+                }).ToList();
 
-            await _unitOfWork.GetRepository<RepairInvoice>().InsertAsync(invoice);
+                _unitOfWork.GetRepository<RepairInvoice>().Update(existingInvoice);
+            }
+            else
+            {
+                var invoice = new RepairInvoice
+                {
+                    InvoiceId = invoiceDto.InvoiceId,
+                    InvoiceContent = invoiceDto.InvoiceContent,
+                    TotalAmount = invoiceDto.TotalAmount,
+                    //CreatedBy = invoiceDto.CreatedBy,
+                    MalfuntionEquipments = invoiceDto.MalfunctionEquipments.Select(me => new MalfuntionEquipment
+                    {
+                        EquipmentId = me.EquipmentId,
+                        Description = me.Description,
+                        SolvingMethod = me.SolvingMethod,
+                        RepairPrice = me.RepairPrice
+                    }).ToList()
+                };
+
+                await _unitOfWork.GetRepository<RepairInvoice>().InsertAsync(invoice);
+            }
+
             await _unitOfWork.SaveAsync();
         }
-
 
         public async Task AddRepairInvoiceWithDetailsAsync(RepairInvoice invoice, List<MalfunctionEquipmentDTO> malfunctionEquipments)
         {

@@ -53,6 +53,10 @@ namespace Forms.Views.Accountant
             LoadUserControl(new InvoiceView());
         }
 
+        private void FeeManagementViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUserControl(new FeeManagementView());
+        }
         private void EquipmentViewButton_Click(object sender, RoutedEventArgs e)
         {
             LoadUserControl(new EquipmentView());

@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Forms.Views.Accountant;
+using Repositories.Repositories.Entities;
 using Services.DTOs.EquipmentDTO;
+using Services.DTOs.RepairInvoiceDTO;
 using Services.Interfaces.AccountantServices;
 using System;
 using System.Collections.Generic;
@@ -19,12 +21,17 @@ namespace Forms.ViewModels.Accountant
         [ObservableProperty]
         private int repairInvoiceCode;
 
+        [ObservableProperty]
+        private ObservableCollection<ResponseRepairInvoiceDTO> repairInvoices = [];
 
         [ObservableProperty]
         private ObservableCollection<ResponseEquipmentDTO> availableEquipments = new();
 
         [ObservableProperty]
         private ObservableCollection<MalfunctionEquipmentDTO> selectedEquipments = new();
+
+        [ObservableProperty]
+        private ObservableCollection<ResponseRepairInvoiceDTO> filteredRepairInvoices = [];
 
         [ObservableProperty]
         private string invoiceContent;
@@ -38,7 +45,7 @@ namespace Forms.ViewModels.Accountant
         [RelayCommand]
         public void OnSearchButtonClick()
         {
-            OnSearchTextChanged();  // Gọi lại phương thức tìm kiếm khi button được click
+            OnSearchTextChanged(); 
         }
 
         public AddRepairInvoiceViewModel(IRepairInvoiceService repairInvoiceService)
@@ -83,7 +90,6 @@ namespace Forms.ViewModels.Accountant
             }
         }
 
-
         [RelayCommand]
         private async void AddEquipment(ResponseEquipmentDTO equipment)
         {
@@ -91,21 +97,13 @@ namespace Forms.ViewModels.Accountant
             {
                 return;
             }
-
-            var malfunctionEquipment = await _repairInvoiceService.GetMalfunctionEquipmentByIdAsync(equipment.EquipmentId);
-
-            if (malfunctionEquipment != null)
+            var selectedEquipment = new MalfunctionEquipmentDTO
             {
-                var malfunction = new MalfunctionEquipmentDTO
-                {
-                    EquipmentId = malfunctionEquipment.EquipmentId ?? 0,
-                    EquipmentName = malfunctionEquipment.EquipmentName,
-                    RepairPrice = malfunctionEquipment.RepairPrice
-                };
+                EquipmentId = equipment.EquipmentId,
+                EquipmentName = equipment.EquipmentName,
+            };
 
-                SelectedEquipments.Add(malfunction);
-                TotalAmount = SelectedEquipments.Sum(e => e.RepairPrice);
-            }
+            SelectedEquipments.Add(selectedEquipment);
         }
 
         [RelayCommand]
@@ -117,7 +115,6 @@ namespace Forms.ViewModels.Accountant
                 TotalAmount = SelectedEquipments.Sum(e => e.RepairPrice);
             }
         }
-
         [RelayCommand]
         private async Task SaveInvoiceAsync()
         {
@@ -126,6 +123,8 @@ namespace Forms.ViewModels.Accountant
                 MessageBox.Show("Vui lòng nhập nội dung hóa đơn và chọn ít nhất một thiết bị!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            TotalAmount = SelectedEquipments.Sum(e => e.RepairPrice);
 
             var invoice = new CreateRepairInvoiceDTO
             {
@@ -139,11 +138,28 @@ namespace Forms.ViewModels.Accountant
             {
                 await _repairInvoiceService.AddRepairInvoiceAsync(invoice);
                 MessageBox.Show("Lưu hóa đơn thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseForm();
+                await LoadInvoicesAsync();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi lưu hóa đơn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private async Task LoadInvoicesAsync()
+        {
+            var invoiceList = await _repairInvoiceService.GetAllRepairInvoicesAsync();
+            FilteredRepairInvoices = RepairInvoices = new ObservableCollection<ResponseRepairInvoiceDTO>(invoiceList);
+        }
+
+        private void CloseForm()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var window = Application.Current.Windows.OfType<AddRepairInvoiceView>().FirstOrDefault();
+                window?.Close();
+            });
         }
     }
 }

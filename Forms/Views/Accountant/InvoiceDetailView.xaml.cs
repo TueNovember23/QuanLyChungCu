@@ -10,19 +10,22 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Forms.Views.Accountant
 {
     /// <summary>
-    /// Interaction logic for InvoiceDetailsView.xaml
+    /// Interaction logic for InvoiceDetailView.xaml
     /// </summary>
-    public partial class InvoiceDetailsView : UserControl
+    public partial class InvoiceDetailView : Window
     {
-        public InvoiceDetailsView()
+        public InvoiceDetailView()
         {
             InitializeComponent();
+        }
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

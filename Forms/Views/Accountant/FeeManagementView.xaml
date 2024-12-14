@@ -1,72 +1,230 @@
-﻿<UserControl x:Class="Forms.Views.Accountant.FeeManagementView"
-              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-       xmlns:header="clr-namespace:Forms.Views"
-       mc:Ignorable="d"
-       d:DesignHeight="850" d:DesignWidth="1200">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Forms.Views.Accountant.FeeManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:header="clr-namespace:Forms.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="850" d:DesignWidth="1100">
 
-    <Grid Margin="16">
-        <TabControl>
-            <!-- Water Fee Tab -->
-            <TabItem Header="Water Fees">
-                <StackPanel>
-                    <DataGrid ItemsSource="{Binding WaterFees}" 
-                              SelectedItem="{Binding SelectedWaterFee}" 
-                              AutoGenerateColumns="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding WaterFeeId}" />
-                            <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedDate}" />
-                            <DataGridTextColumn Header="Level 1" Binding="{Binding Level1}" />
-                            <DataGridTextColumn Header="Price 1" Binding="{Binding Price1}" />
-                            <DataGridTextColumn Header="Level 2" Binding="{Binding Level2}" />
-                            <DataGridTextColumn Header="Price 2" Binding="{Binding Price2}" />
-                            <DataGridTextColumn Header="Price 3" Binding="{Binding Price3}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                        <Button Content="Add/Update" Command="{Binding AddOrUpdateWaterFeeCommand}" />
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <!-- Management Fee Tab -->
-            <TabItem Header="Management Fees">
-                <StackPanel>
-                    <DataGrid ItemsSource="{Binding ManagementFees}" 
-                              SelectedItem="{Binding SelectedManagementFee}" 
-                              AutoGenerateColumns="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding ManagementFeeId}" />
-                            <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedDate}" />
-                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                        <Button Content="Add/Update" Command="{Binding AddOrUpdateManagementFeeCommand}" />
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
+        <header:Header Grid.Row="0"/>
 
-            <!-- Vehicle Invoice Detail Tab -->
-            <TabItem Header="Vehicle Invoice Details">
+        <!-- Loading Indicator -->
+        <materialDesign:Card Grid.Row="1"
+                            Background="#80000000"
+                            Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Panel.ZIndex="1000">
+            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                         Value="0"
+                         IsIndeterminate="True"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"/>
+        </materialDesign:Card>
+
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Side - Fee Lists -->
+            <Grid Grid.Column="0" Margin="0,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Water Fee List -->
+                <materialDesign:Card Grid.Row="0" UniformCornerRadius="15" Margin="0,0,0,10">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" 
+                                 Text="Giá nước" 
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                 Margin="15,15,15,10"/>
+
+                        <DataGrid DockPanel.Dock="Top"
+                                Margin="15"
+                                ItemsSource="{Binding WaterFees}"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                IsReadOnly="True"
+                                VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate, StringFormat=dd/MM/yyyy}"/>
+                                <DataGridTextColumn Header="Mức 1 (m³)" Binding="{Binding Level1}"/>
+                                <DataGridTextColumn Header="Giá mức 1" Binding="{Binding Price1, StringFormat=N0}"/>
+                                <DataGridTextColumn Header="Mức 2 (m³)" Binding="{Binding Level2}"/>
+                                <DataGridTextColumn Header="Giá mức 2" Binding="{Binding Price2, StringFormat=N0}"/>
+                                <DataGridTextColumn Header="Giá mức 3" Binding="{Binding Price3, StringFormat=N0}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </materialDesign:Card>
+
+                <!-- Management Fee List -->
+                <materialDesign:Card Grid.Row="1" UniformCornerRadius="15" Margin="0,10">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" 
+                                 Text="Phí quản lý" 
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                 Margin="15,15,15,10"/>
+
+                        <DataGrid DockPanel.Dock="Top"
+                                Margin="15"
+                                ItemsSource="{Binding ManagementFees}"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                IsReadOnly="True"
+                                VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate, StringFormat=dd/MM/yyyy}"/>
+                                <DataGridTextColumn Header="Giá (VNĐ/m²)" Binding="{Binding Price, StringFormat=N0}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </materialDesign:Card>
+
+                <!-- Vehicle Fee List -->
+                <materialDesign:Card Grid.Row="2" UniformCornerRadius="15" Margin="0,10,0,0">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" 
+                                 Text="Phí gửi xe" 
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                 Margin="15,15,15,10"/>
+
+                        <DataGrid DockPanel.Dock="Top"
+                                Margin="15"
+                                ItemsSource="{Binding VehicleCategories}"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                IsReadOnly="True"
+                                VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Loại xe" Binding="{Binding CategoryName}"/>
+                                <DataGridTextColumn Header="Phí hàng tháng" Binding="{Binding MonthlyFee, StringFormat=N0}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </materialDesign:Card>
+            </Grid>
+
+            <!-- Right Side - Add New Forms -->
+            <ScrollViewer Grid.Column="1" Margin="10,0,0,0">
                 <StackPanel>
-                    <DataGrid ItemsSource="{Binding VehicleInvoiceDetails}" 
-                              SelectedItem="{Binding SelectedVehicleInvoiceDetail}" 
-                              AutoGenerateColumns="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Invoice ID" Binding="{Binding VechicleInvoiceId}" />
-                            <DataGridTextColumn Header="Vehicle ID" Binding="{Binding VehicleId}" />
-                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                        <Button Content="Add/Update" Command="{Binding AddOrUpdateVehicleInvoiceDetailCommand}" />
-                    </StackPanel>
+                    <!-- Water Fee Form -->
+                    <materialDesign:Card UniformCornerRadius="15" Margin="0,0,0,20">
+                        <StackPanel Margin="15">
+                            <TextBlock Text="Thêm giá nước mới"
+                                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                     Margin="0,0,0,15"/>
+
+                            <TextBox materialDesign:HintAssist.Hint="Mức 1 (m³)"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding Level1, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,10"/>
+                            <TextBox materialDesign:HintAssist.Hint="Giá mức 1"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding Price1, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,10"/>
+                            <TextBox materialDesign:HintAssist.Hint="Mức 2 (m³)"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding Level2, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,10"/>
+                            <TextBox materialDesign:HintAssist.Hint="Giá mức 2"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding Price2, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,10"/>
+                            <TextBox materialDesign:HintAssist.Hint="Giá mức 3"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding Price3, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,10"/>
+
+                            <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Command="{Binding AddWaterFeeCommand}"
+                                    Margin="0,10,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Water" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Thêm giá nước mới"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </materialDesign:Card>
+
+                    <!-- Management Fee Form -->
+                    <materialDesign:Card UniformCornerRadius="15" Margin="0,0,0,20">
+                        <StackPanel Margin="15">
+                            <TextBlock Text="Thêm phí quản lý mới"
+                                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                     Margin="0,0,0,15"/>
+
+                            <TextBox materialDesign:HintAssist.Hint="Giá (VNĐ/m²)"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding ManagementPrice, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,10"/>
+
+                            <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Command="{Binding AddManagementFeeCommand}"
+                                    Margin="0,10,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="CashRegister" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Thêm phí quản lý mới"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </materialDesign:Card>
+
+                    <!-- Vehicle Category Form -->
+                    <materialDesign:Card UniformCornerRadius="15" Margin="0,0,0,20">
+                        <StackPanel Margin="15">
+                            <TextBlock Text="Cập nhật phí gửi xe"
+                                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                     Margin="0,0,0,15"/>
+
+                            <ComboBox materialDesign:HintAssist.Hint="Chọn loại xe"
+                                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                     ItemsSource="{Binding VehicleCategories}"
+                                     SelectedItem="{Binding SelectedVehicleCategory}"
+                                     DisplayMemberPath="CategoryName"
+                                     IsEditable="True"
+                                     Text="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,10"/>
+
+                            <TextBox materialDesign:HintAssist.Hint="Phí hàng tháng"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="{Binding MonthlyFee, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,10"/>
+
+                            <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Command="{Binding AddVehicleCategoryCommand}"
+                                    Margin="0,10,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Car" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Cập nhật phí gửi xe"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </materialDesign:Card>
+
+                    <!-- Refresh Button -->
+                    <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                            Command="{Binding RefreshCommand}"
+                            HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Refresh" Margin="0,0,8,0"/>
+                            <TextBlock Text="Làm mới dữ liệu"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
-            </TabItem>
-        </TabControl>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </UserControl>

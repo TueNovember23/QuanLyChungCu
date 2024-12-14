@@ -46,7 +46,6 @@ namespace Forms.ViewModels.Accountant
         [ObservableProperty]
         private ObservableCollection<MalfunctionEquipmentDTO> selectedMalfunctions = new();
 
-
         public RepairInvoiceViewModel(IRepairInvoiceService repairInvoiceService)
         {
             _repairInvoiceService = repairInvoiceService;
@@ -54,21 +53,21 @@ namespace Forms.ViewModels.Accountant
 
         }
 
-   
-
         private async Task LoadRepairInvoicesAsync()
         {
             var invoiceList = await _repairInvoiceService.GetAllRepairInvoicesAsync();
             FilteredRepairInvoices = RepairInvoices = new ObservableCollection<ResponseRepairInvoiceDTO>(invoiceList);
         }
 
-     
+        private void OnAddRepairInvoiceClosed(object sender, EventArgs e)
+        {
+            LoadRepairInvoicesAsync();
+        }
 
         [RelayCommand]
         private void Refresh()
         {
-            SearchText = string.Empty;
-            FilteredRepairInvoices = new ObservableCollection<ResponseRepairInvoiceDTO>(RepairInvoices);
+            LoadRepairInvoicesAsync();
         }
 
         [RelayCommand]
@@ -85,15 +84,6 @@ namespace Forms.ViewModels.Accountant
             }
         }
 
-
-
-        private void CalculateTotalRepairCost()
-        {
-            TotalRepairCost = SelectedEquipments.Sum(e => e.RepairPrice);
-        }
-
-
-
         [RelayCommand]
         private void AddEquipmentToInvoice(Equipment equipment)
         {
@@ -106,27 +96,20 @@ namespace Forms.ViewModels.Accountant
         }
 
 
-
         [RelayCommand]
         private async Task ViewInvoiceDetails(int invoiceId)
         {
-            var invoice = await _repairInvoiceService.GetRepairInvoiceByIdAsync(invoiceId);
-            if (invoice != null)
+            try
             {
-                MessageBox.Show(
-                    $"Mã hóa đơn: {invoice.InvoiceId}\n" +
-                    $"Nội dung: {invoice.InvoiceContent}\n" +
-                    $"Tổng tiền: {invoice.TotalAmount:N0} VND\n" +
-                    $"Trạng thái: {invoice.Status}\n" +
-                    $"Ngày lập: {invoice.InvoiceDate:dd/MM/yyyy}",
-                    "Chi tiết hóa đơn",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information
-                );
+                var invoiceDetailView = new InvoiceDetailView();
+                var viewModel = new InvoiceDetailViewModel(_repairInvoiceService, invoiceId);
+                invoiceDetailView.DataContext = viewModel;
+                invoiceDetailView.ShowDialog();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Không tìm thấy hóa đơn!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Lỗi khi xem chi tiết hóa đơn: {ex.Message}", "Lỗi",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

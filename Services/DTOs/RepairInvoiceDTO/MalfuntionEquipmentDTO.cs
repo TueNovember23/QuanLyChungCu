@@ -14,7 +14,7 @@ namespace Services.DTOs.RepairInvoiceDTO
         public string? EquipmentName { get; set; }
         public string? Description { get; set; }
         public string? SolvingMethod { get; set; }
-        public double RepairPrice { get; set; }
+        public double? RepairPrice { get; set; }
     }
 
 }

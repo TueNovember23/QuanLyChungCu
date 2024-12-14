@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Forms.Views.Accountant
 {
@@ -43,6 +45,20 @@ namespace Forms.Views.Accountant
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void NumberOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var regex = new Regex(@"^[0-9]*(\.[0-9]*)?$"); 
+            e.Handled = !regex.IsMatch((sender as TextBox)?.Text.Insert((sender as TextBox)?.CaretIndex ?? 0, e.Text));
+        }
+
+        private void NumberOnly_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true; 
+            }
         }
     }
 }
