@@ -10,6 +10,8 @@ namespace Services.DTOs.InvoiceDTO
     {
         public int ManagementFeeInvoiceId { get; set; }
         public string ApartmentCode { get; set; } = null!;
+        public double? Fee { get; set; }
+        public int? Area { get; set; }
         public double Price { get; set; }
         public double TotalAmount { get; set; }
         public DateOnly CreatedDate { get; set; }

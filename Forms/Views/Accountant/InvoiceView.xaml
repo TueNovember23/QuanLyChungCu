@@ -58,7 +58,7 @@
         <TabControl Grid.Row="2" 
                     Style="{StaticResource MaterialDesignTabControl}"
                     TabStripPlacement="Left"
-                    Margin="16">
+                    Margin="16">  
             <TabItem>
                 <TabItem.Header>
                     <StackPanel>
@@ -143,6 +143,16 @@
                             <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
                             <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
                             <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                            <DataGridTemplateColumn Header="Xem chi tiết" Width="auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Chi tiết" Width="Auto" Height="30" 
+                                        Command="{Binding DataContext.ViewDetailVehicleCommand,
+                                                    RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        CommandParameter="{Binding InvoiceId}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -178,8 +188,8 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
                             <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
-                            <DataGridTextColumn Header="Diện tích (m²)" Binding="{Binding ApartmentArea}"/>
-                            <DataGridTextColumn Header="Đơn giá (VNĐ/m²)" Binding="{Binding Price}"/>
+                            <DataGridTextColumn Header="Diện tích (m²)" Binding="{Binding Area}"/>
+                            <DataGridTextColumn Header="Đơn giá (VNĐ/m²)" Binding="{Binding Fee}"/>
                             <DataGridTextColumn Header="Thành tiền" Binding="{Binding TotalAmount}"/>
                             <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
                         </DataGrid.Columns>

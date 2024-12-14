@@ -1,4 +1,5 @@
 ﻿using Castle.Components.DictionaryAdapter;
+using Core;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
 using Repositories.Repositories.Entities;
@@ -47,9 +48,15 @@ namespace Services.Services.AccountantServices
                 var waterInvoice = _unitOfWork.GetRepository<WaterInvoice>().Entities.Where(_ => _.InvoiceId == list[i].InvoiceId).FirstOrDefault();
                 if(waterInvoice != null)
                 {
-                    listI[i].ApartmentCode = waterInvoice.Apartment.ApartmentCode;
+                    listI[i].ApartmentCode = waterInvoice.Apartment.ApartmentCode!;
+                    continue;
                 }
-                continue;
+                var managementInvoice = _unitOfWork.GetRepository<ManagementFeeInvoice>().Entities.Where(_ => _.InvoiceId == list[i].InvoiceId).FirstOrDefault();
+                if (managementInvoice != null)
+                {
+                    listI[i].ApartmentCode = managementInvoice.Apartment.ApartmentCode;
+                    continue;
+                }
             }
             return listI;
         }
@@ -67,6 +74,7 @@ namespace Services.Services.AccountantServices
                     EndIndex = w.EndIndex,
                     NumberOfPeople = w.NumberOfPeople,
                     TotalAmount = w.TotalAmount ?? 0,
+                    CreatedDate = w.Invoice.CreatedDate ?? new(),
                     InvoiceId = w.InvoiceId
                 })
                 .ToListAsync();
@@ -84,7 +92,7 @@ namespace Services.Services.AccountantServices
                     VehicleInvoiceId = v.VechicleInvoiceId,
                     ApartmentCode = v.Apartment.ApartmentCode,
                     TotalAmount = v.TotalAmount ?? 0,
-                    //CreatedDate = v.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
+                    CreatedDate = v.Invoice.CreatedDate ?? new(),
                     InvoiceId = v.InvoiceId
                 })
                 .ToListAsync();
@@ -103,15 +111,22 @@ namespace Services.Services.AccountantServices
                     ApartmentCode = m.Apartment.ApartmentCode,
                     Price = m.Price,
                     TotalAmount = m.TotalAmount ?? 0,
-                    //CreatedDate = m.CreatedDate ?? DateOnly.FromDateTime(DateTime.Now),
-                    InvoiceId = m.InvoiceId
+                    CreatedDate = m.Invoice.CreatedDate ?? new(),
+                    InvoiceId = m.InvoiceId,
+                    Fee = m.ManagementFeeHistory.Price,
+                    Area = m.Apartment.Area
                 })
                 .ToListAsync();
 
             return managementInvoices;
         }
 
-
+        public async Task<VechicleInvoice> GetVehicleInvoiceById(int  id)
+        {
+            var invoice = await _unitOfWork.GetRepository<VechicleInvoice>().Entities
+                .FirstOrDefaultAsync(_ => _.InvoiceId == id) ?? throw new BusinessException("Không tìm thấy hóa đơn");
+            return invoice;
+        }
 
 
         public async Task GenerateInvoices(int month, int year, List<InvoiceInputDTO> invoiceInputs)

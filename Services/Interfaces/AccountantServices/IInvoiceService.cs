@@ -20,5 +20,6 @@ namespace Services.Interfaces.AccountantServices
         Task<List<ResponseVehicleInvoiceDTO>> GetVehicleInvoices(int month, int year);
         Task<List<ResponseManagementFeeInvoiceDTO>> GetManagementFeeInvoices(int month, int year);
         Task UpdateInvoiceStatus(int invoiceId, string status);
+        Task <VechicleInvoice> GetVehicleInvoiceById(int id);
     }
 }

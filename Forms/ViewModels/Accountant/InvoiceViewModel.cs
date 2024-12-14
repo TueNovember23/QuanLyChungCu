@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Forms.Views.Accountant;
 using Repositories.Repositories.Entities;
 using Services.DTOs.InvoiceDTO;
 using Services.Interfaces.AccountantServices;
@@ -206,6 +207,12 @@ namespace Forms.ViewModels.Accountant
             }
         }
 
+        [RelayCommand]
+        private void ViewDetailVehicle(int InvoiceId)
+        {
+            DetailVehicleInvoice f = new DetailVehicleInvoice(_invoiceService, InvoiceId);
+            f.ShowDialog();
+        }
 
     }
 }

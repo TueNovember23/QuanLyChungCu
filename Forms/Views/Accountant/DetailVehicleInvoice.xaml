@@ -1,0 +1,58 @@
+﻿<Window x:Class="Forms.Views.Accountant.DetailVehicleInvoice"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Forms.Views.Accountant"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+         Title="Chi tiết lịch bảo trì" Height="650" Width="700"
+         WindowStartupLocation="CenterScreen"
+         WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Border CornerRadius="20" Background="#f1f1f1" BorderBrush="Black" BorderThickness="0.5">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <!-- Header -->
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Right">
+                <Button x:Name="CloseButton" Content="X" Width="30" Height="30"
+                      Style="{StaticResource MaterialDesignFloatingActionButton}" 
+                      Click="CloseButton_Click" />
+            </StackPanel>
+
+            <!-- Thông tin lịch bảo trì -->
+            <StackPanel Grid.Row="1" Margin="0,10" Grid.Column="0">
+                <TextBlock Text="Chi tiết hóa đơn xe" FontSize="24" FontWeight="Bold" Margin="0,0,0,20" />
+                <TextBox x:Name="VehicleInvoiceIdInput" materialDesign:HintAssist.Hint="Mã hóa đơn" 
+                       IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10" />
+                <TextBox x:Name="ApartmentCodeInput" materialDesign:HintAssist.Hint="Căn hộ" 
+                       IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10" />
+                <TextBox x:Name="TotalAmountInput" materialDesign:HintAssist.Hint="Thành tiền" 
+                       IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10" />
+                <TextBox x:Name="CreatedDateInput" materialDesign:HintAssist.Hint="Ngày tạo" 
+                       IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,10" />
+            </StackPanel>
+
+            <!-- Danh sách thiết bị -->
+            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,20">
+                <TextBlock Text="Danh sách xe" FontSize="18" FontWeight="Bold" Margin="0,0,0,10" />
+                <DataGrid x:Name="VehicleDataGrid" AutoGenerateColumns="False" Margin="0,10"
+                        IsReadOnly="True" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Biển số xe" Binding="{Binding VehicleId}" Width="auto" />
+                        <DataGridTextColumn Header="Loại xe" Binding="{Binding VehicleCategory}" Width="auto" />
+                        <DataGridTextColumn Header="Chủ sở hữu" Binding="{Binding VehicleOwner}" Width="auto" />
+                        <DataGridTextColumn Header="Giá" Binding="{Binding Price}" Width="auto" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
