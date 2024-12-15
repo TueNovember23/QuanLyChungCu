@@ -74,6 +74,17 @@
                         <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
                         <DataGridTextColumn Header="Tổng tiền" Binding="{Binding TotalAmount}"/>
                         <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                        <DataGridTemplateColumn Header="In">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="In" 
+                                    Command="{Binding DataContext.PrintInvoiceCommand, 
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource MaterialDesignFlatButton}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>

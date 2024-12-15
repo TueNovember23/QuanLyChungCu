@@ -8,8 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace Forms.ViewModels.Accountant
@@ -221,5 +222,170 @@ namespace Forms.ViewModels.Accountant
             f.ShowDialog();
             await LoadLoadLoad();
         }
+
+        [RelayCommand]
+        private async void PrintInvoice(ResponseInvoiceDTO invoice)
+        {
+            if (invoice == null) return;
+
+            var flowDocument = new FlowDocument();
+            flowDocument.PagePadding = new Thickness(50);
+
+            // Header
+            var headerParagraph = new Paragraph(new Run("HÓA ĐƠN CHI TIẾT"))
+            {
+                TextAlignment = TextAlignment.Center,
+                FontSize = 20,
+                FontWeight = FontWeights.Bold
+            };
+            flowDocument.Blocks.Add(headerParagraph);
+
+            // Basic Invoice Info
+            var infoParagraph = new Paragraph();
+            infoParagraph.Inlines.Add(new Run($"Mã hóa đơn: {invoice.InvoiceId}\n"));
+            infoParagraph.Inlines.Add(new Run($"Căn hộ: {invoice.ApartmentCode}\n"));
+            infoParagraph.Inlines.Add(new Run($"Tháng/Năm: {invoice.Month}/{invoice.Year}\n"));
+            infoParagraph.Inlines.Add(new Run($"Ngày tạo: {invoice.CreatedDate}\n"));
+            flowDocument.Blocks.Add(infoParagraph);
+
+            // Water Invoice Details
+            var waterInvoice = WaterInvoices.FirstOrDefault(w => w.InvoiceId == invoice.InvoiceId);
+            if (waterInvoice != null)
+            {
+                var waterSection = new Section();
+                waterSection.Blocks.Add(new Paragraph(new Run("Chi tiết hóa đơn nước")) { FontWeight = FontWeights.Bold });
+
+                var table = new Table();
+                table.BorderBrush = Brushes.Black;
+                table.BorderThickness = new Thickness(1);
+
+                // Add columns
+                for (int i = 0; i < 4; i++)
+                    table.Columns.Add(new TableColumn());
+
+                var headerRow = new TableRow();
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chỉ số đầu"))));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chỉ số cuối"))));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Số người"))));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Thành tiền"))));
+
+                var dataRow = new TableRow();
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.StartIndex.ToString()))));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.EndIndex.ToString()))));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.NumberOfPeople.ToString()))));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.TotalAmount.ToString("N0")))));
+
+                var rowGroup = new TableRowGroup();
+                rowGroup.Rows.Add(headerRow);
+                rowGroup.Rows.Add(dataRow);
+                table.RowGroups.Add(rowGroup);
+
+                waterSection.Blocks.Add(table);
+                flowDocument.Blocks.Add(waterSection);
+            }
+
+            // Management Fee Invoice Details
+            var managementInvoice = ManagementInvoices.FirstOrDefault(m => m.InvoiceId == invoice.InvoiceId);
+            if (managementInvoice != null)
+            {
+                var managementSection = new Section();
+                managementSection.Blocks.Add(new Paragraph(new Run("Chi tiết phí quản lý")) { FontWeight = FontWeights.Bold });
+
+                var table = new Table();
+                table.BorderBrush = Brushes.Black;
+                table.BorderThickness = new Thickness(1);
+
+                for (int i = 0; i < 3; i++)
+                    table.Columns.Add(new TableColumn());
+
+                var headerRow = new TableRow();
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Diện tích (m²)"))));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Đơn giá"))));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Thành tiền"))));
+
+                var dataRow = new TableRow();
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.Area.ToString()))));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.Fee.ToString()))));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.TotalAmount.ToString("N0")))));
+
+                var rowGroup = new TableRowGroup();
+                rowGroup.Rows.Add(headerRow);
+                rowGroup.Rows.Add(dataRow);
+                table.RowGroups.Add(rowGroup);
+
+                managementSection.Blocks.Add(table);
+                flowDocument.Blocks.Add(managementSection);
+            }
+
+            // Vehicle Invoice Details
+            var vehicleInvoice = VehicleInvoices.FirstOrDefault(v => v.InvoiceId == invoice.InvoiceId);
+            if (vehicleInvoice != null)
+            {
+                var vehicleSection = new Section();
+                vehicleSection.Blocks.Add(new Paragraph(new Run("Chi tiết phí gửi xe")) { FontWeight = FontWeights.Bold });
+
+                // Get vehicle details
+                var vehicles = await _invoiceService.GetDetailVehicleInvoiceById(vehicleInvoice.VehicleInvoiceId);
+
+                if (vehicles != null && vehicles.Any())
+                {
+                    var table = new Table();
+                    table.BorderBrush = Brushes.Black;
+                    table.BorderThickness = new Thickness(1);
+
+                    // Add columns
+                    for (int i = 0; i < 4; i++)
+                        table.Columns.Add(new TableColumn());
+
+                    var headerRow = new TableRow();
+                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Biển số"))));
+                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chủ sở hữu"))));
+                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Loại xe"))));
+                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Phí gửi xe"))));
+
+                    var rowGroup = new TableRowGroup();
+                    rowGroup.Rows.Add(headerRow);
+
+                    foreach (var vehicle in vehicles)
+                    {
+                        var dataRow = new TableRow();
+                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Id))));
+                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Owner))));
+                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Type))));
+                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Fee?.ToString("N0")))));
+                        rowGroup.Rows.Add(dataRow);
+                    }
+
+                    table.RowGroups.Add(rowGroup);
+                    vehicleSection.Blocks.Add(table);
+                }
+
+                vehicleSection.Blocks.Add(new Paragraph(new Run($"Tổng tiền: {vehicleInvoice.TotalAmount:N0} VNĐ")));
+                flowDocument.Blocks.Add(vehicleSection);
+            }
+
+            // Total Amount
+            var totalSection = new Section();
+            totalSection.Blocks.Add(new Paragraph(new Run($"Tổng cộng: {invoice.TotalAmount:N0} VNĐ"))
+            {
+                FontWeight = FontWeights.Bold,
+                FontSize = 16,
+                TextAlignment = TextAlignment.Right
+            });
+            flowDocument.Blocks.Add(totalSection);
+
+            // Show print dialog
+            var printDialog = new PrintDialog();
+            if (printDialog.ShowDialog() == true)
+            {
+                flowDocument.PageHeight = printDialog.PrintableAreaHeight;
+                flowDocument.PageWidth = printDialog.PrintableAreaWidth;
+                flowDocument.ColumnWidth = printDialog.PrintableAreaWidth;
+
+                IDocumentPaginatorSource paginatorSource = flowDocument;
+                printDialog.PrintDocument(paginatorSource.DocumentPaginator, "Invoice Print");
+            }
+        }
     }
+    
 }
