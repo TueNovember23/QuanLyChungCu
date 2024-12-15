@@ -27,7 +27,8 @@ namespace Services.Interfaces.AccountantServices
         public Task<int> GetLastWaterInvoiceStartIndex(string apartmentCode);
         public Task<ManagementFee> GetCurrentManagementFee();
         public Task<List<ResponseVehicle>> GetVehiclesByApartmentCode(string apartmentCode);
-
-
+        public Task<WaterFee> GetCurrentWaterFee();
+        public Task<Account> GetAccountByUsername(string username);
+        public Task CreateInvoice(Invoice invoice, WaterInvoice waterInvoice, ManagementFeeInvoice managementFeeInvoice, VechicleInvoice vechicleInvoice, List<VechicleInvoiceDetail> vechicleInvoiceDetails);
     }
 }

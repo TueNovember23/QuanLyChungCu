@@ -27,7 +27,7 @@
                     <ComboBox materialDesign:HintAssist.Hint="Năm" Style="{StaticResource MaterialDesignComboBox}" x:Name="YearCombobox" Width="100" Margin="10"/>
                     <Button Content="Tính tiền" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click"/>
                     <TextBlock Text="Thành tiền" Margin="10" FontSize="15"/>
-                    <TextBlock x:Name="TotalAmoutInput" Text="0 vnđ" Margin="10" FontSize="15"/>
+                    <TextBlock x:Name="TotalAmountInput" Text="0 vnđ" Margin="10" FontSize="15"/>
                     <Button Content="Lưu hóa đơn" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click_1"/>
                 </StackPanel>
                 <materialDesign:Card Style="{StaticResource MaterialDesignOutlinedCard}">

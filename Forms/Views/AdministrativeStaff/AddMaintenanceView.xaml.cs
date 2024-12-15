@@ -110,8 +110,8 @@ namespace Forms.Views.AdministrativeStaff
                 MaintenanceName = MaintenanceNameInput.Text,
                 MaintanaceDate = DateOnly.FromDateTime(MaintenanceDateInput.SelectedDate ?? throw new BusinessException("Ngày bảo trì không hợp lệ")),
                 Description = DescriptionInput.Text,
-                CreatedBy = User?.Username ?? "", // Thay thế bằng tài khoản đang đăng nhập
-                Department = DepartmentInput.SelectedItem.ToString(), // Thay thế bằng tên bộ phận thực hiện bảo trì
+                CreatedBy = User?.Username ?? "",
+                Department = DepartmentInput.SelectedItem.ToString(),
                 EquipmentId = selectedEquipmentIds
             };
 

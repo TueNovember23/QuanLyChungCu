@@ -278,7 +278,45 @@ namespace Services.Services.AccountantServices
                 .Select(_ => new ResponseVehicle() {Id = _.VehicleId, Owner = _.VehicleOwner, Fee = _.VehicleCategory.MonthlyFee, Type = _.VehicleCategory.CategoryName }).ToListAsync();
             return vehicles;
         }
+
+        public async Task<WaterFee> GetCurrentWaterFee()
+        {
+            WaterFee fee = await _unitOfWork.GetRepository<WaterFee>().Entities.FirstOrDefaultAsync(_ => _.DeletedDate == null)
+                ?? throw new BusinessException("Bảng giá nước bị lỗi");
+            return fee;
+        }
+
+        public async Task<Account> GetAccountByUsername(string username)
+        {
+            Account account = await _unitOfWork.GetRepository<Account>().Entities.FirstOrDefaultAsync(_ => _.Username == username)
+                                ?? throw new BusinessException($"Không tìm thấy tài khoản có username {username}");
+            return account;
+        }
+
+        public async Task CreateInvoice(Invoice invoice, WaterInvoice waterInvoice, ManagementFeeInvoice managementFeeInvoice, VechicleInvoice vechicleInvoice, List<VechicleInvoiceDetail> vechicleInvoiceDetails)
+        {
+            await _unitOfWork.GetRepository<Invoice>().InsertAsync(invoice);
+            await _unitOfWork.SaveAsync();
+            int id = invoice.InvoiceId;
+            waterInvoice.InvoiceId = id;
+            managementFeeInvoice.InvoiceId = id;
+            vechicleInvoice.InvoiceId = id;
+            await _unitOfWork.GetRepository<WaterInvoice>().InsertAsync(waterInvoice);
+            await _unitOfWork.GetRepository<ManagementFeeInvoice>().InsertAsync(managementFeeInvoice);
+            if (vechicleInvoiceDetails.Count > 0)
+            {
+                await _unitOfWork.GetRepository<VechicleInvoice>().InsertAsync(vechicleInvoice);
+                await _unitOfWork.SaveAsync();
+                foreach (var v in vechicleInvoiceDetails)
+                {
+                    v.VechicleInvoiceId = vechicleInvoice.VechicleInvoiceId;
+                    await _unitOfWork.GetRepository<VechicleInvoiceDetail>().InsertAsync(v);
+                }
+            }
+            await _unitOfWork.SaveAsync();
+        }
     }
+
     public class ResponseVehicle
     {
         public string? Id { get; set; }

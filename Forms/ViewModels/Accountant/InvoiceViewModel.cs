@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Forms.Views.Accountant;
 using Repositories.Repositories.Entities;
 using Services.DTOs.InvoiceDTO;
+using Services.DTOs.LoginDTO;
 using Services.Interfaces.AccountantServices;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace Forms.ViewModels.Accountant
     public partial class InvoiceViewModel : ObservableObject
     {
         private readonly IInvoiceService _invoiceService;
+        public LoginResponseDTO? User { get; set; }
 
         [ObservableProperty]
         private ObservableCollection<ResponseInvoiceDTO> totalInvoices = [];
@@ -129,7 +131,6 @@ namespace Forms.ViewModels.Accountant
                 var vehicleTask = await _invoiceService.GetVehicleInvoices(SelectedMonth, SelectedYear);
                 var managementTask = await _invoiceService.GetManagementFeeInvoices(SelectedMonth, SelectedYear);
 
-
                 // Cập nhật dữ liệu sau khi tải xong
                 WaterInvoices = new ObservableCollection<ResponseWaterInvoiceDTO>(waterTask);
                 VehicleInvoices = new ObservableCollection<ResponseVehicleInvoiceDTO>(vehicleTask);
@@ -217,7 +218,8 @@ namespace Forms.ViewModels.Accountant
         [RelayCommand]
         private async void CreateInvoice()
         {
-            CreateInvoiceView f = new CreateInvoiceView(_invoiceService);
+            CreateInvoiceView f = new(_invoiceService);
+            f.User = User;
             f.ShowDialog();
             await LoadLoadLoad();
         }
