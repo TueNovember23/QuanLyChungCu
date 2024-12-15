@@ -219,6 +219,8 @@ namespace Forms.Views.Accountant
                 });
             }
             await _service.CreateInvoice(invoice, waterInvoice, managementInvoce, vechicleInvoice, vechicleInvoiceDetails);
+            MessageBox.Show("Tạo hóa đơn thành công");
+            this.Close();
         }
 
 
