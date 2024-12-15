@@ -42,7 +42,7 @@
                               ItemsSource="{Binding Apartments}"
                               SelectedItem="{Binding SelectedApartment}"
                               DisplayMemberPath="ApartmentCode"/>
-
+                    <Button Content="Tìm" Command="{Binding FindCommand}"/>
                 </StackPanel>
 
                 <!-- Header and other controls -->

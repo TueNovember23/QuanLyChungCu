@@ -91,7 +91,7 @@ namespace Forms.ViewModels.Accountant
                 }
 
                 int currentYear = DateTime.Now.Year;
-                for (int i = 2020; i <= currentYear; i++)
+                for (int i = 2010; i <= 2050; i++)
                 {
                     Years.Add(i);
                 }
@@ -226,6 +226,40 @@ namespace Forms.ViewModels.Accountant
         }
 
         [RelayCommand]
+        public async Task Find()
+        {
+            IsLoading = true;
+            try
+            {
+                var invoices = await _invoiceService.GetAllInvoices(SelectedMonth, SelectedYear);
+                var waterTask = await _invoiceService.GetWaterInvoices(SelectedMonth, SelectedYear);
+                var vehicleTask = await _invoiceService.GetVehicleInvoices(SelectedMonth, SelectedYear);
+                var managementTask = await _invoiceService.GetManagementFeeInvoices(SelectedMonth, SelectedYear);
+
+                if (SelectedApartment != null)
+                {
+                    invoices = invoices.Where(i => i.ApartmentCode == SelectedApartment.ApartmentCode).ToList();
+                    waterTask = waterTask.Where(w => w.ApartmentCode == SelectedApartment.ApartmentCode).ToList();
+                    vehicleTask = vehicleTask.Where(v => v.ApartmentCode == SelectedApartment.ApartmentCode).ToList();
+                    managementTask = managementTask.Where(m => m.ApartmentCode == SelectedApartment.ApartmentCode).ToList();
+                }
+
+                TotalInvoices = new ObservableCollection<ResponseInvoiceDTO>(invoices);
+                WaterInvoices = new ObservableCollection<ResponseWaterInvoiceDTO>(waterTask);
+                VehicleInvoices = new ObservableCollection<ResponseVehicleInvoiceDTO>(vehicleTask);
+                ManagementInvoices = new ObservableCollection<ResponseManagementFeeInvoiceDTO>(managementTask);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        [RelayCommand]
         private async void PrintInvoice(ResponseInvoiceDTO invoice)
         {
             if (invoice == null) return;
@@ -300,6 +334,7 @@ namespace Forms.ViewModels.Accountant
                 waterSection.Blocks.Add(table);
                 flowDocument.Blocks.Add(waterSection);
             }
+
 
             var managementInvoice = ManagementInvoices.FirstOrDefault(m => m.InvoiceId == invoice.InvoiceId);
             if (managementInvoice != null)
@@ -423,6 +458,7 @@ namespace Forms.ViewModels.Accountant
             var previewWindow = new InvoicePreviewView(flowDocument);
             previewWindow.ShowDialog();
         }
+
     }
     
 }

@@ -305,7 +305,7 @@ namespace Services.Services.AccountantServices
             );
             if (isExisted)
             {
-                throw new BusinessException($"Hóa đơn căn hộ {waterInvoice.Apartment.ApartmentCode} tháng {invoice.Month} năm {invoice.Year} đã được lập");
+                throw new BusinessException($"Hóa đơn căn hộ này đã được lập");
             }
             await _unitOfWork.GetRepository<Invoice>().InsertAsync(invoice);
             await _unitOfWork.SaveAsync();
