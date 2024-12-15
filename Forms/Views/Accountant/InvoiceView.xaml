@@ -72,8 +72,11 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding InvoiceId}"/>
                         <DataGridTextColumn Header="Căn hộ" Binding="{Binding ApartmentCode}"/>
+                        <DataGridTextColumn Header="Tháng" Binding="{Binding Month}"/>
+                        <DataGridTextColumn Header="Năm" Binding="{Binding Year}"/>
                         <DataGridTextColumn Header="Tổng tiền" Binding="{Binding TotalAmount}"/>
                         <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate}"/>
+                        <DataGridTextColumn Header="Người tạo" Binding="{Binding CreatedBy}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -91,17 +94,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <!-- Nhập liệu tạo hóa đơn -->
-                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,16">
-                        <TextBox materialDesign:HintAssist.Hint="Chỉ số đầu" Width="150" Margin="0,0,16,0" 
-                     Text="{Binding StartIndex, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox materialDesign:HintAssist.Hint="Chỉ số cuối" Width="150" Margin="0,0,16,0" 
-                     Text="{Binding EndIndex, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox materialDesign:HintAssist.Hint="Số người" Width="100" Margin="0,0,16,0" 
-                     Text="{Binding NumberOfPeople, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Content="Tạo hóa đơn" Command="{Binding CreateWaterInvoiceCommand}" Width="150"/>
-                    </StackPanel>
 
                     <!-- Danh sách hóa đơn nước -->
                     <DataGrid ItemsSource="{Binding WaterInvoices}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
@@ -129,13 +121,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,16">
-                        <ComboBox materialDesign:HintAssist.Hint="Chọn xe" Width="150" Margin="0,0,16,0" 
-                      ItemsSource="{Binding Vehicles}" SelectedItem="{Binding SelectedVehicle}"/>
-                        <Button Content="Thêm xe" Command="{Binding AddVehicleToInvoiceCommand}" Width="150" Margin="0,0,16,0"/>
-                        <Button Content="Tạo hóa đơn" Command="{Binding CreateVehicleInvoiceCommand}" Width="150"/>
-                    </StackPanel>
 
                     <DataGrid ItemsSource="{Binding VehicleInvoices}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
                         <DataGrid.Columns>

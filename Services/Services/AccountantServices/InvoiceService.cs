@@ -41,7 +41,8 @@ namespace Services.Services.AccountantServices
                 Year = _.Year,
                 TotalAmount = _.TotalAmount,
                 CreatedDate = _.CreatedDate,
-                Status = _.Status
+                Status = _.Status,
+                CreatedBy = _.CreatedByNavigation.FullName
             }).ToList();
             for (int i = 0; i < list.Count; i++)
             {
@@ -295,6 +296,17 @@ namespace Services.Services.AccountantServices
 
         public async Task CreateInvoice(Invoice invoice, WaterInvoice waterInvoice, ManagementFeeInvoice managementFeeInvoice, VechicleInvoice vechicleInvoice, List<VechicleInvoiceDetail> vechicleInvoiceDetails)
         {
+            bool isExisted = _unitOfWork.GetRepository<Invoice>().Entities.Any(_ =>
+                _.Month == invoice.Month
+                && _.Year == invoice.Year
+                && (_.WaterInvoices.Any(w => w.Apartment.ApartmentId == waterInvoice.ApartmentId)
+                    || _.ManagementFeeInvoices.Any(m => m.Apartment.ApartmentId == managementFeeInvoice.ApartmentId)
+                    || _.VechicleInvoices.Any(v => v.Apartment.ApartmentId == vechicleInvoice.ApartmentId))
+            );
+            if (isExisted)
+            {
+                throw new BusinessException($"Hóa đơn căn hộ {waterInvoice.Apartment.ApartmentCode} tháng {invoice.Month} năm {invoice.Year} đã được lập");
+            }
             await _unitOfWork.GetRepository<Invoice>().InsertAsync(invoice);
             await _unitOfWork.SaveAsync();
             int id = invoice.InvoiceId;
