@@ -234,7 +234,6 @@ namespace Forms.ViewModels.Accountant
             flowDocument.PagePadding = new Thickness(50);
             flowDocument.ColumnWidth = 1000;
 
-            // Header
             var headerParagraph = new Paragraph(new Run("HÓA ĐƠN CHI TIẾT"))
             {
                 TextAlignment = TextAlignment.Center,
@@ -244,7 +243,6 @@ namespace Forms.ViewModels.Accountant
             };
             flowDocument.Blocks.Add(headerParagraph);
 
-            // Basic Invoice Info
             var infoParagraph = new Paragraph()
             {
                 Margin = new Thickness(0, 0, 0, 20)
@@ -255,7 +253,6 @@ namespace Forms.ViewModels.Accountant
             infoParagraph.Inlines.Add(new Run($"Ngày tạo: {invoice.CreatedDate}\n") { FontSize = 14 });
             flowDocument.Blocks.Add(infoParagraph);
 
-            // Water Invoice Details
             var waterInvoice = WaterInvoices.FirstOrDefault(w => w.InvoiceId == invoice.InvoiceId);
             if (waterInvoice != null)
             {
@@ -275,7 +272,6 @@ namespace Forms.ViewModels.Accountant
                 table.BorderThickness = new Thickness(1);
                 table.CellSpacing = 0;
 
-                // Add columns with specific widths
                 for (int i = 0; i < 4; i++)
                 {
                     var column = new TableColumn();
@@ -305,7 +301,6 @@ namespace Forms.ViewModels.Accountant
                 flowDocument.Blocks.Add(waterSection);
             }
 
-            // Management Fee Invoice Details
             var managementInvoice = ManagementInvoices.FirstOrDefault(m => m.InvoiceId == invoice.InvoiceId);
             if (managementInvoice != null)
             {
@@ -352,7 +347,6 @@ namespace Forms.ViewModels.Accountant
                 flowDocument.Blocks.Add(managementSection);
             }
 
-            // Vehicle Invoice Details
             var vehicleInvoice = VehicleInvoices.FirstOrDefault(v => v.InvoiceId == invoice.InvoiceId);
             if (vehicleInvoice != null)
             {
@@ -367,7 +361,6 @@ namespace Forms.ViewModels.Accountant
                     Margin = new Thickness(0, 0, 0, 10)
                 });
 
-                // Get vehicle details
                 var vehicles = await _invoiceService.GetDetailVehicleInvoiceById(vehicleInvoice.VehicleInvoiceId);
 
                 if (vehicles != null && vehicles.Any())
@@ -377,7 +370,6 @@ namespace Forms.ViewModels.Accountant
                     table.BorderThickness = new Thickness(1);
                     table.CellSpacing = 0;
 
-                    // Add columns with specific widths
                     for (int i = 0; i < 4; i++)
                     {
                         var column = new TableColumn();
@@ -418,7 +410,6 @@ namespace Forms.ViewModels.Accountant
                 flowDocument.Blocks.Add(vehicleSection);
             }
 
-            // Total Amount
             var totalSection = new Section();
             totalSection.Blocks.Add(new Paragraph(new Run($"Tổng cộng: {invoice.TotalAmount:N0} VNĐ"))
             {
@@ -429,7 +420,6 @@ namespace Forms.ViewModels.Accountant
             });
             flowDocument.Blocks.Add(totalSection);
 
-            // Create and show preview window
             var previewWindow = new InvoicePreviewView(flowDocument);
             previewWindow.ShowDialog();
         }
