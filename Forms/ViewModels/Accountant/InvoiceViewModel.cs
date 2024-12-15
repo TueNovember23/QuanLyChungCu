@@ -232,50 +232,69 @@ namespace Forms.ViewModels.Accountant
 
             var flowDocument = new FlowDocument();
             flowDocument.PagePadding = new Thickness(50);
+            flowDocument.ColumnWidth = 1000;
 
             // Header
             var headerParagraph = new Paragraph(new Run("HÓA ĐƠN CHI TIẾT"))
             {
                 TextAlignment = TextAlignment.Center,
-                FontSize = 20,
-                FontWeight = FontWeights.Bold
+                FontSize = 24,
+                FontWeight = FontWeights.Bold,
+                Margin = new Thickness(0, 0, 0, 20)
             };
             flowDocument.Blocks.Add(headerParagraph);
 
             // Basic Invoice Info
-            var infoParagraph = new Paragraph();
-            infoParagraph.Inlines.Add(new Run($"Mã hóa đơn: {invoice.InvoiceId}\n"));
-            infoParagraph.Inlines.Add(new Run($"Căn hộ: {invoice.ApartmentCode}\n"));
-            infoParagraph.Inlines.Add(new Run($"Tháng/Năm: {invoice.Month}/{invoice.Year}\n"));
-            infoParagraph.Inlines.Add(new Run($"Ngày tạo: {invoice.CreatedDate}\n"));
+            var infoParagraph = new Paragraph()
+            {
+                Margin = new Thickness(0, 0, 0, 20)
+            };
+            infoParagraph.Inlines.Add(new Run($"Mã hóa đơn: {invoice.InvoiceId}\n") { FontSize = 14 });
+            infoParagraph.Inlines.Add(new Run($"Căn hộ: {invoice.ApartmentCode}\n") { FontSize = 14 });
+            infoParagraph.Inlines.Add(new Run($"Tháng/Năm: {invoice.Month}/{invoice.Year}\n") { FontSize = 14 });
+            infoParagraph.Inlines.Add(new Run($"Ngày tạo: {invoice.CreatedDate}\n") { FontSize = 14 });
             flowDocument.Blocks.Add(infoParagraph);
 
             // Water Invoice Details
             var waterInvoice = WaterInvoices.FirstOrDefault(w => w.InvoiceId == invoice.InvoiceId);
             if (waterInvoice != null)
             {
-                var waterSection = new Section();
-                waterSection.Blocks.Add(new Paragraph(new Run("Chi tiết hóa đơn nước")) { FontWeight = FontWeights.Bold });
+                var waterSection = new Section()
+                {
+                    Margin = new Thickness(0, 0, 0, 20)
+                };
+                waterSection.Blocks.Add(new Paragraph(new Run("Chi tiết hóa đơn nước"))
+                {
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 16,
+                    Margin = new Thickness(0, 0, 0, 10)
+                });
 
                 var table = new Table();
                 table.BorderBrush = Brushes.Black;
                 table.BorderThickness = new Thickness(1);
+                table.CellSpacing = 0;
 
-                // Add columns
+                // Add columns with specific widths
                 for (int i = 0; i < 4; i++)
-                    table.Columns.Add(new TableColumn());
+                {
+                    var column = new TableColumn();
+                    column.Width = new GridLength(1, GridUnitType.Star);
+                    table.Columns.Add(column);
+                }
 
                 var headerRow = new TableRow();
-                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chỉ số đầu"))));
-                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chỉ số cuối"))));
-                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Số người"))));
-                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Thành tiền"))));
+                headerRow.Background = new SolidColorBrush(Colors.LightGray);
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chỉ số đầu")) { TextAlignment = TextAlignment.Center }));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chỉ số cuối")) { TextAlignment = TextAlignment.Center }));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Số người")) { TextAlignment = TextAlignment.Center }));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Thành tiền")) { TextAlignment = TextAlignment.Center }));
 
                 var dataRow = new TableRow();
-                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.StartIndex.ToString()))));
-                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.EndIndex.ToString()))));
-                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.NumberOfPeople.ToString()))));
-                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.TotalAmount.ToString("N0")))));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.StartIndex.ToString())) { TextAlignment = TextAlignment.Center }));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.EndIndex.ToString())) { TextAlignment = TextAlignment.Center }));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.NumberOfPeople.ToString())) { TextAlignment = TextAlignment.Center }));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(waterInvoice.TotalAmount.ToString("N0"))) { TextAlignment = TextAlignment.Right }));
 
                 var rowGroup = new TableRowGroup();
                 rowGroup.Rows.Add(headerRow);
@@ -290,25 +309,39 @@ namespace Forms.ViewModels.Accountant
             var managementInvoice = ManagementInvoices.FirstOrDefault(m => m.InvoiceId == invoice.InvoiceId);
             if (managementInvoice != null)
             {
-                var managementSection = new Section();
-                managementSection.Blocks.Add(new Paragraph(new Run("Chi tiết phí quản lý")) { FontWeight = FontWeights.Bold });
+                var managementSection = new Section()
+                {
+                    Margin = new Thickness(0, 0, 0, 20)
+                };
+                managementSection.Blocks.Add(new Paragraph(new Run("Chi tiết phí quản lý"))
+                {
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 16,
+                    Margin = new Thickness(0, 0, 0, 10)
+                });
 
                 var table = new Table();
                 table.BorderBrush = Brushes.Black;
                 table.BorderThickness = new Thickness(1);
+                table.CellSpacing = 0;
 
                 for (int i = 0; i < 3; i++)
-                    table.Columns.Add(new TableColumn());
+                {
+                    var column = new TableColumn();
+                    column.Width = new GridLength(1, GridUnitType.Star);
+                    table.Columns.Add(column);
+                }
 
                 var headerRow = new TableRow();
-                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Diện tích (m²)"))));
-                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Đơn giá"))));
-                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Thành tiền"))));
+                headerRow.Background = new SolidColorBrush(Colors.LightGray);
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Diện tích (m²)")) { TextAlignment = TextAlignment.Center }));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Đơn giá")) { TextAlignment = TextAlignment.Center }));
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Thành tiền")) { TextAlignment = TextAlignment.Center }));
 
                 var dataRow = new TableRow();
-                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.Area.ToString()))));
-                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.Fee.ToString()))));
-                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.TotalAmount.ToString("N0")))));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.Area.ToString())) { TextAlignment = TextAlignment.Center }));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.Fee.ToString())) { TextAlignment = TextAlignment.Right }));
+                dataRow.Cells.Add(new TableCell(new Paragraph(new Run(managementInvoice.TotalAmount.ToString("N0"))) { TextAlignment = TextAlignment.Right }));
 
                 var rowGroup = new TableRowGroup();
                 rowGroup.Rows.Add(headerRow);
@@ -323,8 +356,16 @@ namespace Forms.ViewModels.Accountant
             var vehicleInvoice = VehicleInvoices.FirstOrDefault(v => v.InvoiceId == invoice.InvoiceId);
             if (vehicleInvoice != null)
             {
-                var vehicleSection = new Section();
-                vehicleSection.Blocks.Add(new Paragraph(new Run("Chi tiết phí gửi xe")) { FontWeight = FontWeights.Bold });
+                var vehicleSection = new Section()
+                {
+                    Margin = new Thickness(0, 0, 0, 20)
+                };
+                vehicleSection.Blocks.Add(new Paragraph(new Run("Chi tiết phí gửi xe"))
+                {
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 16,
+                    Margin = new Thickness(0, 0, 0, 10)
+                });
 
                 // Get vehicle details
                 var vehicles = await _invoiceService.GetDetailVehicleInvoiceById(vehicleInvoice.VehicleInvoiceId);
@@ -334,16 +375,22 @@ namespace Forms.ViewModels.Accountant
                     var table = new Table();
                     table.BorderBrush = Brushes.Black;
                     table.BorderThickness = new Thickness(1);
+                    table.CellSpacing = 0;
 
-                    // Add columns
+                    // Add columns with specific widths
                     for (int i = 0; i < 4; i++)
-                        table.Columns.Add(new TableColumn());
+                    {
+                        var column = new TableColumn();
+                        column.Width = new GridLength(1, GridUnitType.Star);
+                        table.Columns.Add(column);
+                    }
 
                     var headerRow = new TableRow();
-                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Biển số"))));
-                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chủ sở hữu"))));
-                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Loại xe"))));
-                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Phí gửi xe"))));
+                    headerRow.Background = new SolidColorBrush(Colors.LightGray);
+                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Biển số")) { TextAlignment = TextAlignment.Center }));
+                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Chủ sở hữu")) { TextAlignment = TextAlignment.Center }));
+                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Loại xe")) { TextAlignment = TextAlignment.Center }));
+                    headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Phí gửi xe")) { TextAlignment = TextAlignment.Center }));
 
                     var rowGroup = new TableRowGroup();
                     rowGroup.Rows.Add(headerRow);
@@ -351,10 +398,10 @@ namespace Forms.ViewModels.Accountant
                     foreach (var vehicle in vehicles)
                     {
                         var dataRow = new TableRow();
-                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Id))));
-                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Owner))));
-                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Type))));
-                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Fee?.ToString("N0")))));
+                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Id)) { TextAlignment = TextAlignment.Center }));
+                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Owner)) { TextAlignment = TextAlignment.Left }));
+                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Type)) { TextAlignment = TextAlignment.Center }));
+                        dataRow.Cells.Add(new TableCell(new Paragraph(new Run(vehicle.Fee?.ToString("N0"))) { TextAlignment = TextAlignment.Right }));
                         rowGroup.Rows.Add(dataRow);
                     }
 
@@ -362,7 +409,12 @@ namespace Forms.ViewModels.Accountant
                     vehicleSection.Blocks.Add(table);
                 }
 
-                vehicleSection.Blocks.Add(new Paragraph(new Run($"Tổng tiền: {vehicleInvoice.TotalAmount:N0} VNĐ")));
+                vehicleSection.Blocks.Add(new Paragraph(new Run($"Tổng tiền: {vehicleInvoice.TotalAmount:N0} VNĐ"))
+                {
+                    TextAlignment = TextAlignment.Right,
+                    FontWeight = FontWeights.Bold,
+                    Margin = new Thickness(0, 10, 0, 0)
+                });
                 flowDocument.Blocks.Add(vehicleSection);
             }
 
@@ -371,22 +423,15 @@ namespace Forms.ViewModels.Accountant
             totalSection.Blocks.Add(new Paragraph(new Run($"Tổng cộng: {invoice.TotalAmount:N0} VNĐ"))
             {
                 FontWeight = FontWeights.Bold,
-                FontSize = 16,
-                TextAlignment = TextAlignment.Right
+                FontSize = 18,
+                TextAlignment = TextAlignment.Right,
+                Margin = new Thickness(0, 20, 0, 0)
             });
             flowDocument.Blocks.Add(totalSection);
 
-            // Show print dialog
-            var printDialog = new PrintDialog();
-            if (printDialog.ShowDialog() == true)
-            {
-                flowDocument.PageHeight = printDialog.PrintableAreaHeight;
-                flowDocument.PageWidth = printDialog.PrintableAreaWidth;
-                flowDocument.ColumnWidth = printDialog.PrintableAreaWidth;
-
-                IDocumentPaginatorSource paginatorSource = flowDocument;
-                printDialog.PrintDocument(paginatorSource.DocumentPaginator, "Invoice Print");
-            }
+            // Create and show preview window
+            var previewWindow = new InvoicePreviewView(flowDocument);
+            previewWindow.ShowDialog();
         }
     }
     
