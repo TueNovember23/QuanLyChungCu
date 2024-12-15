@@ -17,5 +17,7 @@ public partial class Vehicle
 
     public virtual Apartment Apartment { get; set; } = null!;
 
+    public virtual ICollection<VechicleInvoiceDetail> VechicleInvoiceDetails { get; set; } = new List<VechicleInvoiceDetail>();
+
     public virtual VehicleCategory VehicleCategory { get; set; } = null!;
 }
