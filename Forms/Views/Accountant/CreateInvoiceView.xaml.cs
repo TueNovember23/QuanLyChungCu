@@ -1,5 +1,6 @@
 ﻿using Core;
 using Repositories.Repositories.Entities;
+using Services.DTOs.LoginDTO;
 using Services.Interfaces.AccountantServices;
 using Services.Services.AccountantServices;
 using System.Windows;
@@ -12,6 +13,9 @@ namespace Forms.Views.Accountant
     public partial class CreateInvoiceView : Window
     {
         private readonly IInvoiceService _service;
+
+        public LoginResponseDTO? User { get; set; }
+
         public CreateInvoiceView(IInvoiceService service)
         {
             InitializeComponent();
@@ -71,7 +75,7 @@ namespace Forms.Views.Accountant
             e.Handled = !int.TryParse(e.Text, out _);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             if (ApartmentComboBox.SelectedItem == null)
             {
@@ -102,13 +106,17 @@ namespace Forms.Views.Accountant
             {
                 throw new BusinessException("Chỉ số cuối kỳ phải lớn hơn chỉ số đầu kỳ.");
             }
-
+            int peoples = 0;
             if (!int.TryParse(NumberOfPeopleInput.Text.Replace("người", "").Trim(), out int numberOfPeople) || numberOfPeople <= 0)
             {
                 throw new BusinessException("Số lượng cư dân không hợp lệ.");
             }
-
-            double averageUsage = (endIndex - startIndex) / (double)numberOfPeople;
+            else
+            {
+                peoples = numberOfPeople;
+            }
+            double currenUsage = (endIndex - startIndex);
+            double averageUsage = currenUsage / (double)numberOfPeople;
             if (averageUsage >= 10)
             {
                 MessageBoxResult result = MessageBox.Show(
@@ -124,12 +132,95 @@ namespace Forms.Views.Accountant
                 }
             }
 
+            // Tính tiền nước
+            WaterFee waterFee = await _service.GetCurrentWaterFee();
+            double waterPrice = 0;
+            int level1 = (waterFee.Level1 ?? 0) * peoples;
+            int level2 = (waterFee.Level2 ?? 0) * peoples;
+            if (currenUsage <= level1)
+            {
+                waterPrice = currenUsage * (waterFee.Price1 ?? 0);
+            }
+            else if (currenUsage <= level2)
+            {
+                waterPrice = level1 * (waterFee.Price1 ?? 0) + (currenUsage - level1) * (waterFee.Price2 ?? 0);
+            }
+            else
+            {
+                waterPrice = level1 * (waterFee.Price1 ?? 0) + (level2 - level1) * (waterFee.Price2 ?? 0) + (currenUsage - level2) * (waterFee.Price3 ?? 0);
+            }
+            WaterInvoiceAmountInput.Text = waterPrice.ToString() + "vnđ";
+
+            // Tính tiền phí quản lý
+            double manageFee = (await _service.GetCurrentManagementFee()).Price ?? 0;
+            double apartmentArea = double.Parse(AreaInput.Text);
+            double manageFeePrice = manageFee * apartmentArea;
+            ManageFeeInvoiceAmoutInput.Text = manageFeePrice.ToString() + "vnđ";
+
+            // Tính tiền phí xe
+            double vehiclePrice = 0;
+            List<ResponseVehicle> vehicles = (VehicleDataGrid.ItemsSource as List<ResponseVehicle>)!;
+            foreach (var vehicle in vehicles)
+            {
+                vehiclePrice += vehicle.Fee ?? 0;
+            }
+            VehicleInvoiceAmount.Text = vehiclePrice.ToString() + "vnđ";
+
+            // Cập nhật thành tiền
+            TotalAmountInput.Text = (waterPrice + manageFeePrice + vehiclePrice).ToString() + "vnđ";
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // lưu hóa đơn
+            string apartmentCode = ApartmentComboBox.SelectedItem as string;
+            Account account = await _service.GetAccountByUsername(User!.Username);
+            Apartment apartment = await _service.GetApartmentByCode(apartmentCode!);
+            WaterFee waterFee = await _service.GetCurrentWaterFee();
+            ManagementFee managementFee = await _service.GetCurrentManagementFee();
+            Invoice invoice = new()
+            {
+                Month = (int)MonthCombobox.SelectedItem,
+                Year = (int)YearCombobox.SelectedItem,
+                TotalAmount = double.Parse(TotalAmountInput.Text.Replace("vnđ", "")),
+                CreatedBy = account.AccountId
+            };
+
+            WaterInvoice waterInvoice = new()
+            {
+                StartIndex = int.Parse(StartIndexInput.Text),
+                EndIndex = int.Parse(EndIndexInput.Text),
+                NumberOfPeople = int.Parse(NumberOfPeopleInput.Text.Replace("người", "").Trim()),
+                TotalAmount = double.Parse(WaterInvoiceAmountInput.Text.Replace("vnđ", "")),
+                ApartmentId = apartment.ApartmentId,
+                WaterFeeId = waterFee.WaterFeeId,
+            };
+
+            ManagementFeeInvoice managementInvoce = new()
+            {
+                Price = 0,
+                TotalAmount = double.Parse(ManageFeeInvoiceAmoutInput.Text.Replace("vnđ", "")),
+                ApartmentId = apartment.ApartmentId,
+                ManagementFeeHistoryId = managementFee.ManagementFeeId,
+            };
+
+            List<ResponseVehicle> vehicles = (VehicleDataGrid.ItemsSource as List<ResponseVehicle>)!;
+            VechicleInvoice vechicleInvoice = new()
+            {
+                TotalAmount = double.Parse(VehicleInvoiceAmount.Text.Replace("vnđ", "")),
+                ApartmentId = apartment.ApartmentId
+            };
+            List<VechicleInvoiceDetail> vechicleInvoiceDetails = new();
+            foreach (var v in vehicles)
+            {
+                vechicleInvoiceDetails.Add(new()
+                {
+                    VehicleId = v.Id!,
+                    Price = v.Fee ?? 0
+                });
+            }
+            await _service.CreateInvoice(invoice, waterInvoice, managementInvoce, vechicleInvoice, vechicleInvoiceDetails);
         }
+
 
         private void ApartmentComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {

@@ -50,7 +50,9 @@ namespace Forms.Views.Accountant
 
         private void InvoiceViewButton_Click(object sender, RoutedEventArgs e)
         {
-            LoadUserControl(new InvoiceView());
+            var f = new InvoiceView();
+            LoadUserControl(f);
+            f.User = User;
         }
 
         private void FeeManagementViewButton_Click(object sender, RoutedEventArgs e)
@@ -90,6 +92,7 @@ namespace Forms.Views.Accountant
             CircleSliceText.Visibility = Visibility.Visible;
             CalendarText.Visibility = Visibility.Visible;
             EqualizerText.Visibility = Visibility.Visible;
+            CalendarTextt.Visibility = Visibility.Visible;
             ChatText.Visibility = Visibility.Visible;
             YourAccountText.Visibility = Visibility.Visible;
             ExitText.Visibility = Visibility.Visible;
@@ -104,6 +107,7 @@ namespace Forms.Views.Accountant
             CircleSliceText.Visibility = Visibility.Collapsed;
             CalendarText.Visibility = Visibility.Collapsed;
             EqualizerText.Visibility = Visibility.Collapsed;
+            CalendarTextt.Visibility = Visibility.Collapsed;
             ChatText.Visibility = Visibility.Collapsed;
             YourAccountText.Visibility = Visibility.Collapsed;
             ExitText.Visibility = Visibility.Collapsed;

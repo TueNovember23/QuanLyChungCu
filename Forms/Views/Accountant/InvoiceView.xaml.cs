@@ -1,5 +1,7 @@
 ﻿using Forms.ViewModels.Accountant;
+using Forms.ViewModels.AdministativeStaff;
 using Microsoft.Extensions.DependencyInjection;
+using Services.DTOs.LoginDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,17 @@ namespace Forms.Views.Accountant
     /// </summary>
     public partial class InvoiceView : UserControl
     {
+        private LoginResponseDTO? _user;
+        public LoginResponseDTO? User
+        {
+            get { return _user; }
+            set
+            {
+                _user = value;
+                (DataContext as InvoiceViewModel)!.User = User;
+            }
+        }
+
         public InvoiceView()
         {
             InitializeComponent();

@@ -15,7 +15,7 @@ public partial class MalfuntionEquipment
 
     public string? SolvingMethod { get; set; }
 
-    public double? RepairPrice { get; set; }
+    public double RepairPrice { get; set; }
 
     public virtual Equipment? Equipment { get; set; }
 
